@@ -18,6 +18,7 @@ public class Login extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         try{
             v=inflater.inflate(R.layout.fragment_login,null);
+
         }
         catch (Exception e){
             e.printStackTrace();
