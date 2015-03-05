@@ -6,4 +6,7 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_dashboard">DashboardActivity</string>
 
+    <!--Login Screen Strings-->
+    <string name="email_address">Email address</string>
+    <string name="password">Password</string>
 </resources>

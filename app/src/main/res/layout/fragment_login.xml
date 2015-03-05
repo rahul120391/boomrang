@@ -44,8 +44,10 @@
                   android:drawableLeft="@drawable/ic_email"
                   android:drawablePadding="10dp"
                   android:ems="15"
+                  android:hint="@string/email_address"
                   android:inputType="text"
                   android:padding="10dp"
+                  android:textColor="@color/email_password_txtclr"
                   />
               <EditText
                   android:layout_width="match_parent"
@@ -54,8 +56,10 @@
                   android:drawableLeft="@drawable/ic_password"
                   android:drawablePadding="10dp"
                   android:ems="15"
+                  android:hint="@string/password"
                   android:inputType="text"
                   android:padding="10dp"
+                  android:textColor="@color/email_password_txtclr"
                   />
               </LinearLayout>
 
