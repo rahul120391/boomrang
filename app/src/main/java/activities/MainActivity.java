@@ -16,8 +16,6 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
-
-
      /******************************************************************************************************************************/
      /***
      * This method is used for replacing one fragment with another
