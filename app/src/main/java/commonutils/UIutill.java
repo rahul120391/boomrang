@@ -24,8 +24,8 @@ public class UIutill {
      * @param context -pass activity context as argument to apply font on the views
      */
 
-    public static Typeface SetFont(Context context) {
-        font = Typeface.createFromAsset(context.getAssets(), "segoeui.ttf");
+    public static Typeface SetFont(Context context,String fontname) {
+        font = Typeface.createFromAsset(context.getAssets(),fontname);
         return font;
     }
 

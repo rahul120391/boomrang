@@ -33,11 +33,12 @@
               android:layout_height="wrap_content"
               android:layout_centerInParent="true"
               android:layout_margin="20dp"
-              android:background="@drawable/login_bg_rounded_shape"
+              android:background="@drawable/login_box_bg"
               android:orientation="vertical"
-              android:padding="10dp"
+              android:padding="15dp"
               >
               <EditText
+                  android:id="@+id/et_email"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
                   android:background="@color/transparent"
@@ -46,23 +47,87 @@
                   android:ems="15"
                   android:hint="@string/email_address"
                   android:inputType="text"
-                  android:padding="10dp"
+                  android:paddingLeft="10dp"
+                  android:paddingRight="10dp"
+                  android:textAppearance="@android:style/TextAppearance.Medium"
                   android:textColor="@color/email_password_txtclr"
+                  android:textColorHint="@color/email_password_txtclr"
+                  android:textCursorDrawable="@drawable/edittext_cursor_drawable"
                   />
               <EditText
+                  android:id="@+id/et_password"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
+                  android:layout_marginTop="15dp"
                   android:background="@color/transparent"
                   android:drawableLeft="@drawable/ic_password"
                   android:drawablePadding="10dp"
                   android:ems="15"
                   android:hint="@string/password"
                   android:inputType="text"
-                  android:padding="10dp"
+                  android:paddingLeft="10dp"
+                  android:paddingRight="10dp"
+                  android:textAppearance="@android:style/TextAppearance.Medium"
                   android:textColor="@color/email_password_txtclr"
+                  android:textColorHint="@color/email_password_txtclr"
+                  android:textCursorDrawable="@drawable/edittext_cursor_drawable"
                   />
               </LinearLayout>
-
+            <LinearLayout
+                android:id="@+id/toggle_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/main_layout"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="-30dp"
+                android:orientation="horizontal"
+                >
+              <ToggleButton
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_marginLeft="20dp"
+                  android:background="@drawable/toggle_selector"
+                  android:checked="false"
+                  android:textOff=" "
+                  android:textOn=" "
+                  />
+                 <TextView
+                     android:id="@+id/tv_rememberme"
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:paddingLeft="10dp"
+                     android:text="@string/remember_me"
+                     android:textAppearance="@android:style/TextAppearance.Small"
+                     android:textColor="@color/remember_me_txtclr"
+                     />
+                </LinearLayout>
+        <Button
+            android:id="@+id/btn_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/toggle_layout"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/login_button_bg"
+            android:gravity="center_horizontal"
+            android:paddingTop="10dp"
+            android:text="@string/login"
+            android:textColor="@color/login_button_txtclr"
+            />
+        <TextView
+            android:id="@+id/tv_forgot"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/btn_login"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:gravity="center"
+            android:text="@string/forgot_password"
+            android:textAppearance="@android:style/TextAppearance.Small"
+            android:textColor="@color/forgot_txtclr"
+            />
         </RelativeLayout>
 
 </FrameLayout>
