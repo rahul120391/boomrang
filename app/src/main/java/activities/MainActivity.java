@@ -22,18 +22,15 @@ public class MainActivity extends FragmentActivity {
      * This method is used for replacing one fragment with another
      * @param id
      * -id of the container containing fragments
-     * @param _frgremove
-     * -fragment to remove
       * @param _frgadd
       * -fragment to add
      */
-     public void FragmentTransactions(int id, Fragment _frgremove,Fragment  _frgadd){
+     public void FragmentTransactions(int id,Fragment  _frgadd){
            fragmentManager = getSupportFragmentManager();
            FragmentTransaction fragmentTransaction = fragmentManager
                     .beginTransaction();
-           fragmentTransaction.setCustomAnimations(R.anim.accordion_right_in,R.anim.accordion_left_out,R.anim.accordion_left_in,R.anim.accordion_right_out);
-           fragmentTransaction.remove(_frgremove);
-           fragmentTransaction.add(id,_frgadd);
-           fragmentTransaction.commit();
+         // fragmentTransaction.setCustomAnimations(R.anim.accordion_right_in,R.anim.accordion_left_out,R.anim.accordion_left_in,R.anim.accordion_right_out);
+          fragmentTransaction.replace(id,_frgadd);
+          fragmentTransaction.commit();
     }
 }

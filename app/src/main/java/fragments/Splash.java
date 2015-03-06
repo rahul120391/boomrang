@@ -29,7 +29,7 @@ public class Splash extends Fragment {
                     catch (Exception e){
                         e.printStackTrace();
                     }
-                    ((MainActivity)getActivity()).FragmentTransactions(R.id.frame_container,new Splash(),new Login());
+                    ((MainActivity)getActivity()).FragmentTransactions(R.id.frame_container,new Login());
                 }
             };
             thread.start();
