@@ -31,7 +31,7 @@ public class MainActivity extends FragmentActivity {
            fragmentManager = getSupportFragmentManager();
            FragmentTransaction fragmentTransaction = fragmentManager
                     .beginTransaction();
-           fragmentTransaction.setCustomAnimations(R.anim.anim_slide_in_left,R.anim.anim_slide_out_left);
+           fragmentTransaction.setCustomAnimations(R.anim.accordion_right_in,R.anim.accordion_left_out,R.anim.accordion_left_in,R.anim.accordion_right_out);
            fragmentTransaction.remove(_frgremove);
            fragmentTransaction.add(id,_frgadd);
            fragmentTransaction.commit();

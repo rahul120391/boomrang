@@ -58,6 +58,8 @@ public class UIutill {
      * @param message -message to show inside snackbar
      */
     public void ShowSnackBar(Context context, String message) {
-        SnackbarManager.show(Snackbar.with(context).text(message).color(context.getResources().getColor(R.color.Red)).textColor(context.getResources().getColor(R.color.White)));
+        SnackbarManager.show(Snackbar.with(context).text(message).
+                color(context.getResources().getColor(R.color.login_box_bg)).
+                textColor(context.getResources().getColor(R.color.email_password_txtclr)));
     }
 }
