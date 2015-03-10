@@ -24,7 +24,7 @@
     <color name="Black">#000000</color>
     <color name="White">#FFFFFF</color>
     <color name="transparent">#00000000</color>
-
+   
     <!--Login Screen Colors-->
     <color name="login_box_bg">#953724</color>
     <color name="login_box_shadow_bg">#432721</color>
@@ -34,5 +34,17 @@
     <color name="login_button_txtclr">#fec1b2</color>
     <color name="forgot_txtclr">#ffc2b3</color>
 
-
+    <!--ActionBar color-->
+    <color name="toggle_circle_color">#ffae9b</color>
+    
+    <!--DashBoard color-->
+    <color name="my_file_profile_color">#B34A35</color>
+    <color name="my_file_profile_stroke_color">#D78580</color>
+    <color name="progress_unfilled_color">#FFAE9B</color>
+    <color name="progress_filled_color">#A63933</color>
+    <color name="all_indi_color">#FFAE9B</color>
+    <color name="consume_indi_color">#A63933</color>
+    <color name="remaining_indi_color">#3E2A25</color>
+    <color name="all_con_rem_txtclr">#FFAE9B</color>
+    <color name="all_con_rem_amount_txtclr">#FFFFFF</color>
 </resources>

@@ -1,16 +1,15 @@
 package activities;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+
+import com.desarrollodroide.libraryfragmenttransactionextended.FragmentTransactionExtended;
 
 import Boomerang.R;
 
 
 public class MainActivity extends FragmentActivity {
-    FragmentManager fragmentManager;
+    android.app.FragmentManager fragmentManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,13 +23,16 @@ public class MainActivity extends FragmentActivity {
      * -id of the container containing fragments
       * @param _frgadd
       * -fragment to add
+      * @param _newfrag
+      * -new fragment
      */
-     public void FragmentTransactions(int id,Fragment  _frgadd){
-           fragmentManager = getSupportFragmentManager();
-           FragmentTransaction fragmentTransaction = fragmentManager
+     public void FragmentTransactions(int id, android.app.Fragment _frgadd, android.app.Fragment _newfrag){
+           fragmentManager = getFragmentManager();
+           android.app.FragmentTransaction fragmentTransaction = fragmentManager
                     .beginTransaction();
-         // fragmentTransaction.setCustomAnimations(R.anim.accordion_right_in,R.anim.accordion_left_out,R.anim.accordion_left_in,R.anim.accordion_right_out);
-          fragmentTransaction.replace(id,_frgadd);
-          fragmentTransaction.commit();
+         FragmentTransactionExtended fragmentTransactionExtended =new FragmentTransactionExtended(MainActivity.this,fragmentTransaction,_frgadd,_frgadd,id);
+         fragmentTransactionExtended.addTransition(FragmentTransactionExtended.ROTATE_DOWN);
+         fragmentTransaction.replace(id,_newfrag);
+         fragmentTransactionExtended.commit();
     }
 }

@@ -2,7 +2,6 @@ package fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,7 @@ import activities.MainActivity;
 /**
  * Created by rahul on 3/4/2015.
  */
-public class Splash extends Fragment {
+public class Splash extends android.app.Fragment {
 
     View v=null;
     @Override
@@ -29,7 +28,7 @@ public class Splash extends Fragment {
                     catch (Exception e){
                         e.printStackTrace();
                     }
-                    ((MainActivity)getActivity()).FragmentTransactions(R.id.frame_container,new Login());
+                    ((MainActivity)getActivity()).FragmentTransactions(R.id.fragment_place,new Splash(),new Login());
                 }
             };
             thread.start();

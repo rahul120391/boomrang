@@ -1,20 +1,29 @@
 package activities;
 
+import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 
 import Boomerang.R;
 
-public class DashboardActivity extends ActionBarActivity {
+
+public class DashboardActivity extends ActionBarActivity{
     FragmentManager fragmentManager;
     Fragment fragment;
+    Toolbar toolbar;
+    ActionBar bar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+        toolbar=(Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowHomeEnabled(false);
+
     }
     /**************************************************************************************************************************/
     /***
@@ -40,4 +49,5 @@ public class DashboardActivity extends ActionBarActivity {
             fragmentManager.popBackStack(tag, 0);
         }
     }
+
 }

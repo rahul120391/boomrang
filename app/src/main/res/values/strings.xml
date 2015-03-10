@@ -12,4 +12,12 @@
     <string name="remember_me">Remember me</string>
     <string name="login">Login</string>
     <string name="forgot_password">Forgot your password?</string>
+
+    <!--DashBoard Screen Strings-->
+    <string name="my_file">My Files</string>
+    <string name="my_profile">My Profile</string>
+    <string name="space_stats">Space Stats</string>
+    <string name="allowed">Allowed</string>
+    <string name="consumed">Consumed</string>
+    <string name="remaining">Remaining</string>
 </resources>
