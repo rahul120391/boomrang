@@ -85,9 +85,9 @@ public class UIutill {
                     .withMessage(message)                     //.withMessage(null)  no Msg
                     .withMessageColor(cnt.getResources().getColor(R.color.email_password_txtclr))                              //def  | withMessageColor(int resid)
                     .withDialogColor(cnt.getResources().getColor(R.color.login_box_bg))                               //def  | withDialogColor(int resid)
-                    .withIcon(cnt.getResources().getDrawable(R.drawable.ic_launcher))
+                    .withIcon(cnt.getResources().getDrawable(R.drawable.appicon))
                     .withDuration(700)                                          //def
-                    .withEffect(Effectstype.Newspager)                                         //def Effectstype.Slidetop
+                    .withEffect(Effectstype.Fliph)                                         //def Effectstype.Slidetop
                     .withButton1Text("OK")                                      //def gone
                     .withButton2Text("Cancel")                                  //def gone
                     .isCancelableOnTouchOutside(true)                           //def    | isCancelable(true)

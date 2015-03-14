@@ -1,6 +1,8 @@
 package commonutils;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -57,9 +59,9 @@ public class MethodClass<T> {
      */
     public void MakeGetRequest(String url) {
         switch (url) {
-            case URLS.SPECIALITY:
+   /*         case URLS.SPECIALITY:
                 myretro.getstates(new CallbackClass<T>(inter, cnt));
-                break;
+                break;*/
             default:
                 break;
         }
@@ -75,7 +77,8 @@ public class MethodClass<T> {
     public void MakePostRequest(Map<String, String> map, String url) {
         switch (url) {
             case URLS.LOGIN:
-                myretro.login(map, new CallbackClass<T>(inter, cnt));
+                System.out.println("map"+map);
+                myretro.login(map,new CallbackClass<T>(inter, cnt));
                 break;
             default:
                 break;
@@ -92,9 +95,9 @@ public class MethodClass<T> {
      */
     public void MakeGetRequestWithParams(Map<String, String> map, String url) {
         switch (url) {
-            case URLS.SEARCH_REQUEST:
+            /*case URLS.SEARCH_REQUEST:
                 myretro.sendtomany(map, new CallbackClass<T>(inter, cnt));
-                break;
+                break;*/
             default:
                 break;
         }
@@ -111,12 +114,40 @@ public class MethodClass<T> {
      */
     public void MakeMultipartRequest(Map<String, String> map, TypedFile file, String url) {
         switch (url) {
-            case URLS.ADD_ANIMAL:
+       /*     case URLS.ADD_ANIMAL:
                 myretro.addanimanl(map, file, new CallbackClass<T>(inter, cnt));
-                break;
+                break;*/
             default:
                 break;
         }
 
+    }
+
+
+    /***
+     * Check Internet connection
+     * @return
+     */
+    public  boolean checkInternetConnection() {
+        ConnectivityManager cm = (ConnectivityManager) cnt
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifiNetwork = cm
+                .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        if (wifiNetwork != null && wifiNetwork.isConnected()) {
+            return true;
+        }
+
+        NetworkInfo mobileNetwork = cm
+                .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        if (mobileNetwork != null && mobileNetwork.isConnected()) {
+            return true;
+        }
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        if (activeNetwork != null && activeNetwork.isConnected()) {
+            return true;
+        }
+
+        return false;
     }
 }

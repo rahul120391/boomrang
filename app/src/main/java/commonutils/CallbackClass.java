@@ -19,16 +19,20 @@ public class CallbackClass<T> implements Callback<T> {
      * @param cnt    -context of the activity/fragment
      */
     public CallbackClass(DataTransferInterface<T> result, Context cnt) {
+
+        ProgressDialogClass.getDialog(cnt);
         this.result = result;
     }
 
     @Override
     public void success(T apiresponse, Response response) {
+        ProgressDialogClass.logout();
         result.onSuccess(apiresponse);
     }
 
     @Override
     public void failure(RetrofitError retrofitError) {
+        ProgressDialogClass.logout();
         result.onFailure(retrofitError);
     }
 }

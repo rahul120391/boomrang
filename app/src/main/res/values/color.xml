@@ -47,4 +47,15 @@
     <color name="remaining_indi_color">#3E2A25</color>
     <color name="all_con_rem_txtclr">#FFAE9B</color>
     <color name="all_con_rem_amount_txtclr">#FFFFFF</color>
+    <color name="navigation_divider">#3f0602</color>
+    <color name="listitem_bg">#7d1911</color>
+    <!--MyFiles color-->
+    <color name="myfiles_unselelcted">#a53b32</color>
+    <color name="myfiles_selected">#9f392e</color>
+    <color name="listview_divider">#a2a2a2</color>
+    <color name="listview_txtclr">#a1382f</color>
+    <!--UserProfile color-->
+    <color name="subheadings_color">#a1382f</color>
+    <color name="subheadings_divider_color">#a2a2a2</color>
+    <color name="headings_color">#292929</color>
 </resources>

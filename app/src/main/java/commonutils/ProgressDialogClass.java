@@ -20,12 +20,11 @@ public class ProgressDialogClass {
             dialog = new ProgressDialog(cnt, R.style.ProgressDialogTheme);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setIndeterminate(true);
-            dialog.setMessage("Loading...");
             dialog.setCancelable(false);
             dialog.getWindow().setGravity(Gravity.CENTER_HORIZONTAL);
             dialog.setIndeterminateDrawable(new CircularProgressDrawable.Builder(
                     cnt)
-                    .color(cnt.getResources().getColor(R.color.Red))
+                    .color(cnt.getResources().getColor(R.color.email_password_txtclr))
                     .angleInterpolator(new AccelerateInterpolator()).build());
             dialog.show();
         }

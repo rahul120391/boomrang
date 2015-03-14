@@ -1,8 +1,10 @@
 package fragments;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,49 +15,55 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.daimajia.androidanimations.library.Techniques;
-import com.daimajia.androidanimations.library.YoYo;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import Boomerang.R;
 import activities.DashboardActivity;
+import commonutils.CustomErrorHandling;
+import commonutils.DataTransferInterface;
+import commonutils.MethodClass;
 import commonutils.UIutill;
+import commonutils.URLS;
+import retrofit.RetrofitError;
 
 /**
  * Created by rahul on 3/4/2015.
  */
-public class Login extends android.app.Fragment {
+public class Login<T> extends android.app.Fragment implements View.OnClickListener, DataTransferInterface<T> {
     View v=null;
     EditText et_email,et_password;
     TextView tv_rememberme,tv_forgot;
     Button btn_login;
     ImageView iv_logo;
+    MethodClass<T> methodClass;
     LinearLayout login_layout;
+    SharedPreferences sharedprefs;
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         try{
+            sharedprefs=getActivity().getSharedPreferences("Login",0);
+            methodClass=new MethodClass<T>(getActivity(),this);
             v=inflater.inflate(R.layout.fragment_login,null);
             et_email=(EditText)v.findViewById(R.id.et_email);
             et_password=(EditText)v.findViewById(R.id.et_password);
             tv_rememberme=(TextView)v.findViewById(R.id.tv_rememberme);
             tv_forgot=(TextView)v.findViewById(R.id.tv_forgot);
             btn_login=(Button)v.findViewById(R.id.btn_login);
-            btn_login.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent i=new Intent(getActivity(), DashboardActivity.class);
-                    startActivity(i);
-                    getActivity().finish();
-                }
-            });
-
+            btn_login.setOnClickListener(this);
             iv_logo=(ImageView)v.findViewById(R.id.iv_logo);
             iv_logo.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    YoYo.with(Techniques.Pulse).duration(2000).playOn(iv_logo);
+                    iv_logo.startAnimation(AnimationUtils.loadAnimation(getActivity(),R.anim.top_down));
                     iv_logo.setVisibility(View.VISIBLE);
                 }
-            },1000);
+            },1500);
 
             login_layout=(LinearLayout)v.findViewById(R.id.login_layout);
             login_layout.postDelayed(new Runnable() {
@@ -76,5 +84,92 @@ public class Login extends android.app.Fragment {
             e.printStackTrace();
         }
         return v;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.btn_login:
+                try{
+                     if(et_email.getText().toString().length()==0){
+                         UIutill.ShowSnackBar(getActivity(),getString(R.string.empty_email));
+                     }
+                     else if(!et_email.getText().toString()
+                             .matches(Patterns.EMAIL_ADDRESS.pattern())){
+                         UIutill.ShowSnackBar(getActivity(),getString(R.string.valied_Email));
+                     }
+                    else if(et_password.getText().toString().length()==0){
+                         UIutill.ShowSnackBar(getActivity(),getString(R.string.empty_password));
+                     }
+                    else{
+                         if(methodClass.checkInternetConnection()){
+                             Map<String,String> values=new HashMap<String,String>();
+                             values.put("EmailID",et_email.getText().toString());
+                             values.put("Password",et_password.getText().toString());
+                             System.out.println("urls"+URLS.LOGIN);
+                             System.out.println("values"+values);
+                             methodClass.MakePostRequest(values, URLS.LOGIN);
+                         }
+                         else{
+                             UIutill.ShowSnackBar(getActivity(),getString(R.string.no_network));
+                         }
+
+                     }
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+                break;
+        }
+    }
+    @Override
+    public void onSuccess(T s) {
+        try{
+            String value=new Gson().toJson(s);
+            JsonParser jsonParser = new JsonParser();
+            JsonObject jsonreturn= (JsonObject)jsonParser.parse(value);
+            boolean IsSucess=jsonreturn.get("IsSucess").getAsBoolean();
+            if(IsSucess){
+                JsonArray ResponseData=jsonreturn.get("ResponseData").getAsJsonArray();
+                JsonObject mainobject=ResponseData.get(0).getAsJsonObject();
+                SharedPreferences.Editor e=sharedprefs.edit();
+                e.putString("UserID",mainobject.get("UserID").getAsString());
+                e.putString("FirstName",mainobject.get("FirstName").getAsString());
+                e.putString("LastName",mainobject.get("LastName").getAsString());
+                e.putString("RegistrationDate",mainobject.get("RegistrationDate").getAsString());
+                e.putString("emailID",mainobject.get("emailID").getAsString());
+
+                if(mainobject.get("Company")!=null){
+                    e.putString("Company",mainobject.get("Company").getAsString());
+                }
+                else{
+                    e.putString("Company","Not specified");
+                }
+                e.putString("Password",mainobject.get("Password").getAsString());
+                if(mainobject.get("ZipCode")!=null){
+                    e.putString("ZipCode",mainobject.get("ZipCode").getAsString());
+                }
+                else{
+                    e.putString("ZipCode","Not specified");
+                }
+                e.commit();
+                Intent i=new Intent(getActivity(), DashboardActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(i);
+                getActivity().finish();
+            }
+            else{
+                UIutill.ShowDialog(getActivity(),getString(R.string.error),jsonreturn.get("Message").getAsString());
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onFailure(RetrofitError error) {
+        System.out.println("failure"+error.getMessage());
+        UIutill.ShowDialog(getActivity(), getString(R.string.error), CustomErrorHandling.ShowError(error, getActivity()));
     }
 }

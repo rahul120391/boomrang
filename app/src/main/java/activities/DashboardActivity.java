@@ -4,25 +4,61 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.Toolbar;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.widget.SlidingPaneLayout;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import Boomerang.R;
+import adapters.SideBarAdapter;
+import fragments.MyDashBoard;
+import fragments.MyFiles;
+import fragments.UserProfile;
 
 
-public class DashboardActivity extends ActionBarActivity{
+public class DashboardActivity extends FragmentActivity implements AdapterView.OnItemClickListener{
     FragmentManager fragmentManager;
-    Fragment fragment;
-    Toolbar toolbar;
-    ActionBar bar;
+    ListView lv_drawer;
+    SlidingPaneLayout slidingpane;
+    private ActionBar actionBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
-        toolbar=(Toolbar)findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowHomeEnabled(false);
+        try{
+            lv_drawer=(ListView)findViewById(R.id.lv_drawer);
+            lv_drawer.setOnItemClickListener(this);
+            slidingpane=(SlidingPaneLayout)findViewById(R.id.slidingpane);
+           // slidingpane.setParallaxDistance(100);
+            SideBarAdapter adapter=new SideBarAdapter(this);
+            lv_drawer.setAdapter(adapter);
+
+            ActionBar bar = getActionBar();
+            bar.setDisplayShowHomeEnabled(false);
+            bar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+            bar.setCustomView(R.layout.action_bar_layout);
+            ((TextView)findViewById(R.id.tv_email)).setText(getSharedPreferences("Login",0).getString("emailID",""));
+            findViewById(R.id.iv_image).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(slidingpane.isOpen()){
+                        slidingpane.closePane();
+                    }
+                    else{
+                        slidingpane.openPane();
+                    }
+                }
+            });
+            onItemClick(null,null,4,0);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
 
     }
     /**************************************************************************************************************************/
@@ -49,5 +85,70 @@ public class DashboardActivity extends ActionBarActivity{
             fragmentManager.popBackStack(tag, 0);
         }
     }
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (slidingpane.isOpen()) {
+            slidingpane.closePane();
+        }
+               switch (position){
+                   case 0:
+                       finish();
+                       break;
+                   case 1:
+                       try{
+                           FragmentTransactions(R.id.fragment_container,new UserProfile(),"myprofile");
+                       }
+                       catch (Exception e){
+                           e.printStackTrace();
+                       }
 
+                       break;
+                   case 2:
+                       try{
+                           FragmentTransactions(R.id.fragment_container,new MyFiles(),"myfiles");
+                       }
+                       catch (Exception e){
+                           e.printStackTrace();
+                       }
+
+                       break;
+                   case 4:
+                       try{
+                           FragmentTransactions(R.id.fragment_container,new MyDashBoard(),"dashboard");
+                       }
+                       catch (Exception e){
+                           e.printStackTrace();
+                       }
+                       break;
+                   case 6:
+                       try{
+                           Intent logout = new Intent(this, MainActivity.class);
+                           logout.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                   | Intent.FLAG_ACTIVITY_NEW_TASK
+                                   | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                           startActivity(logout);
+                       }
+                       catch (Exception e){
+                           e.printStackTrace();
+                       }
+                       break;
+               }
+    }
+
+    @Override
+    public void onBackPressed() {
+
+       if(slidingpane.isOpen()){
+           slidingpane.closePane();
+        }
+        else{
+            if (getFragmentManager().getBackStackEntryCount() > 1) {
+                getFragmentManager().popBackStack();
+            } else {
+                super.onBackPressed();
+            }
+        }
+
+
+    }
 }

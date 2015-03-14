@@ -3,7 +3,9 @@ package customviews;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.widget.SeekBar;
 
@@ -53,17 +55,37 @@ public class CustomSeekBar extends SeekBar {
 						* progressBarWidth / 100);
 
 				progressItemRight = lastProgressX + progressItemWidth;
-
-				// for last item give right to progress item to the width
-				if (i == mProgressItemsList.size() - 1
-						&& progressItemRight != progressBarWidth) {
-					progressItemRight = progressBarWidth;
-				}
-				Rect progressRect = new Rect();
-				progressRect.set(lastProgressX, thumboffset / 2,
-						progressItemRight, progressBarHeight - thumboffset / 2);
-				canvas.drawRect(progressRect, progressPaint);
-				lastProgressX = progressItemRight;
+                // for last item give right to progress item to the width
+                if (i == mProgressItemsList.size() - 1
+                        && progressItemRight != progressBarWidth) {
+                    progressItemRight = progressBarWidth;
+                }
+                if(i==0){
+                    RectF progressRect = new RectF();
+                    progressRect.set(lastProgressX, thumboffset / 2,
+                            progressItemRight, progressBarHeight - thumboffset / 2);
+                    Path p=new Path();
+                    float radius[]={20,20,0,0,0,0,20,20};
+                    p.addRoundRect(progressRect,radius, Path.Direction.CCW);
+                    canvas.drawPath(p,progressPaint);
+                }
+                else if(i==mProgressItemsList.size()-1){
+                    RectF progressRect = new RectF();
+                    progressRect.set(lastProgressX, thumboffset / 2,
+                            progressItemRight, progressBarHeight - thumboffset / 2);
+                    Path p=new Path();
+                    float radius[]={0,0,20,20,20,20,0,0};
+                    p.addRoundRect(progressRect,radius, Path.Direction.CCW);
+                    canvas.drawPath(p,progressPaint);
+                }
+                else{
+                    Rect progressRect = new Rect();
+                    progressRect.set(lastProgressX, thumboffset / 2,
+                            progressItemRight, progressBarHeight - thumboffset / 2);
+                    canvas.drawRect(progressRect,progressPaint);
+                }
+                //canvas.drawRect(progressRect, progressPaint);
+                lastProgressX = progressItemRight;
 			}
 			super.onDraw(canvas);
 		}

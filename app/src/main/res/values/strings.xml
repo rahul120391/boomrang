@@ -6,12 +6,26 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_dashboard">DashboardActivity</string>
 
+    <!--Common Error Strings-->
+    <string name="no_network">No network connection</string>
+    <string name="unable_fetch_data">Unable to fetch data</string>
+    <!--Server Errors String-->
+    <string name="server_error">Server error</string>
+    <string name="badgateway">Bad gateway error</string>
+    <string name="client_timeout">Client connection timeout error</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="error">Error</string>
     <!--Login Screen Strings-->
     <string name="email_address">Email address</string>
     <string name="password">Password</string>
     <string name="remember_me">Remember me</string>
     <string name="login">Login</string>
     <string name="forgot_password">Forgot your password?</string>
+
+    <!--Login Screen Errors-->
+    <string name="empty_email">Please enter your email address</string>
+    <string name="valied_Email">Please enter valid email address</string>
+    <string name="empty_password">Please enter your password </string>
 
     <!--DashBoard Screen Strings-->
     <string name="my_file">My Files</string>
@@ -20,4 +34,27 @@
     <string name="allowed">Allowed</string>
     <string name="consumed">Consumed</string>
     <string name="remaining">Remaining</string>
+
+    <!--MyFiles Strings-->
+    <string name="myfile">my files</string>
+    <string name="search">search</string>
+    <string name="refresh">refresh</string>
+    <string name="upload">upload</string>
+
+    <!--UserProfile Strings-->
+    <string name="user_info">User Information</string>
+    <string name="email">E-mail</string>
+    <string name="company">Company</string>
+    <string name="other_info">Other Information</string>
+    <string name="reg_date">Registartion Date</string>
+    <string name="zip_code">Zip Code</string>
+    <string name="dummy_email">abc@gmail.com</string>
+    <string name="dummy_password">abc12</string>
+    <string name="dummy_company">No company</string>
+    <string name="dummy_date">12-03-1991</string>
+    <string name="dummy_zip">144221</string>
+
+    <!--ListView Footer-->
+    <string name="back">Back</string>
+    <string name="loading">Loading\u002e\u002e\u002e</string>
 </resources>
