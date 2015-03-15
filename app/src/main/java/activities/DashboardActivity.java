@@ -122,6 +122,7 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
                        break;
                    case 6:
                        try{
+                           getSharedPreferences("Login",0).edit().clear().commit();
                            Intent logout = new Intent(this, MainActivity.class);
                            logout.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
                                    | Intent.FLAG_ACTIVITY_NEW_TASK

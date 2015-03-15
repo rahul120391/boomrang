@@ -28,13 +28,6 @@ public class Splash extends android.app.Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        SharedPreferences prefs=activity.getSharedPreferences("Login",0);
-        if (!prefs.getString("UserID", "").equalsIgnoreCase("")) {
-            getActivity().finish();
-            Intent i = new Intent(getActivity(), DashboardActivity.class);
-            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(i);
-        }
     }
 
     @Override

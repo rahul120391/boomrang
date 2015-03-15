@@ -99,6 +99,7 @@
                 android:orientation="horizontal"
                 >
               <ToggleButton
+                  android:id="@+id/tb_rememb"
                   android:layout_width="40dp"
                   android:layout_height="18dp"
                   android:layout_marginLeft="20dp"

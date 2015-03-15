@@ -1,6 +1,7 @@
 package fragments;
 
 import android.app.Fragment;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Html;
@@ -9,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -36,7 +39,7 @@ import retrofit.RetrofitError;
  */
 public class MyDashBoard<T> extends Fragment implements View.OnClickListener, DataTransferInterface<T>{
     View v=null;
-    CustomSeekBar customseekbar;
+    ProgressBar customseekbar;
     TextView tv_allowed,tv_consumed,tv_remaining;
     //ProgressBar progressbar;
     LinearLayout layout_myfiles,layout_myprofile;
@@ -57,25 +60,27 @@ public class MyDashBoard<T> extends Fragment implements View.OnClickListener, Da
         try{
             methodClass=new MethodClass<T>(getActivity(),this);
             Map<String,String> values=new HashMap<String,String>();
-            values.put("UserId", getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
-            methodClass.MakePostRequest(values, URLS.GETSPACESTATS);
+            System.out.println("login id"+getActivity().getSharedPreferences("Login", 0).getString("UserID",""));
+            values.put("UserId",getActivity().getSharedPreferences("Login", 0).getString("UserID",""));
+            if(methodClass.checkInternetConnection()){
+                methodClass.MakePostRequest(values, URLS.GETSPACESTATS);
+            }
+            else{
+                UIutill.ShowSnackBar(getActivity(),getString(R.string.no_network));
+            }
+
             v=inflater.inflate(R.layout.fragment_dashboard,null);
             layout_myfiles=(LinearLayout)v.findViewById(R.id.layout_myfiles);
             layout_myfiles.setOnClickListener(this);
             layout_myprofile=(LinearLayout)v.findViewById(R.id.layout_myprofile);
             layout_myprofile.setOnClickListener(this);
-            customseekbar=(CustomSeekBar)v.findViewById(R.id.customseekbar);
-            initDataToSeekbar();
+            customseekbar=(ProgressBar)v.findViewById(R.id.customseekbar);
             tv_myfiles=(TextView)v.findViewById(R.id.tv_myfiles);
             tv_myprofile=(TextView)v.findViewById(R.id.tv_myprofile);
             tv_spacestats=(TextView)v.findViewById(R.id.tv_spacestats);
             tv_allowed=(TextView)v.findViewById(R.id.tv_allowed);
             tv_consumed=(TextView)v.findViewById(R.id.tv_consumed);
             tv_remaining=(TextView)v.findViewById(R.id.tv_remaining);
-            tv_allowed.setText(Html.fromHtml("<font  color='#ffae9b'>"+getResources().getString(R.string.allowed)+"</font>"+"  "+"<font color='#FFFFFF'>(0.5 TB)</font>"));
-            tv_consumed.setText(Html.fromHtml("<font  color='#ffae9b'>"+getResources().getString(R.string.consumed)+"</font>"+"  "+"<font color='#FFFFFF'>(0.5 TB)</font>"));
-            tv_remaining.setText(Html.fromHtml("<font  color='#ffae9b'>"+getResources().getString(R.string.remaining)+"</font>"+"  "+"<font color='#FFFFFF'>(0.5 TB)</font>"));
-
             //Set Font
             tv_myfiles.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
             tv_myprofile.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
@@ -89,7 +94,7 @@ public class MyDashBoard<T> extends Fragment implements View.OnClickListener, Da
         }
         return v;
     }
-    private void initDataToSeekbar() {
+/*    private void initDataToSeekbar() {
         progressItemList = new ArrayList<ProgressItem>();
         mProgressItem = new ProgressItem();
         mProgressItem.progressItemPercentage = ((redSpan / totalSpan) * 100);
@@ -106,7 +111,7 @@ public class MyDashBoard<T> extends Fragment implements View.OnClickListener, Da
         progressItemList.add(mProgressItem);
         customseekbar.initData(progressItemList);
         customseekbar.invalidate();
-    }
+    }*/
 
     @Override
     public void onClick(View v) {
@@ -124,6 +129,7 @@ public class MyDashBoard<T> extends Fragment implements View.OnClickListener, Da
     public void onSuccess(T s) {
             try{
                 String value=new Gson().toJson(s);
+                System.out.println("value"+value);
                 JsonParser jsonParser = new JsonParser();
                 JsonObject jsonreturn= (JsonObject)jsonParser.parse(value);
                 boolean IsSucess=jsonreturn.get("IsSucess").getAsBoolean();
@@ -132,6 +138,12 @@ public class MyDashBoard<T> extends Fragment implements View.OnClickListener, Da
                     JsonObject mainobject=ResponseData.get(0).getAsJsonObject();
                     String allotedspace=mainobject.get("AllotedSpace").getAsString();
                     String spaceConsumed=mainobject.get("spaceConsumed").getAsString();
+                    String spaceLeft=mainobject.get("spaceLeft").getAsString();
+                    int progress=mainobject.get("Consumed%").getAsInt();
+                    customseekbar.setProgress(progress);
+                    tv_allowed.setText(Html.fromHtml("<font  color='#ffae9b'>" + getResources().getString(R.string.allowed) + "</font>" + "  " + "<font color='#FFFFFF'>" + "(" + allotedspace + ")" + "</font>"));
+                    tv_consumed.setText(Html.fromHtml("<font  color='#ffae9b'>"+getResources().getString(R.string.consumed)+"</font>"+"  "+"<font color='#FFFFFF'>"+"("+spaceConsumed+")"+"</font>"));
+                    tv_remaining.setText(Html.fromHtml("<font  color='#ffae9b'>"+getResources().getString(R.string.remaining)+"</font>"+"  "+"<font color='#FFFFFF'>"+"("+spaceLeft+")"+"</font>"));
 
                 }
             }
@@ -142,8 +154,40 @@ public class MyDashBoard<T> extends Fragment implements View.OnClickListener, Da
 
     @Override
     public void onFailure(RetrofitError error) {
-        UIutill.ShowDialog(getActivity(),getString(R.string.error), CustomErrorHandling.ShowError(error, getActivity()));
+        if(error!=null){
+            UIutill.ShowDialog(getActivity(),getString(R.string.error), CustomErrorHandling.ShowError(error, getActivity()));
+        }
+
     }
 
+    public Double UnitConvert(String value){
+        Double a=0.0;
+        String finalvalue=value.substring(0,value.length()-3);
+        if(value.endsWith("KB")){
+            a=Double.valueOf(finalvalue)*1024;
+        }
+        else if(value.endsWith("MB")){
+             a=Double.valueOf(finalvalue)*1024*1024;
+        }
+        else if(value.endsWith("GB")){
+             a=Double.valueOf(finalvalue)*1024*1024*1024;
+        }
+        else if(value.endsWith("TB")){
+             a=Double.valueOf(finalvalue)*1024*1024*1024*1024;
+        }
+        else if(value.endsWith("PB")){
+             a=Double.valueOf(finalvalue)*1024*1024*1024*1024*1024;
+        }
+        else if(value.endsWith("EB")){
+             a=Double.valueOf(finalvalue)*1024*1024*1024*1024*1024*1024;
+        }
+        else if(value.endsWith("ZB")){
+            a=Double.valueOf(finalvalue)*1024*1024*1024*1024*1024*1024*1024;
+        }
+        else if(value.endsWith("YB")){
+            a=Double.valueOf(finalvalue)*1024*1024*1024*1024*1024*1024*1024*1024;
+        }
+        return a;
+    }
 
 }

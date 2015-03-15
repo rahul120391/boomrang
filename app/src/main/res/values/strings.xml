@@ -57,4 +57,9 @@
     <!--ListView Footer-->
     <string name="back">Back</string>
     <string name="loading">Loading\u002e\u002e\u002e</string>
+
+    <string name="title">Title</string>
+    <string name="ok">Ok</string>
+    <string name="message">Please enter your message</string>
+    <string name="cancel">Cancel</string>
 </resources>

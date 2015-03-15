@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -43,15 +44,28 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
     ImageView iv_logo;
     MethodClass<T> methodClass;
     LinearLayout login_layout;
-    SharedPreferences sharedprefs;
+    SharedPreferences sharedprefs,checkremstate;
+    ToggleButton tb_rememb;
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         try{
             sharedprefs=getActivity().getSharedPreferences("Login",0);
+            checkremstate=getActivity().getSharedPreferences("RemState",0);
             methodClass=new MethodClass<T>(getActivity(),this);
             v=inflater.inflate(R.layout.fragment_login,null);
+            tb_rememb=(ToggleButton)v.findViewById(R.id.tb_rememb);
             et_email=(EditText)v.findViewById(R.id.et_email);
             et_password=(EditText)v.findViewById(R.id.et_password);
+
+            if(checkremstate!=null){
+                if(checkremstate.getString("username","")!=null){
+                    et_email.setText(checkremstate.getString("username",""));
+                }
+                if(checkremstate.getString("password","")!=null){
+                    et_password.setText(checkremstate.getString("password",""));
+                }
+                tb_rememb.setChecked(checkremstate.getBoolean("status",false));
+            }
             tv_rememberme=(TextView)v.findViewById(R.id.tv_rememberme);
             tv_forgot=(TextView)v.findViewById(R.id.tv_forgot);
             btn_login=(Button)v.findViewById(R.id.btn_login);
@@ -130,36 +144,54 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
             JsonObject jsonreturn= (JsonObject)jsonParser.parse(value);
             boolean IsSucess=jsonreturn.get("IsSucess").getAsBoolean();
             if(IsSucess){
-                JsonArray ResponseData=jsonreturn.get("ResponseData").getAsJsonArray();
-                JsonObject mainobject=ResponseData.get(0).getAsJsonObject();
-                SharedPreferences.Editor e=sharedprefs.edit();
-                e.putString("UserID",mainobject.get("UserID").getAsString());
-                e.putString("FirstName",mainobject.get("FirstName").getAsString());
-                e.putString("LastName",mainobject.get("LastName").getAsString());
-                e.putString("RegistrationDate",mainobject.get("RegistrationDate").getAsString());
-                e.putString("emailID",mainobject.get("emailID").getAsString());
+                if(jsonreturn.get("ResponseData").isJsonArray()){
+                    JsonArray ResponseData=jsonreturn.get("ResponseData").getAsJsonArray();
+                    JsonObject mainobject=ResponseData.get(0).getAsJsonObject();
+                    SharedPreferences.Editor e=sharedprefs.edit();
+                    System.out.println("user id"+mainobject.get("UserID").getAsInt()+"");
+                    e.putString("UserID",mainobject.get("UserID").getAsInt()+"");
+                    e.putString("FirstName",mainobject.get("FirstName").getAsString());
+                    e.putString("LastName",mainobject.get("LastName").getAsString());
+                    e.putString("RegistrationDate",mainobject.get("RegistrationDate").getAsString());
+                    e.putString("emailID",mainobject.get("emailID").getAsString());
 
-                if(mainobject.get("Company")!=null){
-                    e.putString("Company",mainobject.get("Company").getAsString());
+                    if(mainobject.get("Company")!=null){
+                        e.putString("Company",mainobject.get("Company").getAsString());
+                    }
+                    else{
+                        e.putString("Company","Not specified");
+                    }
+                    e.putString("Password",mainobject.get("Password").getAsString());
+                    if(mainobject.get("ZipCode")!=null){
+                        e.putString("ZipCode",mainobject.get("ZipCode").getAsString());
+                    }
+                    else{
+                        e.putString("ZipCode","Not specified");
+                    }
+                    e.commit();
+
+                    if(tb_rememb.isChecked()){
+                        SharedPreferences.Editor edit=checkremstate.edit();
+                        edit.putString("username",et_email.getText().toString());
+                        edit.putString("password",et_password.getText().toString());
+                        edit.putBoolean("status",true);
+                        edit.commit();
+                    }
+                    else{
+                        getActivity().getSharedPreferences("RemState",0).edit().clear().commit();
+                    }
+                    Intent i=new Intent(getActivity(), DashboardActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(i);
+                    getActivity().finish();
                 }
                 else{
-                    e.putString("Company","Not specified");
+                    UIutill.ShowDialogg(getActivity(),getString(R.string.error),jsonreturn.get("ResponseData").getAsString());
                 }
-                e.putString("Password",mainobject.get("Password").getAsString());
-                if(mainobject.get("ZipCode")!=null){
-                    e.putString("ZipCode",mainobject.get("ZipCode").getAsString());
-                }
-                else{
-                    e.putString("ZipCode","Not specified");
-                }
-                e.commit();
-                Intent i=new Intent(getActivity(), DashboardActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(i);
-                getActivity().finish();
+
             }
             else{
-                UIutill.ShowDialog(getActivity(),getString(R.string.error),jsonreturn.get("Message").getAsString());
+                UIutill.ShowDialogg(getActivity(),getString(R.string.error),jsonreturn.get("Message").getAsString());
             }
         }
         catch (Exception e){
@@ -169,7 +201,9 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
 
     @Override
     public void onFailure(RetrofitError error) {
-        System.out.println("failure"+error.getMessage());
-        UIutill.ShowDialog(getActivity(), getString(R.string.error), CustomErrorHandling.ShowError(error, getActivity()));
+        if(error!=null){
+
+            UIutill.ShowDialogg(getActivity(),getString(R.string.error), CustomErrorHandling.ShowError(error, getActivity()));
+        }
     }
 }

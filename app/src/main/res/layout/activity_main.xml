@@ -3,10 +3,4 @@
     android:id="@+id/fragment_place"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <fragment
-        android:id="@+id/frg_splash"
-        android:name="fragments.Splash"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
     </com.desarrollodroide.libraryfragmenttransactionextended.SlidingRelativeLayout>

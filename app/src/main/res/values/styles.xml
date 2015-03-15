@@ -33,5 +33,9 @@
         <item name="android:textStyle">normal</item>
         <item name="android:textSize">12sp</item>
     </style>
-
+    <style name="Animations" />
+    <style name="Animations.SmileWindow">
+        <item name="@android:windowEnterAnimation">@anim/grow_from_top</item>
+        <item name="@android:windowExitAnimation">@anim/grow_from_bottom</item>
+    </style>
 </resources>

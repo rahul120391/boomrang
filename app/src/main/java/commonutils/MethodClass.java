@@ -74,11 +74,15 @@ public class MethodClass<T> {
      * @param map -map containing params to pass in the post request
      * @param url -url to fetch data
      */
-    public void MakePostRequest(Map<String, String> map, String url) {
+    public void MakePostRequest(Map<String,String> map, String url) {
         switch (url) {
             case URLS.LOGIN:
                 System.out.println("map"+map);
                 myretro.login(map,new CallbackClass<T>(inter, cnt));
+                break;
+            case URLS.GETSPACESTATS:
+                System.out.println("map"+map);
+                myretro.getspacestats(map,new CallbackClass<T>(inter, cnt));
                 break;
             default:
                 break;

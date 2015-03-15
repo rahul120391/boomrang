@@ -1,9 +1,13 @@
 package activities;
 
+import android.app.FragmentTransaction;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
 import Boomerang.R;
+import fragments.Splash;
 
 
 public class MainActivity extends FragmentActivity {
@@ -12,6 +16,16 @@ public class MainActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        SharedPreferences prefs=getSharedPreferences("Login", 0);
+        if (!prefs.getString("UserID","").equalsIgnoreCase("")) {
+            finish();
+            Intent i = new Intent(this, DashboardActivity.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(i);
+        }
+        else{
+            FragmentTransactions(R.id.fragment_place,new Splash());
+        }
     }
 
      /******************************************************************************************************************************/

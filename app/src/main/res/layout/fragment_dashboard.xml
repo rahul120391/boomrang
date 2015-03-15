@@ -133,7 +133,7 @@
            </LinearLayout>
 
        </LinearLayout>
- <customviews.CustomSeekBar
+<!-- <customviews.CustomSeekBar
         android:id="@+id/customseekbar"
         android:layout_width="match_parent"
         android:layout_height="30dp"
@@ -142,12 +142,20 @@
         android:layout_marginRight="20dp"
         android:layout_marginTop="20dp"
         android:max="100"
-        android:paddingLeft="12dp"
-        android:paddingRight="12dp"
         android:progress="0"
         android:progressDrawable="@android:color/transparent"
         android:thumb="@null"
-        android:thumbOffset="12dp" />
+        android:thumbOffset="12dp" />-->
+    <ProgressBar
+        android:id="@+id/customseekbar"
+        android:layout_below="@+id/layout_stats"
+        android:layout_width="fill_parent"
+        android:layout_height="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:progressDrawable="@drawable/progressbar_bg"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_marginRight="20dp" />
        <LinearLayout
            android:layout_width="match_parent"
            android:layout_height="wrap_content"
