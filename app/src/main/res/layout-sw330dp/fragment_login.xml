@@ -100,8 +100,8 @@
                         >
                         <ToggleButton
                             android:id="@+id/tb_rememb"
-                            android:layout_width="22dp"
-                            android:layout_height="24dp"
+                            android:layout_width="40dp"
+                            android:layout_height="18dp"
                             android:layout_marginLeft="20dp"
                             android:background="@drawable/toggle_selector"
                             android:checked="false"

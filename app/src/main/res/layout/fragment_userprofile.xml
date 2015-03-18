@@ -11,13 +11,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="20dp"
         >
         <ImageView
+            android:id="@+id/iv_dummyprofile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
@@ -25,15 +26,23 @@
             />
          <TextView
              android:id="@+id/tv_userinfo"
-             android:layout_width="match_parent"
+             android:layout_width="wrap_content"
              android:layout_height="wrap_content"
-             android:layout_marginTop="10dp"
+
+             android:layout_toRightOf="@+id/iv_dummyprofile"
              android:paddingLeft="20dp"
              android:text="@string/user_info"
              android:textColor="@color/headings_color"
              android:textSize="20sp"
              />
-        </LinearLayout>
+        <ImageView
+            android:id="@+id/iv_editprofile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/iv_edit"
+            />
+        </RelativeLayout>
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
@@ -70,13 +79,6 @@
                android:textSize="16sp"
                />
            </LinearLayout>
-       <ImageView
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:layout_alignParentRight="true"
-           android:layout_alignParentTop="true"
-           android:src="@drawable/iv_edit"
-           />
        </RelativeLayout>
     <View
         android:layout_width="match_parent"
@@ -114,13 +116,6 @@
                 android:textSize="16sp"
                 />
         </LinearLayout>
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:src="@drawable/iv_edit"
-            />
     </RelativeLayout>
 <View
 android:layout_width="match_parent"
@@ -158,14 +153,6 @@ android:background="@color/subheadings_divider_color"
                 android:textSize="16sp"
                 />
         </LinearLayout>
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-
-            android:src="@drawable/iv_edit"
-            />
     </RelativeLayout>
     <View
         android:layout_width="match_parent"
@@ -188,7 +175,6 @@ android:background="@color/subheadings_divider_color"
             android:id="@+id/tv_otherinfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:paddingLeft="20dp"
             android:text="@string/other_info"
             android:textColor="@color/headings_color"
@@ -268,13 +254,6 @@ android:background="@color/subheadings_divider_color"
                 android:textSize="16sp"
                 />
         </LinearLayout>
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:src="@drawable/iv_edit"
-            />
     </RelativeLayout>
     <View
         android:layout_width="match_parent"

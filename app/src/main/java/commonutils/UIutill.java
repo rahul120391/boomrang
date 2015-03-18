@@ -6,19 +6,12 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.daimajia.androidanimations.library.Techniques;
-import com.daimajia.androidanimations.library.YoYo;
 import com.gitonway.lee.niftymodaldialogeffects.lib.Effectstype;
 import com.gitonway.lee.niftymodaldialogeffects.lib.NiftyDialogBuilder;
 import com.nispok.snackbar.Snackbar;
@@ -120,35 +113,30 @@ public class UIutill {
         }
     }
     public static void ShowDialogg(Context cnt,String title,String message){
-        dialog = new Dialog(cnt);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.getWindow().getAttributes().windowAnimations=R.style.Animations_SmileWindow;
-        dialog.setCancelable(false);
-        dialog.setContentView(R.layout.messagedialog_customview);
-        TextView tv_title=(TextView)dialog.findViewById(R.id.tv_title);
-        tv_title.setText(title);
-        tv_title.setTypeface(UIutill.SetFont(cnt,"segoeuilght.ttf"));
-        TextView tv_message=(TextView)dialog.findViewById(R.id.tv_message);
-        tv_message.setTypeface(UIutill.SetFont(cnt,"segoeuilght.ttf"));
-        tv_message.setText(message);
-        Button btn_ok=(Button)dialog.findViewById(R.id.btn_ok);
-        btn_ok.setTypeface(UIutill.SetFont(cnt,"segoeuilght.ttf"));
-        Button btn_cancel=(Button)dialog.findViewById(R.id.btn_cancel);
-        btn_cancel.setTypeface(UIutill.SetFont(cnt,"segoeuilght.ttf"));
-        btn_ok.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-        btn_cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-        dialog.show();
+        if(dialog==null || !dialog.isShowing()){
+            dialog = new Dialog(cnt);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.getWindow().getAttributes().windowAnimations=R.style.Animations_SmileWindow;
+            dialog.setCancelable(false);
+            dialog.setContentView(R.layout.messagedialog_customview);
+            TextView tv_title=(TextView)dialog.findViewById(R.id.tv_title);
+            tv_title.setText(title);
+            tv_title.setTypeface(UIutill.SetFont(cnt,"segoeuilght.ttf"));
+            TextView tv_message=(TextView)dialog.findViewById(R.id.tv_message);
+            tv_message.setTypeface(UIutill.SetFont(cnt,"segoeuilght.ttf"));
+            tv_message.setText(message);
+            Button btn_ok=(Button)dialog.findViewById(R.id.btn_ok);
+            btn_ok.setTypeface(UIutill.SetFont(cnt,"segoeuilght.ttf"));
+            btn_ok.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+            dialog.show();
+        }
+
 
     }
 }

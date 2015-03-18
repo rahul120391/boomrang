@@ -58,4 +58,13 @@
     <color name="subheadings_color">#a1382f</color>
     <color name="subheadings_divider_color">#a2a2a2</color>
     <color name="headings_color">#292929</color>
+
+    <!--SearchView Color-->
+    <color name="search_view_bg">#CCFFFFFF</color>
+    <color name="search_for_file">#9D372E</color>
+    <color name="search_box_bg">#F1E7E5</color>
+    <color name="search_view_border">#B0B0B0</color>
+    <color name="search_box_txtclr">#9D372E</color>
+    <color name="search_btn_bg">#3d2924</color>
+    <color name="cancel_btn_bg">#b15f58</color>
 </resources>
