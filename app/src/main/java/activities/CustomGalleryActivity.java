@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 
 import com.androidquery.AQuery;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 import Boomerang.R;
@@ -150,6 +152,7 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                GalleryDataModel model=new GalleryDataModel();
                model.setFilemimetype(mimetype);
                model.setFiletitle(title);
+               model.setStatus(false);
                model.setImage_path(path);
                data.add(model);
            }
@@ -169,13 +172,32 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                 String path=cr.getString(0);
                 String title=cr.getString(1);
                 String mimetype=cr.getString(2);
+          /*      Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(path,
+                        MediaStore.Images.Thumbnails.MINI_KIND);
+                Uri uri=getImageUri(this,thumbnail);
+                String imagepath=getRealPathFromURI(uri);*/
                 model.setVideo_path(path);
+                model.setStatus(false);
                 model.setFiletitle(title);
                 model.setFilemimetype(mimetype);
                 data.add(model);
             }
         }
         return data;
+    }
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(),
+                inImage, "Title", null);
+        return Uri.parse(path);
+    }
+
+    public String getRealPathFromURI(Uri uri) {
+        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+        cursor.moveToFirst();
+        int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+        return cursor.getString(idx);
     }
 
     @Override
@@ -234,7 +256,6 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
        ImageView iv_image;
        TextView tv_name;
        CheckBox ch_check;
-       boolean state[];
        int poss;
        public MyAdapter(Context cnt,ArrayList<GalleryDataModel> mylist,int poss){
            this.cnt=cnt;
@@ -242,7 +263,6 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
            this.mylist=mylist;
            inflater=LayoutInflater.from(cnt);
            aq=new AQuery(cnt);
-           state=new boolean[mylist.size()];
        }
        @Override
        public int getCount() {
@@ -272,14 +292,16 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                ch_check.setTag(position);
                if(poss==1){
                    aq.id(iv_image)
-                           .image(mylist.get(position).getImage_path(), true, true, 200,
-                                   R.drawable.ic_launcher, null, 0, 1.0f / 1.0f);
+                           .image(mylist.get(position).getImage_path(), false, true,100,
+                                   0, null, 0, 1.0f / 1.0f);
                }
                else if(poss==2){
                    Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(mylist.get(position).getVideo_path(),
                            MediaStore.Images.Thumbnails.MINI_KIND);
-                   aq.id(iv_image).image(thumbnail,1.0f/1.0f);
+                   thumbnail=Bitmap.createScaledBitmap(thumbnail,100,100,true);
+                   aq.id(iv_image).image(thumbnail,10.f/10.f);
                }
+
                String type[]=mylist.get(position).getFilemimetype().split("/");
                tv_name.setText(mylist.get(position).getFiletitle()+"."+type[1]);
                ch_check.setOnClickListener(new View.OnClickListener() {
@@ -287,30 +309,29 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                    public void onClick(View v) {
                        int pos = (Integer) v.getTag();
                        if (((CheckBox) v).isChecked()) {
-                           state[pos] = true;
+                           mylist.get(pos).setStatus(true);
                            GalleryDataModel model=new GalleryDataModel();
-                           String filetype[]=mylist.get(pos).getFilemimetype().split("/");
-                           System.out.println("file type"+filetype[1]);
                            if(poss==1){
                                model.setImage_path(mylist.get(pos).getImage_path());
                            }
                            else if(poss==2){
                                model.setVideo_path(mylist.get(pos).getVideo_path());
                            }
-                           model.setFilemimetype(filetype[1]);
+                           model.setFilemimetype(mylist.get(pos).getFilemimetype());
                            model.setFiletitle(mylist.get(pos).getFiletitle());
-                           files_list.add(model);
+                         files_list.add(model);
                        } else {
-                           files_list.remove(files_list.get(pos));
-                           state[pos] = false;
+                           mylist.get(pos).setStatus(false);
+                           files_list.remove(files_list.size()-1);
                        }
+                       notifyDataSetChanged();
                    }
                });
+               ch_check.setChecked(mylist.get(position).isStatus());
            }
            catch (Exception e){
                e.printStackTrace();
            }
-            ch_check.setChecked(state[position]);
            return convertView;
        }
    }

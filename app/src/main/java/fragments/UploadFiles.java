@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.ThumbnailUtils;
@@ -19,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -28,20 +30,32 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.androidquery.AQuery;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import Boomerang.R;
 import activities.FileChooser;
+import commonutils.CustomErrorHandling;
+import commonutils.DataTransferInterface;
+import commonutils.MethodClass;
 import commonutils.RequestCodes;
 import commonutils.UIutill;
+import commonutils.URLS;
 import modelclasses.GalleryDataModel;
+import retrofit.RetrofitError;
+import retrofit.mime.TypedFile;
 
 /**
  * Created by rahul on 3/18/2015.
  */
-public class UploadFiles extends Fragment implements View.OnClickListener{
+public class UploadFiles<T> extends Fragment implements View.OnClickListener, DataTransferInterface<T>{
 
     View v=null;
     RelativeLayout layout_spinner;
@@ -49,6 +63,7 @@ public class UploadFiles extends Fragment implements View.OnClickListener{
     Button btn_upload;
     MyUploadFilesAdapter adapter=null;
     ArrayList<GalleryDataModel> list=new ArrayList<GalleryDataModel>();
+    MethodClass<T> method;
     private PopupWindow pwindo;
 
     @Nullable
@@ -65,6 +80,8 @@ public class UploadFiles extends Fragment implements View.OnClickListener{
             btn_upload=(Button)v.findViewById(R.id.btn_upload);
             btn_upload.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
             btn_upload.setOnClickListener(this);
+            method=new MethodClass<T>(getActivity(),this);
+
         }
         catch (Exception e){
             e.printStackTrace();
@@ -92,7 +109,18 @@ public class UploadFiles extends Fragment implements View.OnClickListener{
                          UIutill.ShowSnackBar(getActivity(),getString(R.string.upload_error_message));
                      }
                     else{
-                        System.out.println("files"+lv_myfiles.toString());
+                         if(method.checkInternetConnection()){
+                            Map<String,TypedFile> values=new HashMap<String,TypedFile>();
+                            for(int i=0;i<list.size();i++){
+                                int a=i+1;
+                                values.put("file"+a,new TypedFile(list.get(i).getFilemimetype(),new File(list.get(i).getFilepath())));
+                            }
+                           method.UploadFiles(getActivity().getSharedPreferences("Login",0).getString("UserID",""),"4741",values, URLS.UPLOAD_FILES);
+                         }
+                         else{
+                             UIutill.ShowSnackBar(getActivity(),getString(R.string.no_network));
+                         }
+
                      }
                 }
                 catch (Exception e){
@@ -166,7 +194,7 @@ public class UploadFiles extends Fragment implements View.OnClickListener{
                         startActivityForResult(i, RequestCodes.REQUEST_IMAGE);
                     } else if (pos == 2) {
                         i.putExtra("value", "videos");
-                        startActivityForResult(i,  RequestCodes.REQUEST_VIDEO);
+                        startActivityForResult(i, RequestCodes.REQUEST_VIDEO);
                     }
 
                 }
@@ -195,43 +223,67 @@ public class UploadFiles extends Fragment implements View.OnClickListener{
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+        //super.onActivityResult(requestCode, resultCode, data);
+        int pos=0;
+        ArrayList<String> valueslist=new ArrayList<>();
         if(data!=null){
 
             if(requestCode==RequestCodes.REQUEST_IMAGE){
-
                ArrayList<GalleryDataModel> returnedlist= (ArrayList<GalleryDataModel>)data.getBundleExtra("bundle").getSerializable("list");
-               for(GalleryDataModel model:returnedlist){
-                   GalleryDataModel mymodel=new GalleryDataModel();
-                   mymodel.setImage_path(model.getImage_path());
-                   mymodel.setFiletitle(model.getFiletitle());
-                   mymodel.setFilemimetype(model.getFilemimetype());
-                   list.add(mymodel);
-               }
-                adapter=new MyUploadFilesAdapter(getActivity(),list,1);
+                pos=1;
+                for(GalleryDataModel values:list){
+                    valueslist.add(values.getFiletitle());
+                }
+                for(GalleryDataModel model:returnedlist){
+                    String name=model.getFiletitle()+"."+model.getFilemimetype().split("/")[1];
+                    if(!valueslist.contains(name)){
+                        GalleryDataModel mymodel=new GalleryDataModel();
+                        mymodel.setFilepath(model.getImage_path());
+                        String title=model.getFiletitle()+"."+model.getFilemimetype().split("/")[1];
+                        mymodel.setFiletitle(title);
+                        mymodel.setFilemimetype(model.getFilemimetype());
+                        File imgFile = new File(model.getImage_path());
+                        if(imgFile.exists()){
+                            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                            mymodel.setBitmap(myBitmap);
+                        }
+                        list.add(mymodel);
+                    }
+                }
             }
             else if(requestCode==RequestCodes.REQUEST_CAMERA){
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
-                photo = Bitmap.createScaledBitmap(photo, 100, 100, true);
+              //  photo = Bitmap.createScaledBitmap(photo, 100, 100, true);
                 Uri tempUri = getImageUri(getActivity(), photo);
                 String values[]=getRealPathFromURI(tempUri);
                 GalleryDataModel mymodel=new GalleryDataModel();
-                mymodel.setImage_path(values[0]);
-                mymodel.setFiletitle(values[1]);
+                mymodel.setFilepath(values[0]);
+                String typee[]=values[2].split("/");
+                mymodel.setFiletitle(values[1]+"."+typee[1]);
                 mymodel.setFilemimetype(values[2]);
+                mymodel.setBitmap(photo);
                 list.add(mymodel);
-                adapter=new MyUploadFilesAdapter(getActivity(),list,1);
+                pos=1;
             }
             else if(requestCode==RequestCodes.REQUEST_VIDEO){
-                ArrayList<GalleryDataModel> returnedlist=  (ArrayList<GalleryDataModel>)data.getBundleExtra("bundle").getSerializable("list");
-                for(GalleryDataModel model:returnedlist){
-                    GalleryDataModel mymodel=new GalleryDataModel();
-                    mymodel.setVideo_path(model.getVideo_path());
-                    mymodel.setFiletitle(model.getFiletitle());
-                    mymodel.setFilemimetype(model.getFilemimetype());
-                    list.add(mymodel);
+                ArrayList<GalleryDataModel> returnedlist= (ArrayList<GalleryDataModel>)data.getBundleExtra("bundle").getSerializable("list");
+                pos=2;
+                for(GalleryDataModel values:list){
+                    valueslist.add(values.getFiletitle());
                 }
-                adapter=new MyUploadFilesAdapter(getActivity(),list,2);
+                for(GalleryDataModel model:returnedlist){
+                    String name=model.getFiletitle()+"."+model.getFilemimetype().split("/")[1];
+                    if(!valueslist.contains(name)){
+                        GalleryDataModel mymodel=new GalleryDataModel();
+                        mymodel.setFilepath(model.getVideo_path());
+                        mymodel.setFiletitle(model.getFiletitle()+"."+model.getFilemimetype().split("/")[1]);
+                        mymodel.setFilemimetype(model.getFilemimetype());
+                        Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(model.getVideo_path(),
+                                MediaStore.Images.Thumbnails.MINI_KIND);
+                        mymodel.setBitmap(thumbnail);
+                        list.add(mymodel);
+                    }
+                }
             }
             else if(requestCode==RequestCodes.REQUEST_VIDEO_RECORD){
                 Uri uri = data.getData();
@@ -245,12 +297,16 @@ public class UploadFiles extends Fragment implements View.OnClickListener{
                 String filepath = cursor.getString(0);
                 String filetitle=cursor.getString(1);
                 String mimetype=cursor.getString(2);
+                String typee[]=mimetype.split("/");
                 GalleryDataModel mymodel=new GalleryDataModel();
-                mymodel.setVideo_path(filepath);
-                mymodel.setFiletitle(filetitle);
+                mymodel.setFilepath(filepath);
+                mymodel.setFiletitle(filetitle+"."+typee[1]);
                 mymodel.setFilemimetype(mimetype);
+                Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(filepath,
+                        MediaStore.Images.Thumbnails.MINI_KIND);
+                mymodel.setBitmap(thumbnail);
                 list.add(mymodel);
-                adapter=new MyUploadFilesAdapter(getActivity(),list,2);
+                pos=2;
             }
             else if(requestCode==RequestCodes.REQUEST_FILE_BROWSER){
                 String curFileName = data.getStringExtra("GetFileName");
@@ -261,9 +317,23 @@ public class UploadFiles extends Fragment implements View.OnClickListener{
                 mymodel.setFiletitle(curFileName);
                 mymodel.setFilepath(path);
                 mymodel.setFilethumnbail(image);
-                list.add(mymodel);
-                adapter=new MyUploadFilesAdapter(getActivity(),list,3);
+                if(getMimeType(path)!=null){
+                    mymodel.setFilemimetype(getMimeType(path));
+                    String uri = "drawable/" + image;
+                    int imageResource = getActivity().getResources().getIdentifier(uri, null, getActivity().getPackageName());
+                    Drawable imagee = getActivity().getResources().getDrawable(imageResource);
+                    Bitmap thumbnail = ((BitmapDrawable)imagee).getBitmap();
+                    mymodel.setBitmap(thumbnail);
+                    list.add(mymodel);
+                    pos=3;
+                }
+                else{
+                    UIutill.ShowSnackBar(getActivity(),getString(R.string.mime_type_error));
+                }
+
             }
+            lv_myfiles.setAdapter(null);
+            adapter=new MyUploadFilesAdapter(getActivity(),list,pos);
             lv_myfiles.setAdapter(adapter);
         }
     }
@@ -285,6 +355,46 @@ public class UploadFiles extends Fragment implements View.OnClickListener{
         String values[]={cursor.getString(idx),cursor.getString(idy),cursor.getString(idz)};
         return values;
     }
+
+    @Override
+    public void onSuccess(T s) {
+          try{
+              String value=new Gson().toJson(s);
+              JsonParser jsonParser = new JsonParser();
+              JsonObject jsonreturn= (JsonObject)jsonParser.parse(value);
+              boolean IsSucess=jsonreturn.get("IsSucess").getAsBoolean();
+              if(IsSucess){
+                  String response=jsonreturn.get("ResponseData").getAsString();
+                  UIutill.ShowSnackBar(getActivity(),response);
+              }
+              else{
+                  UIutill.ShowDialog(getActivity(),getString(R.string.error),jsonreturn.get("Message").getAsString());
+              }
+          }
+          catch (Exception e){
+              e.printStackTrace();
+          }
+    }
+
+    @Override
+    public void onFailure(RetrofitError error) {
+        if(error!=null){
+            System.out.println("error messsage"+error.getMessage());
+            UIutill.ShowDialog(getActivity(), getString(R.string.error), CustomErrorHandling.ShowError(error, getActivity()));
+        }
+    }
+
+  public String getMimeType(String path){
+      String type=null;
+      if(path.lastIndexOf(".") != -1) {
+          String ext = path.substring(path.lastIndexOf(".")+1);
+          MimeTypeMap mime = MimeTypeMap.getSingleton();
+          type = mime.getMimeTypeFromExtension(ext);
+      } else {
+          type = null;
+      }
+      return type;
+  }
 
     class  MyUploadFilesAdapter extends BaseAdapter{
         Context context;
@@ -327,32 +437,17 @@ public class UploadFiles extends Fragment implements View.OnClickListener{
 
                 iv_delete=(ImageView)convertView.findViewById(R.id.iv_delete);
                 iv_image=(ImageView)convertView.findViewById(R.id.iv_image);
-                if(pos==1){
-                    aq.id(iv_image)
-                            .image(mylist.get(position).getImage_path(), true, true, 200,
-                                    R.drawable.ic_launcher, null, 0, 1.0f / 1.0f);
-                    tv_name.setText(mylist.get(position).getFiletitle()+"."+mylist.get(position).getFilemimetype());
-                }
-                else if(pos==2){
-                    Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(list.get(position).getVideo_path(),
-                            MediaStore.Images.Thumbnails.MINI_KIND);
-                    aq.id(iv_image).image(thumbnail,1.0f/1.0f);
-                    tv_name.setText(mylist.get(position).getFiletitle()+"."+mylist.get(position).getFilemimetype());
-                }
-                else if(pos==3){
-                    tv_name.setText(mylist.get(position).getFiletitle());
-                    String uri = "drawable/" + mylist.get(position).getFilethumnbail();
-                    int imageResource = context.getResources().getIdentifier(uri, null, context.getPackageName());
-                    Drawable image = context.getResources().getDrawable(imageResource);
-                    Bitmap thumbnail = ((BitmapDrawable)image).getBitmap();
-                    aq.id(iv_image).image(thumbnail,1.0f/1.0f);
-                }
+                tv_name.setText(mylist.get(position).getFiletitle());
+                aq.id(iv_image).image(mylist.get(position).getBitmap(),1.0f/1.0f);
                 iv_delete.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         int pos=lv_myfiles.getPositionForView(v);
                         mylist.remove(mylist.get(pos));
                         notifyDataSetChanged();
+                        if(lv_myfiles.getCount()==0){
+                            btn_upload.setVisibility(View.GONE);
+                        }
                     }
                 });
 
@@ -363,6 +458,4 @@ public class UploadFiles extends Fragment implements View.OnClickListener{
             return convertView;
         }
     }
-
-
 }

@@ -12,6 +12,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import Boomerang.R;
+import commonutils.UIutill;
 
 
 public class FileArrayAdapter extends ArrayAdapter<Item>{
@@ -47,6 +48,9 @@ public class FileArrayAdapter extends ArrayAdapter<Item>{
                        TextView t1 = (TextView) v.findViewById(R.id.TextView01);
                        TextView t2 = (TextView) v.findViewById(R.id.TextView02);
                        TextView t3 = (TextView) v.findViewById(R.id.TextViewDate);
+                       t1.setTypeface(UIutill.SetFont(c, "segoeuilght.ttf"));
+                       t2.setTypeface(UIutill.SetFont(c,"segoeuilght.ttf"));
+                       t3.setTypeface(UIutill.SetFont(c,"segoeuilght.ttf"));
                        /* Take the ImageView from layout and set the city's image */
 	               		ImageView imageCity = (ImageView) v.findViewById(R.id.fd_Icon1);
 	               		String uri = "drawable/" + o.getImage();

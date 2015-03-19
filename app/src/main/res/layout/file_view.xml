@@ -18,6 +18,7 @@
     android:layout_toRightOf="@+id/fd_Icon1"
     android:singleLine="true"
     android:text="@+id/TextView01"
+    android:textColor="@color/email_password_txtclr"
     android:textStyle="bold">
     
     
@@ -28,7 +29,8 @@
     android:layout_below="@+id/TextView01"
     android:layout_marginLeft="10dip"
     android:layout_toRightOf="@+id/fd_Icon1"
-    android:text="@+id/TextView02">
+    android:text="@+id/TextView02"
+    android:textColor="@color/email_password_txtclr">
     
 </TextView>
 <TextView android:id="@+id/TextViewDate"
@@ -37,7 +39,8 @@
     android:layout_alignParentRight="true"
     android:layout_below="@+id/TextView01"
     android:layout_marginLeft="5dip"
-    android:text="@+id/TextViewDate">
+    android:text="@+id/TextViewDate"
+    android:textColor="@color/email_password_txtclr">
     
 </TextView>
 </RelativeLayout>

@@ -57,11 +57,12 @@ public class MethodClass<T> {
      *
      * @param url -url for getting the data
      */
-    public void MakeGetRequest(String url) {
+    public void MakeGetRequest(String url,String userid) {
         switch (url) {
-   /*         case URLS.SPECIALITY:
-                myretro.getstates(new CallbackClass<T>(inter, cnt));
-                break;*/
+            case URLS.GET_ROOT_FOLDER_FILES:
+                myretro.getrootfolderfiles(userid,new CallbackClass<T>(inter,cnt));
+                break;
+
             default:
                 break;
         }
@@ -109,24 +110,30 @@ public class MethodClass<T> {
     }
 
 
-    /**
-     * method to make multipart request for file uploading
+
+    /***
      *
-     * @param map  -map containing params to pass in the multipart request
-     * @param file -file body of the file to upload
-     * @param url  -url via which file to upload
+     * @param userid
+     * -useridof the logged in person
+     * @param folderid
+     * -current folder id
+     * @param files
+     * -file map containing files to upload
+     * @param url
+     * -url to uplaod file
      */
-    public void MakeMultipartRequest(Map<String, String> map, TypedFile file, String url) {
-        switch (url) {
-       /*     case URLS.ADD_ANIMAL:
-                myretro.addanimanl(map, file, new CallbackClass<T>(inter, cnt));
-                break;*/
-            default:
-                break;
-        }
-
+    public void UploadFiles(String userid,String  folderid,Map<String,TypedFile> files,String url){
+       switch (url){
+           case URLS.UPLOAD_FILES:
+               System.out.println("userid" + userid);
+               System.out.println("folderid"+folderid);
+               System.out.println("file"+files);
+                myretro.fileupload(userid,folderid,files,new CallbackClass<T>(inter, cnt));
+               break;
+           default:
+               break;
+       }
     }
-
 
     /***
      * Check Internet connection

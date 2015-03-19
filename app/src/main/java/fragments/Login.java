@@ -186,12 +186,12 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
                     getActivity().finish();
                 }
                 else{
-                    UIutill.ShowDialogg(getActivity(),getString(R.string.error),jsonreturn.get("ResponseData").getAsString());
+                    UIutill.ShowDialog(getActivity(), getString(R.string.error), jsonreturn.get("ResponseData").getAsString());
                 }
 
             }
             else{
-                UIutill.ShowDialogg(getActivity(),getString(R.string.error),jsonreturn.get("Message").getAsString());
+                UIutill.ShowDialog(getActivity(), getString(R.string.error), jsonreturn.get("Message").getAsString());
             }
         }
         catch (Exception e){
@@ -203,7 +203,7 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
     public void onFailure(RetrofitError error) {
         if(error!=null){
 
-            UIutill.ShowDialogg(getActivity(),getString(R.string.error), CustomErrorHandling.ShowError(error, getActivity()));
+            UIutill.ShowDialog(getActivity(), getString(R.string.error), CustomErrorHandling.ShowError(error, getActivity()));
         }
     }
 }

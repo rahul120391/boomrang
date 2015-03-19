@@ -4,22 +4,40 @@ package modelclasses;
  * Created by rahul on 3/11/2015.
  */
 public class MyFilesDataModel {
-    private int images;
-    private String name;
+    private int fileid;
+    private String filename;
+    private String filetype;
+    private String filepath;
 
-    public int getImages() {
-        return images;
+    public String getFilepath() {
+        return filepath;
     }
 
-    public void setImages(int images) {
-        this.images = images;
+    public void setFilepath(String filepath) {
+        this.filepath = filepath;
     }
 
-    public String getName() {
-        return name;
+    public String getFiletype() {
+        return filetype;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFiletype(String filetype) {
+        this.filetype = filetype;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
+    public int getFileid() {
+        return fileid;
+    }
+
+    public void setFileid(int fileid) {
+        this.fileid = fileid;
     }
 }

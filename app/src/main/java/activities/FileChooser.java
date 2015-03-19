@@ -31,7 +31,7 @@ public class FileChooser extends Activity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Item o = adapter.getItem(position);
-                if(o.getImage().equalsIgnoreCase("ic_folder")||o.getImage().equalsIgnoreCase("directory_up")){
+                if(o.getImage().equalsIgnoreCase("ic_filebrowserfolder")||o.getImage().equalsIgnoreCase("directory_up")){
                     currentDir = new File(o.getPath());
                     fill(currentDir);
                 }
@@ -70,12 +70,12 @@ public class FileChooser extends Activity {
 					else num_item = num_item + " items";
 					
 					//String formated = lastModDate.toString();
-					dir.add(new Item(ff.getName(),num_item,date_modify,ff.getAbsolutePath(),"ic_folder")); 
+					dir.add(new Item(ff.getName(),num_item,date_modify,ff.getAbsolutePath(),"ic_filebrowserfolder"));
 				}
 				else
 				{
 					
-					fls.add(new Item(ff.getName(),ff.length() + " Byte", date_modify, ff.getAbsolutePath(),"ic_myfiles"));
+					fls.add(new Item(ff.getName(),ff.length() + " Byte", date_modify, ff.getAbsolutePath(),"ic_filebrowserfile"));
 				}
 			 }
 		 }catch(Exception e)

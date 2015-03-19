@@ -52,8 +52,6 @@ public class MyFilesAdapter extends BaseAdapter {
         iv_file_folder=(ImageView)convertView.findViewById(R.id.iv_file_folder);
         tv_file_folder=(TextView)convertView.findViewById(R.id.tv_file_folder);
         tv_file_folder.setTypeface(UIutill.SetFont(context, "segoeuilght.ttf"));
-        iv_file_folder.setImageResource(myfileslist.get(position).getImages());
-        tv_file_folder.setText(myfileslist.get(position).getName());
         return convertView;
     }
 }

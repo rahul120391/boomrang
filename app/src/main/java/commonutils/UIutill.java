@@ -1,18 +1,16 @@
 package commonutils;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.gitonway.lee.niftymodaldialogeffects.lib.Effectstype;
 import com.gitonway.lee.niftymodaldialogeffects.lib.NiftyDialogBuilder;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.SnackbarManager;
@@ -27,7 +25,7 @@ public class UIutill {
     static Typeface font;
     static NiftyDialogBuilder dialogBuilder;
     static Dialog dialog;
-
+    static AlertDialog mydialog;
 
     /**
      * this method is used to set font on the views
@@ -75,68 +73,37 @@ public class UIutill {
     }
 
     /***
-     *
-     * @param cnt -pass activity context as argument to show dialog on that activity
-     * @param title -title of the Dialog
-     * @param message -message of the Dialog
+     * this method is used to show dialog
+     * @param cnt
+     * -pass activity context as argument to show dialog on that activity
+     * @param title
+     * -title of the dialog
+     * @param message
+     * -error message
      */
-
     public static void ShowDialog(Context cnt,String title,String message){
-        if(dialogBuilder==null || !dialogBuilder.isShowing()){
-            dialogBuilder=NiftyDialogBuilder.getInstance(cnt);
-            dialogBuilder
-                    .withTitle(title)                                  //.withTitle(null)  no title
-                    .withTitleColor(cnt.getResources().getColor(R.color.all_indi_color))                                  //def
-                    .withDividerColor(cnt.getResources().getColor(R.color.transparent))                              //def
-                    .withMessage(message)                     //.withMessage(null)  no Msg
-                    .withMessageColor(cnt.getResources().getColor(R.color.all_indi_color))                              //def  | withMessageColor(int resid)
-                    .withDialogColor(cnt.getResources().getColor(R.color.login_box_bg))                               //def  | withDialogColor(int resid)
-                    .withIcon(cnt.getResources().getDrawable(R.drawable.appicon))
-                    .withDuration(700)                                          //def
-                    .withEffect(Effectstype.Fliph)                                         //def Effectstype.Slidetop
-                    .withButton1Text(cnt.getResources().getString(R.string.ok))                                      //def gone
-                    .withButton2Text(cnt.getResources().getString(R.string.cancel))                             //def gone
-                    .isCancelableOnTouchOutside(false)                           //def    | isCancelable(true)
-                    .setButton1Click(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            dialogBuilder.dismiss();
-                        }
-                    })
-                    .setButton2Click(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            dialogBuilder.dismiss();
-                        }
-                    })
-                    .show();
-        }
-    }
-    public static void ShowDialogg(Context cnt,String title,String message){
-        if(dialog==null || !dialog.isShowing()){
-            dialog = new Dialog(cnt);
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            dialog.getWindow().getAttributes().windowAnimations=R.style.Animations_SmileWindow;
-            dialog.setCancelable(false);
-            dialog.setContentView(R.layout.messagedialog_customview);
-            TextView tv_title=(TextView)dialog.findViewById(R.id.tv_title);
+        if (dialog==null || !dialog.isShowing()){
+            LayoutInflater inflater =LayoutInflater.from(cnt);
+            final View dialoglayout = inflater.inflate(R.layout.messagedialog_customview, null);
+            final AlertDialog.Builder builder = new AlertDialog.Builder(cnt);
+            TextView tv_title=(TextView)dialoglayout.findViewById(R.id.tv_title);
             tv_title.setText(title);
             tv_title.setTypeface(UIutill.SetFont(cnt,"segoeuilght.ttf"));
-            TextView tv_message=(TextView)dialog.findViewById(R.id.tv_message);
+            TextView tv_message=(TextView)dialoglayout.findViewById(R.id.tv_message);
             tv_message.setTypeface(UIutill.SetFont(cnt,"segoeuilght.ttf"));
             tv_message.setText(message);
-            Button btn_ok=(Button)dialog.findViewById(R.id.btn_ok);
+            Button btn_ok=(Button)dialoglayout.findViewById(R.id.btn_ok);
             btn_ok.setTypeface(UIutill.SetFont(cnt,"segoeuilght.ttf"));
+            builder.setView(dialoglayout);
+            dialog=builder.create();
+            dialog.getWindow().getAttributes().windowAnimations=R.style.Animations_SmileWindow;
+            dialog.show();
             btn_ok.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     dialog.dismiss();
                 }
             });
-            dialog.show();
         }
-
-
     }
 }

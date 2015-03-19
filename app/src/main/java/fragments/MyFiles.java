@@ -13,29 +13,41 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import java.util.ArrayList;
 
 import Boomerang.R;
 import activities.DashboardActivity;
-import adapters.MyFilesAdapter;
+import commonutils.CustomErrorHandling;
+import commonutils.DataTransferInterface;
+import commonutils.MethodClass;
 import commonutils.UIutill;
 import modelclasses.MyFilesDataModel;
+import retrofit.RetrofitError;
 
 /**
  * Created by rahul on 3/11/2015.
  */
-public class MyFiles extends Fragment implements View.OnClickListener{
+public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTransferInterface<T>{
     View v=null;
     RelativeLayout layout_myfiles,layout_search,layout_refresh,layout_upload;
-    //TextView tv_myfiles,tv_search,tv_refresh,tv_upload;
+    TextView tv_foldername,tv_back;
     ListView lv_myfiles;
     ArrayList<MyFilesDataModel> myfileslist=new ArrayList<>();
     AlertDialog dialog;
+    MethodClass<T> methodClass;
+    RelativeLayout layout_foldernames;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         try{
+            methodClass=new MethodClass<>(getActivity(),this);
             v=inflater.inflate(R.layout.fragment_myfiles,null);
+            layout_foldernames=(RelativeLayout)v.findViewById(R.id.layout_foldernames);
             layout_myfiles=(RelativeLayout)v.findViewById(R.id.layout_myfiles);
             layout_search=(RelativeLayout)v.findViewById(R.id.layout_search);
             layout_refresh=(RelativeLayout)v.findViewById(R.id.layout_refresh);
@@ -44,33 +56,18 @@ public class MyFiles extends Fragment implements View.OnClickListener{
             layout_search.setOnClickListener(this);
             layout_refresh.setOnClickListener(this);
             layout_upload.setOnClickListener(this);
-            //tv_myfiles=(TextView)v.findViewById(R.id.tv_myfiles);
             lv_myfiles=(ListView)v.findViewById(R.id.lv_myfiles);
-            View footer_view=getActivity().getLayoutInflater().inflate(R.layout.listview_header,null);
-            lv_myfiles.addHeaderView(footer_view);
-            for(int i=0;i<20;i++){
-                MyFilesDataModel model=new MyFilesDataModel();
-                if(i<10){
-                    model.setImages(R.drawable.ic_folder);
-                    model.setName("My Folder"+i);
-                }
-                else if(i>=10 && i<=15){
-                    model.setImages(R.drawable.ic_image);
-                    model.setName("Image"+i+".jpg");
-                }
-                else{
-                    model.setImages(R.drawable.ic_video);
-                    model.setName("video"+i+".3gp");
-                }
-               myfileslist.add(model);
+            tv_back=(TextView)v.findViewById(R.id.tv_back);
+            tv_foldername=(TextView)v.findViewById(R.id.tv_foldername);
+            tv_back.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+            tv_foldername.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+            if(methodClass.checkInternetConnection()){
+              //  methodClass.MakeGetRequest(URLS.GET_ROOT_FOLDER_FILES,getActivity().getSharedPreferences("Login",0).getString("UserID",""));
             }
-            MyFilesAdapter adapter=new MyFilesAdapter(getActivity(),myfileslist);
-            lv_myfiles.setAdapter(adapter);
-            //Set Font
-        //    tv_myfiles.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
-         //   tv_search.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
-         //   tv_refresh.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
-         //   tv_upload.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+            else{
+                UIutill.ShowSnackBar(getActivity(),getString(R.string.no_network));
+            }
+
         }
         catch (Exception e){
             e.printStackTrace();
@@ -125,7 +122,7 @@ public class MyFiles extends Fragment implements View.OnClickListener{
             btn_search.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
             btn_cancel.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
             builder.setView(dialoglayout);
-            final AlertDialog dialog=builder.create();
+            dialog=builder.create();
             dialog.getWindow().getAttributes().windowAnimations=R.style.MyAnim_SearchWindow;
             dialog.show();
 
@@ -138,5 +135,52 @@ public class MyFiles extends Fragment implements View.OnClickListener{
         }
 
 
+    }
+
+    @Override
+    public void onSuccess(T s) {
+            try{
+                String value=new Gson().toJson(s);
+                JsonParser jsonParser = new JsonParser();
+                JsonObject jsonreturn= (JsonObject)jsonParser.parse(value);
+                boolean IsSucess=jsonreturn.get("IsSucess").getAsBoolean();
+                if(IsSucess){
+                    if(jsonreturn.get("ResponseData").isJsonArray() && jsonreturn.get("ResponseData").getAsJsonArray().size()>0){
+                        JsonArray ResponseData=jsonreturn.get("ResponseData").getAsJsonArray();
+                        for(int i=0;i<ResponseData.size();i++){
+                           JsonObject object=ResponseData.get(i).getAsJsonObject();
+                            MyFilesDataModel model=new MyFilesDataModel();
+                            model.setFileid(object.get("FileID").getAsInt());
+                            model.setFiletype(object.get("Type").getAsString());
+                            model.setFilepath(object.get("Path").getAsString());
+                            model.setFilename(object.get("FileName").getAsString());
+                            myfileslist.add(model);
+                        }
+                      if(myfileslist.size()>0){
+                          layout_foldernames.setVisibility(View.VISIBLE);
+                          tv_foldername.setText(getString(R.string.my_file));
+                      }
+
+                    }
+                    else{
+                        UIutill.ShowDialog(getActivity(),getString(R.string.error),jsonreturn.get("ResponseData").getAsString());
+                    }
+
+                }
+                else{
+                    UIutill.ShowDialog(getActivity(),getString(R.string.error),jsonreturn.get("Message").getAsString());
+                }
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+    }
+
+    @Override
+    public void onFailure(RetrofitError error) {
+        if(error!=null){
+
+            UIutill.ShowDialog(getActivity(),getString(R.string.error), CustomErrorHandling.ShowError(error, getActivity()));
+        }
     }
 }

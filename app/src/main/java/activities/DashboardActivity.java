@@ -25,7 +25,6 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
     ListView lv_drawer;
     SlidingPaneLayout slidingpane;
     private ActionBar actionBar;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +54,7 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
                 }
             });
             onItemClick(null,null,4,0);
+
         }
         catch (Exception e){
             e.printStackTrace();

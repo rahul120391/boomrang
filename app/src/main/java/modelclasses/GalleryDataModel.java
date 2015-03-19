@@ -1,5 +1,7 @@
 package modelclasses;
 
+import android.graphics.Bitmap;
+
 import java.io.Serializable;
 
 /**
@@ -12,6 +14,24 @@ public class GalleryDataModel implements Serializable {
     private String filethumnbail;
     private String video_path;
     private String filepath;
+    private Bitmap bitmap;
+    private boolean status;
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
+    public Bitmap getBitmap() {
+        return bitmap;
+    }
+
+    public void setBitmap(Bitmap bitmap) {
+        this.bitmap = bitmap;
+    }
 
     public String getFilepath() {
         return filepath;
