@@ -154,7 +154,7 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
                     e.putString("LastName",mainobject.get("LastName").getAsString());
                     e.putString("RegistrationDate",mainobject.get("RegistrationDate").getAsString());
                     e.putString("emailID",mainobject.get("emailID").getAsString());
-
+                    e.putInt("DirectoryId",mainobject.get("DirectoryId").getAsInt());
                     if(mainobject.get("Company")!=null){
                         e.putString("Company",mainobject.get("Company").getAsString());
                     }

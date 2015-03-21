@@ -9,4 +9,7 @@ public class URLS {
     public static final String GETSPACESTATS="/GetSpaceStats";
     public static final String UPLOAD_FILES="/upload";
     public static final String GET_ROOT_FOLDER_FILES="/GetFilesinRootFolder";
+    public static final String TEMP_DELETE_FILE_FOLDER="/TempDelete";
+    public static final String PERMANENT_DELETE_FILE_FOLDER="/PermanentDelete";
+    public static final String SEARCH_FILE_FOLDER="/SearchFileFolder";
 }

@@ -103,6 +103,7 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                    lv_files.setVisibility(View.GONE);
                }
                else{
+
                    MyAdapter adapter=new MyAdapter(this,datalist,2);
                    lv_files.setAdapter(adapter);
                }
@@ -149,6 +150,7 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                String path=cr.getString(0);
                String title=cr.getString(1);
                String mimetype=cr.getString(2);
+               System.out.println("uris"+MediaStore.Images.Thumbnails.getContentUri(path));
                GalleryDataModel model=new GalleryDataModel();
                model.setFilemimetype(mimetype);
                model.setFiletitle(title);
@@ -163,21 +165,27 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
     public ArrayList<GalleryDataModel> GetVideoData(){
         ArrayList<GalleryDataModel> data = new ArrayList<GalleryDataModel>();
         String projection[] = { MediaStore.Video.Media.DATA,
-                MediaStore.Video.Media.TITLE,MediaStore.Video.Media.MIME_TYPE};
+                MediaStore.Video.Media.TITLE,MediaStore.Video.Media.MIME_TYPE,MediaStore.Video.Media._ID};
         Cursor cr = managedQuery(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
                 projection, null, null, null);
+        String[] thumbColumns = { MediaStore.Video.Thumbnails.DATA,
+                MediaStore.Video.Thumbnails.VIDEO_ID };
         if (cr != null) {
             while (cr.moveToNext()) {
                 GalleryDataModel model=new GalleryDataModel();
                 String path=cr.getString(0);
                 String title=cr.getString(1);
                 String mimetype=cr.getString(2);
-          /*      Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(path,
-                        MediaStore.Images.Thumbnails.MINI_KIND);
+                String id=cr.getString(3);
+                Uri pp=MediaStore.Video.Thumbnails.getContentUri(path);
+                System.out.println("ppppp"+getPath(pp));
+                Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(path,
+                        MediaStore.Images.Thumbnails.MICRO_KIND);
                 Uri uri=getImageUri(this,thumbnail);
-                String imagepath=getRealPathFromURI(uri);*/
+                String imagepath=getRealPathFromURI(uri);
                 model.setVideo_path(path);
                 model.setStatus(false);
+                model.setImage_path(imagepath);
                 model.setFiletitle(title);
                 model.setFilemimetype(mimetype);
                 data.add(model);
@@ -246,6 +254,13 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
         }
     }
 
+    public String getPath(Uri uri)
+    {
+        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+        cursor.moveToFirst();
+        int idx = cursor.getColumnIndex(MediaStore.Video.Thumbnails.DATA);
+        return cursor.getString(idx);
+    }
 
     class MyAdapter extends BaseAdapter{
 
@@ -290,17 +305,9 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                tv_name.setTypeface(UIutill.SetFont(cnt,"segoeuilght.ttf"));
                ch_check=(CheckBox)convertView.findViewById(R.id.ch_check);
                ch_check.setTag(position);
-               if(poss==1){
-                   aq.id(iv_image)
-                           .image(mylist.get(position).getImage_path(), false, true,100,
-                                   0, null, 0, 1.0f / 1.0f);
-               }
-               else if(poss==2){
-                   Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(mylist.get(position).getVideo_path(),
-                           MediaStore.Images.Thumbnails.MINI_KIND);
-                   thumbnail=Bitmap.createScaledBitmap(thumbnail,100,100,true);
-                   aq.id(iv_image).image(thumbnail,10.f/10.f);
-               }
+
+               aq.id(iv_image) .image(mylist.get(position).getImage_path(), false, true, 100,
+                            0, null, 0, 1.0f / 1.0f);
 
                String type[]=mylist.get(position).getFilemimetype().split("/");
                tv_name.setText(mylist.get(position).getFiletitle()+"."+type[1]);

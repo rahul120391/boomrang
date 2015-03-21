@@ -30,4 +30,13 @@ public interface MyRetrofitInterface<T> {
 
     @GET(URLS.GET_ROOT_FOLDER_FILES)
     void getrootsubfolderfiles(@QueryMap Map<String,String> map,Callback<T> object);
+
+    @GET(URLS.TEMP_DELETE_FILE_FOLDER)
+    void tempdelfilefolder(@QueryMap Map<String,String> map,Callback<T> object);
+
+    @GET(URLS.PERMANENT_DELETE_FILE_FOLDER)
+    void permamnentdelfilefolder(@QueryMap Map<String,String> map,Callback<T> object);
+
+    @GET(URLS.SEARCH_FILE_FOLDER)
+    void searchfilefolder(@QueryMap Map<String,String> map,Callback<T> object);
 }

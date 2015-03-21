@@ -41,6 +41,9 @@
     <string name="refresh">Refresh</string>
     <string name="upload">Upload</string>
     <string name="myfiles">My Files</string>
+    <string name="no_file">No files inside folder</string>
+    <string name="no_search_result">No search result found</string>
+    <string name="empty_search">Please enter text to search</string>
     <!-- UserProfile Strings -->
     <string name="user_info">User Information</string>
     <string name="email">E-mail</string>

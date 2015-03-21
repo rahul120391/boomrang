@@ -100,9 +100,9 @@ public class MethodClass<T> {
      */
     public void MakeGetRequestWithParams(Map<String, String> map, String url) {
         switch (url) {
-            /*case URLS.SEARCH_REQUEST:
-                myretro.sendtomany(map, new CallbackClass<T>(inter, cnt));
-                break;*/
+              case URLS.GET_ROOT_FOLDER_FILES:
+                myretro.getrootsubfolderfiles(map,new CallbackClass<T>(inter,cnt));
+                break;
             default:
                 break;
         }
