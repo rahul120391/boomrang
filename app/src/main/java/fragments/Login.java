@@ -104,7 +104,11 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btn_login:
-                try{
+                Intent i=new Intent(getActivity(), DashboardActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(i);
+                getActivity().finish();
+             /*   try{
                      if(et_email.getText().toString().length()==0){
                          UIutill.ShowSnackBar(getActivity(),getString(R.string.empty_email));
                      }
@@ -132,7 +136,7 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
                 }
                 catch (Exception e){
                     e.printStackTrace();
-                }
+                }*/
                 break;
         }
     }

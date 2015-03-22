@@ -4,12 +4,14 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SlidingPaneLayout;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -20,7 +22,7 @@ import fragments.MyFiles;
 import fragments.UserProfile;
 
 
-public class DashboardActivity extends FragmentActivity implements AdapterView.OnItemClickListener{
+public class DashboardActivity extends FragmentActivity implements AdapterView.OnItemClickListener,View.OnClickListener{
     FragmentManager fragmentManager;
     ListView lv_drawer;
     SlidingPaneLayout slidingpane;
@@ -33,26 +35,15 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
             lv_drawer=(ListView)findViewById(R.id.lv_drawer);
             lv_drawer.setOnItemClickListener(this);
             slidingpane=(SlidingPaneLayout)findViewById(R.id.slidingpane);
-           // slidingpane.setParallaxDistance(100);
             SideBarAdapter adapter=new SideBarAdapter(this);
             lv_drawer.setAdapter(adapter);
-
             ActionBar bar = getActionBar();
             bar.setDisplayShowHomeEnabled(false);
             bar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
             bar.setCustomView(R.layout.action_bar_layout);
-            ((TextView)findViewById(R.id.tv_email)).setText(getSharedPreferences("Login",0).getString("emailID",""));
-            findViewById(R.id.iv_image).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(slidingpane.isOpen()){
-                        slidingpane.closePane();
-                    }
-                    else{
-                        slidingpane.openPane();
-                    }
-                }
-            });
+            ((ImageView)findViewById(R.id.iv_logout)).setOnClickListener(this);
+            ((TextView)findViewById(R.id.tv_email)).setText(getSharedPreferences("Login", 0).getString("emailID", ""));
+            ((ImageView)findViewById(R.id.iv_toggle)).setOnClickListener(this);
             onItemClick(null,null,4,0);
 
         }
@@ -150,6 +141,26 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
             }
         }
 
+
+    }
+
+    @Override
+    public void onClick(View v) {
+          switch (v.getId()) {
+              case R.id.iv_logout:
+                  onItemClick(null,null,6,0);
+                  break;
+              case R.id.iv_toggle:
+                  if(slidingpane.isOpen()) {
+                      slidingpane.closePane();
+                  }
+                  else {
+                  slidingpane.openPane();
+                  }
+                  break;
+              default:
+                  break;
+          }
 
     }
 }

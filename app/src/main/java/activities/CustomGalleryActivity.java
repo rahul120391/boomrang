@@ -168,8 +168,6 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                 MediaStore.Video.Media.TITLE,MediaStore.Video.Media.MIME_TYPE,MediaStore.Video.Media._ID};
         Cursor cr = managedQuery(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
                 projection, null, null, null);
-        String[] thumbColumns = { MediaStore.Video.Thumbnails.DATA,
-                MediaStore.Video.Thumbnails.VIDEO_ID };
         if (cr != null) {
             while (cr.moveToNext()) {
                 GalleryDataModel model=new GalleryDataModel();
@@ -177,8 +175,8 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                 String title=cr.getString(1);
                 String mimetype=cr.getString(2);
                 String id=cr.getString(3);
-                Uri pp=MediaStore.Video.Thumbnails.getContentUri(path);
-                System.out.println("ppppp"+getPath(pp));
+                System.out.println("path"+path+"\n"+id);
+                System.out.println("idd"+id);
                 Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(path,
                         MediaStore.Images.Thumbnails.MICRO_KIND);
                 Uri uri=getImageUri(this,thumbnail);
@@ -254,13 +252,6 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
         }
     }
 
-    public String getPath(Uri uri)
-    {
-        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
-        cursor.moveToFirst();
-        int idx = cursor.getColumnIndex(MediaStore.Video.Thumbnails.DATA);
-        return cursor.getString(idx);
-    }
 
     class MyAdapter extends BaseAdapter{
 
