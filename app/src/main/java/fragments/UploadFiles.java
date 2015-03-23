@@ -65,7 +65,7 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
     ArrayList<GalleryDataModel> list=new ArrayList<GalleryDataModel>();
     MethodClass<T> method;
     private PopupWindow pwindo;
-
+    int folderid;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -81,7 +81,13 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
             btn_upload.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
             btn_upload.setOnClickListener(this);
             method=new MethodClass<T>(getActivity(),this);
-
+            if(savedInstanceState==null){
+                Bundle bundle=getArguments();
+                folderid=bundle.getInt("folderid",0);
+            }
+            else{
+               folderid=savedInstanceState.getInt("folderid",0);
+            }
         }
         catch (Exception e){
             e.printStackTrace();
@@ -114,8 +120,8 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                             for(int i=0;i<list.size();i++){
                                 int a=i+1;
                                 values.put("file"+a,new TypedFile(list.get(i).getFilemimetype(),new File(list.get(i).getFilepath())));
-                            }
-                           method.UploadFiles(getActivity().getSharedPreferences("Login",0).getString("UserID",""),"4741",values, URLS.UPLOAD_FILES);
+                             }
+                           method.UploadFiles(getActivity().getSharedPreferences("Login",0).getString("UserID",""),folderid+"",values, URLS.UPLOAD_FILES);
                          }
                          else{
                              UIutill.ShowSnackBar(getActivity(),getString(R.string.no_network));
@@ -342,7 +348,7 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
         String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(),
-                inImage, "Title", null);
+                inImage, System.currentTimeMillis()+"", null);
         return Uri.parse(path);
     }
 
@@ -457,5 +463,72 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
             }
             return convertView;
         }
+    }
+
+    class  MyUploadFilesAdapter extends BaseAdapter{
+        Context context;
+        ArrayList<GalleryDataModel> mylist;
+        LayoutInflater inf;
+        ImageView iv_image, iv_delete;
+        TextView tv_name;
+        AQuery aq;
+        int pos;
+        public MyUploadFilesAdapter(Context context, ArrayList<GalleryDataModel> mylist,int pos) {
+            this.pos=pos;
+            this.context = context;
+            this.mylist = mylist;
+            inf = LayoutInflater.from(context);
+            aq = new AQuery(context);
+        }
+        @Override
+        public int getCount() {
+            return mylist.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return mylist.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(final int position, View convertView, ViewGroup parent) {
+            try{
+                if(convertView==null){
+                    convertView=inf.inflate(R.layout.uploadfileslistview_row_item,null);
+                }
+                tv_name=(TextView)convertView.findViewById(R.id.tv_name);
+                tv_name.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+
+                iv_delete=(ImageView)convertView.findViewById(R.id.iv_delete);
+                iv_image=(ImageView)convertView.findViewById(R.id.iv_image);
+                tv_name.setText(mylist.get(position).getFiletitle());
+                aq.id(iv_image).image(mylist.get(position).getBitmap(),1.0f/1.0f);
+                iv_delete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int pos=lv_myfiles.getPositionForView(v);
+                        mylist.remove(mylist.get(pos));
+                        notifyDataSetChanged();
+                        if(lv_myfiles.getCount()==0){
+                            btn_upload.setVisibility(View.GONE);
+                        }
+                    }
+                });
+
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+            return convertView;
+        }
+    }    @Override
+    public void onSaveInstanceState(Bundle outState) {
+         outState.putInt("folderid",folderid);
+         super.onSaveInstanceState(outState);
     }
 }

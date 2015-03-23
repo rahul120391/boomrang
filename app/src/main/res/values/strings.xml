@@ -87,4 +87,8 @@
     <string name="select_file">Please select atleast one file</string>
     <string name="file_max_limit">Only 5 items can be selected at times</string>
     <string name="mime_type_error">Mime type of file is null</string>
+
+
+    <!--SearchResult Screen Strings-->
+    <string name="no_result">No files found</string>
 </resources>

@@ -103,6 +103,9 @@ public class MethodClass<T> {
               case URLS.GET_ROOT_FOLDER_FILES:
                 myretro.getrootsubfolderfiles(map,new CallbackClass<T>(inter,cnt));
                 break;
+            case URLS.SEARCH_FILE_FOLDER:
+                myretro.searchfilefolder(map,new CallbackClass<T>(inter,cnt));
+                break;
             default:
                 break;
         }

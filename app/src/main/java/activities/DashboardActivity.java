@@ -4,7 +4,6 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -44,7 +43,7 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
             ((ImageView)findViewById(R.id.iv_logout)).setOnClickListener(this);
             ((TextView)findViewById(R.id.tv_email)).setText(getSharedPreferences("Login", 0).getString("emailID", ""));
             ((ImageView)findViewById(R.id.iv_toggle)).setOnClickListener(this);
-            onItemClick(null,null,4,0);
+            onItemClick(null,null,3,0);
 
         }
         catch (Exception e){
@@ -103,7 +102,7 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
                        }
 
                        break;
-                   case 4:
+                   case 3:
                        try{
                            FragmentTransactions(R.id.fragment_container,new MyDashBoard(),"dashboard");
                        }
@@ -111,7 +110,7 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
                            e.printStackTrace();
                        }
                        break;
-                   case 6:
+                   case 5:
                        try{
                            getSharedPreferences("Login",0).edit().clear().commit();
                            Intent logout = new Intent(this, MainActivity.class);
@@ -148,7 +147,7 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
     public void onClick(View v) {
           switch (v.getId()) {
               case R.id.iv_logout:
-                  onItemClick(null,null,6,0);
+                  onItemClick(null,null,5,0);
                   break;
               case R.id.iv_toggle:
                   if(slidingpane.isOpen()) {
@@ -162,5 +161,9 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
                   break;
           }
 
+    }
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 }

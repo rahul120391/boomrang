@@ -8,13 +8,13 @@
     android:layout_width="match_parent"
     android:layout_height="50dp"
     android:orientation="horizontal"
-    android:weightSum="2"
+    android:weightSum="5"
     >
    <RelativeLayout
        android:id="@+id/layout_myfiles"
        android:layout_width="0dp"
        android:layout_height="match_parent"
-       android:layout_weight="0.5"
+       android:layout_weight="1"
        android:background="@color/myfiles_selected"
        >
        <ImageView
@@ -29,7 +29,7 @@
         android:id="@+id/layout_search"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.5"
+        android:layout_weight="1"
         android:background="@color/myfiles_unselelcted"
         >
         <ImageView
@@ -44,22 +44,22 @@
         android:id="@+id/layout_refresh"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.5"
+        android:layout_weight="1"
         android:background="@color/myfiles_unselelcted"
         >
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
             android:layout_centerInParent="true"
             android:paddingTop="10dp"
-            android:src="@drawable/ic_refreshicon"
+            android:src="@drawable/iv_sidesync"
             />
         </RelativeLayout>
     <RelativeLayout
         android:id="@+id/layout_upload"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.5"
+        android:layout_weight="1"
         android:background="@color/myfiles_unselelcted"
         >
         <ImageView
@@ -70,6 +70,21 @@
             android:src="@drawable/ic_uploadicon"
             />
         </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/layout_createfolder"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/myfiles_unselelcted"
+        >
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:paddingTop="10dp"
+            android:src="@drawable/ic_myfiles"
+            />
+    </RelativeLayout>
     </LinearLayout>
     <RelativeLayout
         android:id="@+id/layout_foldernames"

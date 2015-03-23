@@ -8,7 +8,7 @@
         android:layout_height="wrap_content"
         android:background="@color/myfiles_selected"
         android:padding="10dp"
-        android:visibility="visible"
+        android:visibility="gone"
         >
         <TextView
             android:id="@+id/tv_foldername"

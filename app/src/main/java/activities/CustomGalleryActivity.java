@@ -166,6 +166,7 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
         ArrayList<GalleryDataModel> data = new ArrayList<GalleryDataModel>();
         String projection[] = { MediaStore.Video.Media.DATA,
                 MediaStore.Video.Media.TITLE,MediaStore.Video.Media.MIME_TYPE,MediaStore.Video.Media._ID};
+        String Thumbnail_projection[]={MediaStore.Video.Thumbnails.DATA};
         Cursor cr = managedQuery(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
                 projection, null, null, null);
         if (cr != null) {
@@ -175,12 +176,18 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                 String title=cr.getString(1);
                 String mimetype=cr.getString(2);
                 String id=cr.getString(3);
-                System.out.println("path"+path+"\n"+id);
-                System.out.println("idd"+id);
-                Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(path,
-                        MediaStore.Images.Thumbnails.MICRO_KIND);
-                Uri uri=getImageUri(this,thumbnail);
-                String imagepath=getRealPathFromURI(uri);
+                String imagepath=null;
+                Cursor cursor=managedQuery(MediaStore.Video.Thumbnails.EXTERNAL_CONTENT_URI,Thumbnail_projection,MediaStore.Video.Thumbnails.VIDEO_ID+"="+id,null,null);
+                if(cursor.moveToFirst()){
+                    imagepath=cursor.getString(0);
+                }
+                else{
+                    Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(path,
+                            MediaStore.Images.Thumbnails.MICRO_KIND);
+                    Uri uri=getImageUri(this,thumbnail);
+                    imagepath=getRealPathFromURI(uri);
+                }
+
                 model.setVideo_path(path);
                 model.setStatus(false);
                 model.setImage_path(imagepath);
@@ -195,7 +202,7 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
         String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(),
-                inImage, "Title", null);
+                inImage, System.currentTimeMillis()+"", null);
         return Uri.parse(path);
     }
 
@@ -296,10 +303,8 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                tv_name.setTypeface(UIutill.SetFont(cnt,"segoeuilght.ttf"));
                ch_check=(CheckBox)convertView.findViewById(R.id.ch_check);
                ch_check.setTag(position);
-
                aq.id(iv_image) .image(mylist.get(position).getImage_path(), false, true, 100,
                             0, null, 0, 1.0f / 1.0f);
-
                String type[]=mylist.get(position).getFilemimetype().split("/");
                tv_name.setText(mylist.get(position).getFiletitle()+"."+type[1]);
                ch_check.setOnClickListener(new View.OnClickListener() {

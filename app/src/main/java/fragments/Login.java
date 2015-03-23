@@ -104,11 +104,7 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btn_login:
-                Intent i=new Intent(getActivity(), DashboardActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(i);
-                getActivity().finish();
-             /*   try{
+              try{
                      if(et_email.getText().toString().length()==0){
                          UIutill.ShowSnackBar(getActivity(),getString(R.string.empty_email));
                      }
@@ -124,7 +120,7 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
                              Map<String,String> values=new HashMap<String,String>();
                              values.put("EmailID",et_email.getText().toString());
                              values.put("Password",et_password.getText().toString());
-                             System.out.println("urls"+URLS.LOGIN);
+                             System.out.println("urls"+ URLS.LOGIN);
                              System.out.println("values"+values);
                              methodClass.MakePostRequest(values, URLS.LOGIN);
                          }
@@ -136,7 +132,7 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
                 }
                 catch (Exception e){
                     e.printStackTrace();
-                }*/
+                }
                 break;
         }
     }

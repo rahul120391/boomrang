@@ -30,7 +30,6 @@ import adapters.MyFilesAdapter;
 import commonutils.CustomErrorHandling;
 import commonutils.DataTransferInterface;
 import commonutils.MethodClass;
-import commonutils.MySingletonclass;
 import commonutils.UIutill;
 import commonutils.URLS;
 import modelclasses.MyFilesDataModel;
@@ -49,6 +48,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
     MethodClass<T> methodClass;
     RelativeLayout layout_foldernames;
     Stack<Integer> stack=new Stack<Integer>();
+    Stack<String> foldernames=new Stack<>();
     int folderid;
     int position;
     String foldername;
@@ -63,6 +63,9 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
             foldername=getString(R.string.myfiles);
             folderid=getActivity().getSharedPreferences("Login",0).getInt("DirectoryId", 0);
             layout_foldernames=(RelativeLayout)v.findViewById(R.id.layout_foldernames);
+            foldernames.clear();
+            stack.clear();
+            layout_foldernames.setVisibility(View.GONE);
             layout_myfiles=(RelativeLayout)v.findViewById(R.id.layout_myfiles);
             layout_search=(RelativeLayout)v.findViewById(R.id.layout_search);
             layout_refresh=(RelativeLayout)v.findViewById(R.id.layout_refresh);
@@ -107,7 +110,6 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                 layout_search.setBackgroundColor(getResources().getColor(R.color.myfiles_selected));
                 layout_refresh.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
                 layout_upload.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
-                position=3;
                 ShowSearchDialog();
                 break;
             case R.id.layout_refresh:
@@ -121,7 +123,11 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                 layout_search.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
                 layout_refresh.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
                 layout_upload.setBackgroundColor(getResources().getColor(R.color.myfiles_selected));
-                ((DashboardActivity)getActivity()).FragmentTransactions(R.id.fragment_container,new UploadFiles(),"uploadfiles");
+                UploadFiles files=new UploadFiles();
+                Bundle b=new Bundle();
+                b.putInt("folderid",stack.lastElement());
+                files.setArguments(b);
+                ((DashboardActivity)getActivity()).FragmentTransactions(R.id.fragment_container,files,"uploadfiles");
                 break;
             case R.id.tv_back:
                 try{
@@ -180,17 +186,12 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                         UIutill.ShowSnackBar(getActivity(),getString(R.string.empty_search));
                     }
                     else{
-                       if(methodClass.checkInternetConnection()){
-                           searchstring=et_search.getText().toString();
-                           Map<String,String> map=new HashMap<String, String>();
-                           map.put("userId",getActivity().getSharedPreferences("Login",0).getString("UserID",""));
-                           map.put("searchText",searchstring);
-                           methodClass.MakeGetRequestWithParams(map,URLS.SEARCH_FILE_FOLDER);
-                       }
-                        else{
-                           UIutill.ShowSnackBar(getActivity(),getString(R.string.no_network));
-                       }
-
+                        dialog.dismiss();
+                        SearchResult result=new SearchResult();
+                        Bundle b=new Bundle();
+                        b.putString("searctext",et_search.getText().toString());
+                        result.setArguments(b);
+                        ((DashboardActivity)getActivity()).FragmentTransactions(R.id.fragment_container,result,"searchresult");
                     }
                 }
             });
@@ -209,7 +210,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                 JsonObject jsonreturn= (JsonObject)jsonParser.parse(value);
                 boolean IsSucess=jsonreturn.get("IsSucess").getAsBoolean();
                 if(IsSucess){
-                    if(jsonreturn.get("ResponseData").isJsonArray() && jsonreturn.get("ResponseData").getAsJsonArray().size()>0){
+                    if(jsonreturn.get("ResponseData").isJsonArray() && jsonreturn.get("ResponseData").getAsJsonArray().size()>=0){
                         JsonArray ResponseData=jsonreturn.get("ResponseData").getAsJsonArray();
                         System.out.println("response"+ResponseData);
                         myfileslist.clear();
@@ -230,48 +231,28 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                         }
 
 
+                        layout_foldernames.setVisibility(View.VISIBLE);
 
-                        if(myfileslist.size()>0){
-
-                            if(position==1 || position==2){
-                                tv_foldername.setText(foldername);
-                                if(position==1){
+                                if (position == 1) {
                                     stack.push(folderid);
-                                }
-                                else if(position==2){
+                                    foldernames.push(foldername);
+                                } else if (position == 2) {
                                     stack.pop();
+                                    foldernames.pop();
                                 }
-                                if(stack.size()>1){
+                                if (stack.size() > 1) {
                                     tv_back.setText(getString(R.string.back));
                                     tv_back.setVisibility(View.VISIBLE);
-                                }
-                                else{
+                                } else {
                                     tv_back.setVisibility(View.GONE);
                                 }
-                                System.out.println("stack"+stack);
-                                layout_foldernames.setVisibility(View.VISIBLE);
-                                tv_foldername.setText(getString(R.string.my_file));
+                                tv_foldername.setText(foldernames.lastElement());
+                                System.out.println("stack" + stack);
                                 lv_myfiles.setAdapter(null);
-                                adapter=new MyFilesAdapter(getActivity(),myfileslist);
+                                adapter = new MyFilesAdapter(getActivity(), myfileslist);
                                 lv_myfiles.setAdapter(adapter);
-                            }
-                            else if(position==3){
-                                MySingletonclass.getobject().setList(myfileslist);
-                                MySingletonclass.getobject().setSearchstring(searchstring);
-                                ((DashboardActivity)getActivity()).FragmentTransactions(R.id.fragment_container,new SearchResult(),"search");
-                            }
 
 
-                        }
-                        else{
-                            if(position==1 ||position==2){
-                                UIutill.ShowSnackBar(getActivity(),getString(R.string.no_file));
-                            }
-                            else if(position==3){
-                                UIutill.ShowSnackBar(getActivity(),getString(R.string.no_search_result));
-                            }
-
-                        }
 
                     }
                     else{
