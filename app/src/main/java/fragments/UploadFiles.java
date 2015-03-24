@@ -324,7 +324,7 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                 mymodel.setFiletitle(filetitle+"."+typee[1]);
                 mymodel.setFilemimetype(mimetype);
                 Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(filepath,
-                        MediaStore.Images.Thumbnails.MINI_KIND);
+                        MediaStore.Images.Thumbnails.MICRO_KIND);
                 Uri tempUri = getImageUri(getActivity(), thumbnail);
                 String values[]=getRealPathFromURI(tempUri);
                 mymodel.setImage_path(values[0]);

@@ -187,6 +187,7 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                 else{
                     Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(path,
                             MediaStore.Images.Thumbnails.MICRO_KIND);
+
                     Uri uri=getImageUri(this,thumbnail);
                     imagepath=getRealPathFromURI(uri);
                 }
