@@ -1,6 +1,5 @@
 package activities;
 
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -40,6 +39,9 @@ public class MainActivity extends FragmentActivity {
          fragmentManager = getFragmentManager();
          android.app.FragmentTransaction fragmentTransaction = fragmentManager
                  .beginTransaction();
+         fragmentTransaction.setCustomAnimations(
+                 R.animator.card_flip_right_in, R.animator.card_flip_right_out,
+                 R.animator.card_flip_left_in, R.animator.card_flip_left_out);
          fragmentTransaction.replace(id, _newfrag,null);
          fragmentTransaction.commit();
      }

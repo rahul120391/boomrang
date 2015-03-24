@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.ThumbnailUtils;
@@ -48,6 +47,7 @@ import commonutils.MethodClass;
 import commonutils.RequestCodes;
 import commonutils.UIutill;
 import commonutils.URLS;
+import customviews.SwipeDismissListViewTouchListener;
 import modelclasses.GalleryDataModel;
 import retrofit.RetrofitError;
 import retrofit.mime.TypedFile;
@@ -64,8 +64,9 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
     MyUploadFilesAdapter adapter=null;
     ArrayList<GalleryDataModel> list=new ArrayList<GalleryDataModel>();
     MethodClass<T> method;
-    private PopupWindow pwindo;
     int folderid;
+    private PopupWindow pwindo;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -92,7 +93,27 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
         catch (Exception e){
             e.printStackTrace();
         }
+        SwipeDismissListViewTouchListener touchListener =
+                new SwipeDismissListViewTouchListener(
+                        lv_myfiles,
+                        new SwipeDismissListViewTouchListener.DismissCallbacks() {
+                            @Override
+                            public boolean canDismiss(int position) {
+                                return true;
+                            }
 
+                            @Override
+                            public void onDismiss(ListView listView, int[] reverseSortedPositions) {
+                                for (int position : reverseSortedPositions) {
+                                    list.remove(position);
+                                }
+                                adapter.notifyDataSetChanged();
+                                if(lv_myfiles.getCount()==0){
+                                    btn_upload.setVisibility(View.GONE);
+                                }
+                            }
+                        });
+        lv_myfiles.setOnTouchListener(touchListener);
         return v;
     }
 
@@ -248,11 +269,7 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                         String title=model.getFiletitle()+"."+model.getFilemimetype().split("/")[1];
                         mymodel.setFiletitle(title);
                         mymodel.setFilemimetype(model.getFilemimetype());
-                        File imgFile = new File(model.getImage_path());
-                        if(imgFile.exists()){
-                            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                            mymodel.setBitmap(myBitmap);
-                        }
+                        mymodel.setImage_path(model.getImage_path());
                         list.add(mymodel);
                     }
                 }
@@ -267,7 +284,7 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                 String typee[]=values[2].split("/");
                 mymodel.setFiletitle(values[1]+"."+typee[1]);
                 mymodel.setFilemimetype(values[2]);
-                mymodel.setBitmap(photo);
+                mymodel.setImage_path(values[0]);
                 list.add(mymodel);
                 pos=1;
             }
@@ -282,11 +299,9 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                     if(!valueslist.contains(name)){
                         GalleryDataModel mymodel=new GalleryDataModel();
                         mymodel.setFilepath(model.getVideo_path());
-                        mymodel.setFiletitle(model.getFiletitle()+"."+model.getFilemimetype().split("/")[1]);
+                        mymodel.setFiletitle(model.getFiletitle() + "." + model.getFilemimetype().split("/")[1]);
                         mymodel.setFilemimetype(model.getFilemimetype());
-                        Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(model.getVideo_path(),
-                                MediaStore.Images.Thumbnails.MINI_KIND);
-                        mymodel.setBitmap(thumbnail);
+                        mymodel.setImage_path(model.getImage_path());
                         list.add(mymodel);
                     }
                 }
@@ -310,7 +325,9 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                 mymodel.setFilemimetype(mimetype);
                 Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(filepath,
                         MediaStore.Images.Thumbnails.MINI_KIND);
-                mymodel.setBitmap(thumbnail);
+                Uri tempUri = getImageUri(getActivity(), thumbnail);
+                String values[]=getRealPathFromURI(tempUri);
+                mymodel.setImage_path(values[0]);
                 list.add(mymodel);
                 pos=2;
             }
@@ -341,6 +358,7 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
             lv_myfiles.setAdapter(null);
             adapter=new MyUploadFilesAdapter(getActivity(),list,pos);
             lv_myfiles.setAdapter(adapter);
+
         }
     }
 
@@ -402,67 +420,10 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
       return type;
   }
 
-    class  MyUploadFilesAdapter extends BaseAdapter{
-        Context context;
-        ArrayList<GalleryDataModel> mylist;
-        LayoutInflater inf;
-        ImageView iv_image, iv_delete;
-        TextView tv_name;
-        AQuery aq;
-        int pos;
-        public MyUploadFilesAdapter(Context context, ArrayList<GalleryDataModel> mylist,int pos) {
-            this.pos=pos;
-            this.context = context;
-            this.mylist = mylist;
-            inf = LayoutInflater.from(context);
-            aq = new AQuery(context);
-        }
-        @Override
-        public int getCount() {
-            return mylist.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return mylist.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            try{
-                if(convertView==null){
-                    convertView=inf.inflate(R.layout.uploadfileslistview_row_item,null);
-                }
-                tv_name=(TextView)convertView.findViewById(R.id.tv_name);
-                tv_name.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
-
-                iv_delete=(ImageView)convertView.findViewById(R.id.iv_delete);
-                iv_image=(ImageView)convertView.findViewById(R.id.iv_image);
-                tv_name.setText(mylist.get(position).getFiletitle());
-                aq.id(iv_image).image(mylist.get(position).getBitmap(),1.0f/1.0f);
-                iv_delete.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        int pos=lv_myfiles.getPositionForView(v);
-                        mylist.remove(mylist.get(pos));
-                        notifyDataSetChanged();
-                        if(lv_myfiles.getCount()==0){
-                            btn_upload.setVisibility(View.GONE);
-                        }
-                    }
-                });
-
-            }
-            catch (Exception e){
-                e.printStackTrace();
-            }
-            return convertView;
-        }
+     @Override
+    public void onSaveInstanceState(Bundle outState) {
+         outState.putInt("folderid",folderid);
+         super.onSaveInstanceState(outState);
     }
 
     class  MyUploadFilesAdapter extends BaseAdapter{
@@ -503,32 +464,20 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                 }
                 tv_name=(TextView)convertView.findViewById(R.id.tv_name);
                 tv_name.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
-
-                iv_delete=(ImageView)convertView.findViewById(R.id.iv_delete);
                 iv_image=(ImageView)convertView.findViewById(R.id.iv_image);
                 tv_name.setText(mylist.get(position).getFiletitle());
-                aq.id(iv_image).image(mylist.get(position).getBitmap(),1.0f/1.0f);
-                iv_delete.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        int pos=lv_myfiles.getPositionForView(v);
-                        mylist.remove(mylist.get(pos));
-                        notifyDataSetChanged();
-                        if(lv_myfiles.getCount()==0){
-                            btn_upload.setVisibility(View.GONE);
-                        }
-                    }
-                });
-
+                if(pos==1 || pos==2){
+                    aq.id(iv_image).image(mylist.get(position).getImage_path(), false, true, 100,
+                            0, null, 0, 1.0f / 1.0f);
+                }
+                else if(position==3){
+                    aq.id(iv_image).image(mylist.get(position).getBitmap(),1.0f/1.0f);
+                }
             }
             catch (Exception e){
                 e.printStackTrace();
             }
             return convertView;
         }
-    }    @Override
-    public void onSaveInstanceState(Bundle outState) {
-         outState.putInt("folderid",folderid);
-         super.onSaveInstanceState(outState);
     }
 }

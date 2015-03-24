@@ -10,11 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -45,7 +45,7 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
     MethodClass<T> methodClass;
     LinearLayout login_layout;
     SharedPreferences sharedprefs,checkremstate;
-    ToggleButton tb_rememb;
+    CheckBox  ch_rememb;
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         try{
@@ -53,7 +53,7 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
             checkremstate=getActivity().getSharedPreferences("RemState",0);
             methodClass=new MethodClass<T>(getActivity(),this);
             v=inflater.inflate(R.layout.fragment_login,null);
-            tb_rememb=(ToggleButton)v.findViewById(R.id.tb_rememb);
+            ch_rememb=(CheckBox)v.findViewById(R.id.ch_rememb);
             et_email=(EditText)v.findViewById(R.id.et_email);
             et_password=(EditText)v.findViewById(R.id.et_password);
 
@@ -64,7 +64,7 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
                 if(checkremstate.getString("password","")!=null){
                     et_password.setText(checkremstate.getString("password",""));
                 }
-                tb_rememb.setChecked(checkremstate.getBoolean("status",false));
+                ch_rememb.setChecked(checkremstate.getBoolean("status",false));
             }
             tv_rememberme=(TextView)v.findViewById(R.id.tv_rememberme);
             tv_forgot=(TextView)v.findViewById(R.id.tv_forgot);
@@ -170,7 +170,7 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
                     }
                     e.commit();
 
-                    if(tb_rememb.isChecked()){
+                    if(ch_rememb.isChecked()){
                         SharedPreferences.Editor edit=checkremstate.edit();
                         edit.putString("username",et_email.getText().toString());
                         edit.putString("password",et_password.getText().toString());

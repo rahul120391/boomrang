@@ -2,15 +2,16 @@ package fragments;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -32,18 +33,23 @@ import commonutils.DataTransferInterface;
 import commonutils.MethodClass;
 import commonutils.UIutill;
 import commonutils.URLS;
+import customviews.SwipeMenu;
+import customviews.SwipeMenuCreator;
+import customviews.SwipeMenuItem;
+import customviews.SwipeMenuListView;
 import modelclasses.MyFilesDataModel;
 import retrofit.RetrofitError;
 
 /**
  * Created by rahul on 3/11/2015.
  */
-public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTransferInterface<T>,AdapterView.OnItemClickListener{
+public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTransferInterface<T>,AdapterView.OnItemClickListener, SwipeMenuListView.OnMenuItemClickListener{
     View v=null;
     RelativeLayout layout_myfiles,layout_search,layout_refresh,layout_upload;
     TextView tv_foldername,tv_back;
-    ListView lv_myfiles;
+    customviews.SwipeMenuListView lv_myfiles;
     ArrayList<MyFilesDataModel> myfileslist=new ArrayList<>();
+    SwipeMenuCreator creator;
     AlertDialog dialog;
     MethodClass<T> methodClass;
     RelativeLayout layout_foldernames;
@@ -74,13 +80,51 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
             layout_search.setOnClickListener(this);
             layout_refresh.setOnClickListener(this);
             layout_upload.setOnClickListener(this);
-            lv_myfiles=(ListView)v.findViewById(R.id.lv_myfiles);
+            lv_myfiles=(customviews.SwipeMenuListView)v.findViewById(R.id.lv_myfiles);
             lv_myfiles.setOnItemClickListener(this);
+
+            lv_myfiles.setOnMenuItemClickListener(this);
             tv_back=(TextView)v.findViewById(R.id.tv_back);
             tv_foldername=(TextView)v.findViewById(R.id.tv_foldername);
             tv_back.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
             tv_back.setOnClickListener(this);
             tv_foldername.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+
+
+            creator =new SwipeMenuCreator() {
+                @Override
+                public void create(SwipeMenu menu) {
+                    int viewtype = menu.getViewType();
+                    SwipeMenuItem item1 = new SwipeMenuItem(
+                            getActivity());
+                    item1.setBackground(new ColorDrawable(getResources().getColor(R.color.login_box_bg)));
+                    item1.setWidth(dp2px(60));
+                    item1.setIcon(R.drawable.iv_delete);
+                    menu.addMenuItem(item1);
+                    SwipeMenuItem item2 = new SwipeMenuItem(
+                            getActivity());
+
+                    item2.setBackground(new ColorDrawable(getResources().getColor(R.color.login_box_bg)));
+                    item2.setWidth(dp2px(60));
+                    item2.setIcon(R.drawable.iv_download);
+                    menu.addMenuItem(item2);
+                    SwipeMenuItem item3 = new SwipeMenuItem(
+                            getActivity());
+                    item3.setBackground(new ColorDrawable(getResources().getColor(R.color.login_box_bg)));
+                    item3.setWidth(dp2px(60));
+                    item3.setIcon(R.drawable.iv_share);
+                    menu.addMenuItem(item3);
+                    if (myfileslist.get(viewtype).getFiletype().equalsIgnoreCase("folder")) {
+                        SwipeMenuItem item4 = new SwipeMenuItem(
+                                getActivity());
+                        item4.setBackground(new ColorDrawable(getResources().getColor(R.color.login_box_bg)));
+                        item4.setWidth(dp2px(60));
+                        item4.setIcon(R.drawable.iv_requestfile);
+                        menu.addMenuItem(item4);
+                    }
+                }
+            };
+
             if(methodClass.checkInternetConnection()){
                 position=1;
               methodClass.MakeGetRequest(URLS.GET_ROOT_FOLDER_FILES,getActivity().getSharedPreferences("Login",0).getString("UserID",""));
@@ -95,6 +139,11 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
         }
         return v;
     }
+    private int dp2px(int dp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
+                getResources().getDisplayMetrics());
+    }
+
 
     @Override
     public void onClick(View v) {
@@ -247,12 +296,10 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                                     tv_back.setVisibility(View.GONE);
                                 }
                                 tv_foldername.setText(foldernames.lastElement());
-                                System.out.println("stack" + stack);
-                                lv_myfiles.setAdapter(null);
+
                                 adapter = new MyFilesAdapter(getActivity(), myfileslist);
                                 lv_myfiles.setAdapter(adapter);
-
-
+                        lv_myfiles.setMenuCreator(creator);
 
                     }
                     else{
@@ -280,6 +327,10 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int positionn, long id) {
 
+        System.out.println("item click"+positionn);
+        if(DashboardActivity.slidingpane.isOpen()){
+            DashboardActivity.slidingpane.closePane();
+        }
         String filetype=((MyFilesDataModel)parent.getItemAtPosition(positionn)).getFiletype();
         if(filetype.equalsIgnoreCase("folder")){
             position=1;
@@ -296,5 +347,11 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
         else{
 
         }
+    }
+
+    @Override
+    public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+        System.out.println("position"+index);
+        return false;
     }
 }

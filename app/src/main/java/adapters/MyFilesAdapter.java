@@ -37,12 +37,24 @@ public class MyFilesAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
+    public MyFilesDataModel getItem(int position) {
         return myfileslist.get(position);
     }
 
     @Override
     public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getViewTypeCount() {
+        // menu type count
+        return myfileslist.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        // current menu type
         return position;
     }
 

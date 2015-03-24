@@ -88,7 +88,6 @@
                             />
                     </LinearLayout>
                     <LinearLayout
-
                         android:id="@+id/toggle_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -98,12 +97,13 @@
                         android:layout_marginTop="-30dp"
                         android:orientation="horizontal"
                         >
-                        <ToggleButton
-                            android:id="@+id/tb_rememb"
-                            android:layout_width="22dp"
-                            android:layout_height="24dp"
+                        <CheckBox
+                            android:id="@+id/ch_rememb"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:layout_marginLeft="20dp"
                             android:background="@drawable/toggle_selector"
+                            android:button="@null"
                             android:checked="false"
                             android:textOff=" "
                             android:textOn=" "

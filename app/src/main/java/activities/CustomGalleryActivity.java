@@ -38,6 +38,8 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
     TextView tv_nofiles;
     ArrayList<GalleryDataModel> files_list=new ArrayList<>();
     Bundle statesave;
+    MyAdapter adapter;
+    ArrayList<GalleryDataModel> datalist=null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +51,7 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
         btn_done.setOnClickListener(this);
         tv_nofiles=(TextView)findViewById(R.id.tv_nofiles);
         tv_nofiles.setTypeface(UIutill.SetFont(this, "segoeuilght.ttf"));
-        ArrayList<GalleryDataModel> datalist;
+
         if(savedInstanceState==null){
             if(getIntent().getStringExtra("value").equalsIgnoreCase("images")){
                   datalist=GetImageData();
@@ -60,7 +62,7 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                      lv_files.setVisibility(View.GONE);
                 }
                 else{
-                    MyAdapter adapter=new MyAdapter(this,datalist,1);
+                    adapter=new MyAdapter(this,datalist,1);
                     lv_files.setAdapter(adapter);
                 }
             }
@@ -74,7 +76,7 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                     lv_files.setVisibility(View.GONE);
                 }
                 else{
-                    MyAdapter adapter=new MyAdapter(this,datalist,2);
+                     adapter=new MyAdapter(this,datalist,2);
                     lv_files.setAdapter(adapter);
                 }
             }
@@ -89,7 +91,7 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                    lv_files.setVisibility(View.GONE);
                }
                else{
-                   MyAdapter adapter=new MyAdapter(this,datalist,1);
+                   adapter=new MyAdapter(this,datalist,1);
                    lv_files.setAdapter(adapter);
                }
            }
@@ -104,11 +106,12 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                }
                else{
 
-                   MyAdapter adapter=new MyAdapter(this,datalist,2);
+                   adapter=new MyAdapter(this,datalist,2);
                    lv_files.setAdapter(adapter);
                }
            }
         }
+
     }
 
 
@@ -314,12 +317,10 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                        if (((CheckBox) v).isChecked()) {
                            mylist.get(pos).setStatus(true);
                            GalleryDataModel model=new GalleryDataModel();
-                           if(poss==1){
-                               model.setImage_path(mylist.get(pos).getImage_path());
-                           }
-                           else if(poss==2){
+                           if(poss==2){
                                model.setVideo_path(mylist.get(pos).getVideo_path());
                            }
+                           model.setImage_path(mylist.get(pos).getImage_path());
                            model.setFilemimetype(mylist.get(pos).getFilemimetype());
                            model.setFiletitle(mylist.get(pos).getFiletitle());
                          files_list.add(model);

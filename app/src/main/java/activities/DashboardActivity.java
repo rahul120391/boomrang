@@ -22,9 +22,9 @@ import fragments.UserProfile;
 
 
 public class DashboardActivity extends FragmentActivity implements AdapterView.OnItemClickListener,View.OnClickListener{
+    public static SlidingPaneLayout slidingpane;
     FragmentManager fragmentManager;
     ListView lv_drawer;
-    SlidingPaneLayout slidingpane;
     private ActionBar actionBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +68,9 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
         if (null == _fragment) {
             FragmentTransaction fragmentTransaction = fragmentManager
                     .beginTransaction();
+            fragmentTransaction.setCustomAnimations(
+                    R.animator.card_flip_right_in, R.animator.card_flip_right_out,
+                    R.animator.card_flip_left_in, R.animator.card_flip_left_out);
             fragmentTransaction.replace(id, fragment, tag);
             fragmentTransaction.addToBackStack(tag);
             fragmentTransaction.commit();
@@ -110,7 +113,7 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
                            e.printStackTrace();
                        }
                        break;
-                   case 5:
+                   case 6:
                        try{
                            getSharedPreferences("Login",0).edit().clear().commit();
                            Intent logout = new Intent(this, MainActivity.class);
@@ -147,7 +150,7 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
     public void onClick(View v) {
           switch (v.getId()) {
               case R.id.iv_logout:
-                  onItemClick(null,null,5,0);
+                  onItemClick(null,null,6,0);
                   break;
               case R.id.iv_toggle:
                   if(slidingpane.isOpen()) {

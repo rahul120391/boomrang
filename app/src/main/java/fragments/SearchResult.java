@@ -3,6 +3,7 @@ package fragments;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,13 +29,15 @@ import commonutils.DataTransferInterface;
 import commonutils.MethodClass;
 import commonutils.UIutill;
 import commonutils.URLS;
+import customviews.SwipeMenu;
+import customviews.SwipeMenuListView;
 import modelclasses.MyFilesDataModel;
 import retrofit.RetrofitError;
 
 /**
  * Created by rahul on 3/21/2015.
  */
-public class SearchResult<T> extends Fragment implements AdapterView.OnItemClickListener, DataTransferInterface<T>,View.OnClickListener{
+public class SearchResult<T> extends Fragment implements AdapterView.OnItemClickListener, DataTransferInterface<T>,View.OnClickListener,SwipeMenuListView.OnMenuItemClickListener{
 
     View v=null;
     TextView tv_foldername,tv_back;
@@ -49,6 +52,7 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
     String foldername;
     ArrayList<MyFilesDataModel> mylist=new ArrayList<>();
     RelativeLayout layout_foldernames;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -94,6 +98,10 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
             e.printStackTrace();
         }
         return v;
+    }
+    private int dp2px(int dp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
+                getResources().getDisplayMetrics());
     }
 
     @Override
@@ -157,8 +165,7 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
                          } else {
                              tv_back.setVisibility(View.GONE);
                          }
-                         tv_foldername.setText(foldernames.lastElement());
-                          lv_myfiles.setAdapter(null);
+                          tv_foldername.setText(foldernames.lastElement());
                           adapter=new MyFilesAdapter(getActivity(),mylist);
                           lv_myfiles.setAdapter(adapter);
                  }
@@ -209,5 +216,10 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
                 }
                 break;
         }
+    }
+
+    @Override
+    public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+        return false;
     }
 }
