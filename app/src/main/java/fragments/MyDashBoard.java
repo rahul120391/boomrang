@@ -1,17 +1,14 @@
 package fragments;
 
 import android.app.Fragment;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -30,7 +27,6 @@ import commonutils.DataTransferInterface;
 import commonutils.MethodClass;
 import commonutils.UIutill;
 import commonutils.URLS;
-import customviews.CustomSeekBar;
 import customviews.ProgressItem;
 import retrofit.RetrofitError;
 
@@ -136,9 +132,9 @@ public class MyDashBoard<T> extends Fragment implements View.OnClickListener, Da
                 if(IsSucess){
                     JsonArray ResponseData=jsonreturn.get("ResponseData").getAsJsonArray();
                     JsonObject mainobject=ResponseData.get(0).getAsJsonObject();
-                    String allotedspace=mainobject.get("AllotedSpace").getAsString();
-                    String spaceConsumed=mainobject.get("spaceConsumed").getAsString();
-                    String spaceLeft=mainobject.get("spaceLeft").getAsString();
+                    String allotedspace=mainobject.get("AllotedSpace").getAsString().trim();
+                    String spaceConsumed=mainobject.get("spaceConsumed").getAsString().trim();
+                    String spaceLeft=mainobject.get("spaceLeft").getAsString().trim();
                     int progress=mainobject.get("Consumed%").getAsInt();
                     customseekbar.setProgress(progress);
                     tv_allowed.setText(Html.fromHtml("<font  color='#ffae9b'>" + getResources().getString(R.string.allowed) + "</font>" + "  " + "<font color='#FFFFFF'>" + "(" + allotedspace + ")" + "</font>"));

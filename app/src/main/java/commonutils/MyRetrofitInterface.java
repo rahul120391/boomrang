@@ -19,8 +19,10 @@ public interface MyRetrofitInterface<T> {
 
     @POST(URLS.LOGIN)
     void login(@QueryMap Map<String,String> map,Callback<T> object);
+
     @POST(URLS.GETSPACESTATS)
     void getspacestats(@QueryMap Map<String,String> map,Callback<T> object);
+
     @Multipart
     @POST(URLS.UPLOAD_FILES)
     void fileupload(@Part("userid") String userid,@Part("folderid") String folderid,@PartMap Map<String,TypedFile> files,Callback<T> object);
@@ -39,4 +41,13 @@ public interface MyRetrofitInterface<T> {
 
     @GET(URLS.SEARCH_FILE_FOLDER)
     void searchfilefolder(@QueryMap Map<String,String> map,Callback<T> object);
+
+    @GET(URLS.CREATE_FOLDER)
+    void createfolder(@QueryMap Map<String,String> map,Callback<T> object);
+
+    @GET(URLS.REQUEST_FILE)
+    void requestfile(@QueryMap Map<String,String> map,Callback<T> object);
+
+    @GET(URLS.SHARE_FILE)
+    void sharefile(@QueryMap Map<String,String> map,Callback<T> object);
 }

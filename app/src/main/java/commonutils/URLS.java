@@ -12,4 +12,7 @@ public class URLS {
     public static final String TEMP_DELETE_FILE_FOLDER="/TempDelete";
     public static final String PERMANENT_DELETE_FILE_FOLDER="/PermanentDelete";
     public static final String SEARCH_FILE_FOLDER="/SearchFileFolder";
+    public static final String CREATE_FOLDER="/CreateFolder";
+    public static final String REQUEST_FILE="/RequestFile";
+    public static final String SHARE_FILE="/ShareAFile";
 }

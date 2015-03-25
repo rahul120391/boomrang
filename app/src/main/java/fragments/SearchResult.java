@@ -139,13 +139,13 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
                          MyFilesDataModel model = new MyFilesDataModel();
                          model.setFileid(object.get("FileID").getAsInt());
                          if (object.get("Type") != null) {
-                             model.setFiletype(object.get("Type").getAsString());
+                             model.setFiletype(object.get("Type").getAsString().trim());
                          } else {
                              model.setFiletype("Unknown");
                          }
 
-                         model.setFilepath(object.get("Path").getAsString());
-                         model.setFilename(object.get("FileName").getAsString());
+                         model.setFilepath(object.get("Path").getAsString().trim());
+                         model.setFilename(object.get("FileName").getAsString().trim());
                          mylist.add(model);
                      }
                      layout_foldernames.setVisibility(View.VISIBLE);

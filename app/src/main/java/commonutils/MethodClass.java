@@ -106,6 +106,18 @@ public class MethodClass<T> {
             case URLS.SEARCH_FILE_FOLDER:
                 myretro.searchfilefolder(map,new CallbackClass<T>(inter,cnt));
                 break;
+            case URLS.CREATE_FOLDER:
+                myretro.createfolder(map,new CallbackClass<T>(inter,cnt));
+                break;
+            case URLS.PERMANENT_DELETE_FILE_FOLDER:
+                myretro.permamnentdelfilefolder(map,new CallbackClass<T>(inter,cnt));
+                break;
+            case URLS.REQUEST_FILE:
+                myretro.requestfile(map,new CallbackClass<T>(inter,cnt));
+                break;
+            case URLS.SHARE_FILE:
+                myretro.sharefile(map, new CallbackClass<T>(inter, cnt));
+                break;
             default:
                 break;
         }

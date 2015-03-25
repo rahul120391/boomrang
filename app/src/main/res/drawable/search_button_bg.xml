@@ -5,7 +5,4 @@
  <solid
      android:color="@color/login_button_bg"
      ></solid>
-    <corners
-        android:radius="20dp"
-        ></corners>
 </shape>

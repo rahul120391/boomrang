@@ -5,6 +5,4 @@
 <solid
     android:color="@color/cancel_btn_bg"
     ></solid>
-    <corners
-        android:radius="20dp"></corners>
 </shape>

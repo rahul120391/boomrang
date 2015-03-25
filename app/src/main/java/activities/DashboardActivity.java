@@ -151,6 +151,7 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
           switch (v.getId()) {
               case R.id.iv_logout:
                   onItemClick(null,null,6,0);
+
                   break;
               case R.id.iv_toggle:
                   if(slidingpane.isOpen()) {

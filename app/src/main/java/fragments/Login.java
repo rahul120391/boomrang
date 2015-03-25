@@ -105,21 +105,21 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
         switch (v.getId()){
             case R.id.btn_login:
               try{
-                     if(et_email.getText().toString().length()==0){
+                     if(et_email.getText().toString().trim().length()==0){
                          UIutill.ShowSnackBar(getActivity(),getString(R.string.empty_email));
                      }
                      else if(!et_email.getText().toString()
                              .matches(Patterns.EMAIL_ADDRESS.pattern())){
                          UIutill.ShowSnackBar(getActivity(),getString(R.string.valied_Email));
                      }
-                    else if(et_password.getText().toString().length()==0){
+                    else if(et_password.getText().toString().trim().length()==0){
                          UIutill.ShowSnackBar(getActivity(),getString(R.string.empty_password));
                      }
                     else{
                          if(methodClass.checkInternetConnection()){
                              Map<String,String> values=new HashMap<String,String>();
-                             values.put("EmailID",et_email.getText().toString());
-                             values.put("Password",et_password.getText().toString());
+                             values.put("EmailID",et_email.getText().toString().trim());
+                             values.put("Password",et_password.getText().toString().trim());
                              System.out.println("urls"+ URLS.LOGIN);
                              System.out.println("values"+values);
                              methodClass.MakePostRequest(values, URLS.LOGIN);
@@ -150,20 +150,20 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
                     SharedPreferences.Editor e=sharedprefs.edit();
                     System.out.println("user id"+mainobject.get("UserID").getAsInt()+"");
                     e.putString("UserID",mainobject.get("UserID").getAsInt()+"");
-                    e.putString("FirstName",mainobject.get("FirstName").getAsString());
-                    e.putString("LastName",mainobject.get("LastName").getAsString());
-                    e.putString("RegistrationDate",mainobject.get("RegistrationDate").getAsString());
-                    e.putString("emailID",mainobject.get("emailID").getAsString());
+                    e.putString("FirstName",mainobject.get("FirstName").getAsString().trim());
+                    e.putString("LastName",mainobject.get("LastName").getAsString().trim());
+                    e.putString("RegistrationDate",mainobject.get("RegistrationDate").getAsString().trim());
+                    e.putString("emailID",mainobject.get("emailID").getAsString().trim());
                     e.putInt("DirectoryId",mainobject.get("DirectoryId").getAsInt());
                     if(mainobject.get("Company")!=null){
-                        e.putString("Company",mainobject.get("Company").getAsString());
+                        e.putString("Company",mainobject.get("Company").getAsString().trim());
                     }
                     else{
                         e.putString("Company","Not specified");
                     }
-                    e.putString("Password",mainobject.get("Password").getAsString());
+                    e.putString("Password",mainobject.get("Password").getAsString().trim());
                     if(mainobject.get("ZipCode")!=null){
-                        e.putString("ZipCode",mainobject.get("ZipCode").getAsString());
+                        e.putString("ZipCode",mainobject.get("ZipCode").getAsString().trim());
                     }
                     else{
                         e.putString("ZipCode","Not specified");
@@ -172,8 +172,8 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
 
                     if(ch_rememb.isChecked()){
                         SharedPreferences.Editor edit=checkremstate.edit();
-                        edit.putString("username",et_email.getText().toString());
-                        edit.putString("password",et_password.getText().toString());
+                        edit.putString("username",et_email.getText().toString().trim());
+                        edit.putString("password",et_password.getText().toString().trim());
                         edit.putBoolean("status",true);
                         edit.commit();
                     }

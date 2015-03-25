@@ -1,18 +1,22 @@
 package fragments;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Patterns;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -45,7 +49,7 @@ import retrofit.RetrofitError;
  */
 public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTransferInterface<T>,AdapterView.OnItemClickListener, SwipeMenuListView.OnMenuItemClickListener{
     View v=null;
-    RelativeLayout layout_myfiles,layout_search,layout_refresh,layout_upload;
+    RelativeLayout layout_myfiles,layout_search,layout_refresh,layout_upload,layout_createfolder;
     TextView tv_foldername,tv_back;
     customviews.SwipeMenuListView lv_myfiles;
     ArrayList<MyFilesDataModel> myfileslist=new ArrayList<>();
@@ -59,6 +63,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
     int position;
     String foldername;
     MyFilesAdapter adapter;
+    Dialog confirmdialog,requestfolder,sharedialog;
     String searchstring;
     @Nullable
     @Override
@@ -76,10 +81,12 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
             layout_search=(RelativeLayout)v.findViewById(R.id.layout_search);
             layout_refresh=(RelativeLayout)v.findViewById(R.id.layout_refresh);
             layout_upload=(RelativeLayout)v.findViewById(R.id.layout_upload);
+            layout_createfolder=(RelativeLayout)v.findViewById(R.id.layout_createfolder);
             layout_myfiles.setOnClickListener(this);
             layout_search.setOnClickListener(this);
             layout_refresh.setOnClickListener(this);
             layout_upload.setOnClickListener(this);
+            layout_createfolder.setOnClickListener(this);
             lv_myfiles=(customviews.SwipeMenuListView)v.findViewById(R.id.lv_myfiles);
             lv_myfiles.setOnItemClickListener(this);
 
@@ -159,7 +166,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                 layout_search.setBackgroundColor(getResources().getColor(R.color.myfiles_selected));
                 layout_refresh.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
                 layout_upload.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
-                ShowSearchDialog();
+                ShowSearch_CreateFolderDialog("search");
                 break;
             case R.id.layout_refresh:
                 layout_myfiles.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
@@ -178,21 +185,30 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                 files.setArguments(b);
                 ((DashboardActivity)getActivity()).FragmentTransactions(R.id.fragment_container,files,"uploadfiles");
                 break;
+            case R.id.layout_createfolder:
+                ShowSearch_CreateFolderDialog("createfolder");
+                break;
             case R.id.tv_back:
                 try{
-                    position=2;
-                    if(stack.size()>2){
-                        Map<String,String> map=new HashMap<>();
-                        map.put("userId",getActivity().getSharedPreferences("Login",0).getString("UserID",""));
-                        int index=stack.indexOf(stack.lastElement());
-                        folderid=stack.get(index-1);
-                        System.out.println("folderid"+folderid);
-                        map.put("folderId",folderid+"");
-                        methodClass.MakeGetRequestWithParams(map, URLS.GET_ROOT_FOLDER_FILES);
+                    if(methodClass.checkInternetConnection()){
+                        position=2;
+                        if(stack.size()>2){
+                            Map<String,String> map=new HashMap<>();
+                            map.put("userId",getActivity().getSharedPreferences("Login",0).getString("UserID",""));
+                            int index=stack.indexOf(stack.lastElement());
+                            folderid=stack.get(index-1);
+                            System.out.println("folderid"+folderid);
+                            map.put("folderId",folderid+"");
+                            methodClass.MakeGetRequestWithParams(map, URLS.GET_ROOT_FOLDER_FILES);
+                        }
+                        else{
+                            methodClass.MakeGetRequest(URLS.GET_ROOT_FOLDER_FILES,getActivity().getSharedPreferences("Login",0).getString("UserID",""));
+                        }
                     }
                     else{
-                        methodClass.MakeGetRequest(URLS.GET_ROOT_FOLDER_FILES,getActivity().getSharedPreferences("Login",0).getString("UserID",""));
+                        UIutill.ShowSnackBar(getActivity(),getString(R.string.no_network));
                     }
+
 
                 }
                 catch (Exception e){
@@ -202,52 +218,6 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
         }
     }
 
-    public void ShowSearchDialog(){
-        if (dialog==null || !dialog.isShowing()){
-            LayoutInflater inflater = getActivity().getLayoutInflater();
-            final View dialoglayout = inflater.inflate(R.layout.search_dialog, null);
-            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            TextView tv_search_for_file=(TextView)dialoglayout.findViewById(R.id.tv_search_for_file);
-            final EditText et_search=(EditText)dialoglayout.findViewById(R.id.et_search);
-            Button btn_search=(Button)dialoglayout.findViewById(R.id.btn_search);
-            Button btn_cancel=(Button)dialoglayout.findViewById(R.id.btn_cancel);
-
-            tv_search_for_file.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
-            et_search.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
-            btn_search.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
-            btn_cancel.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
-            builder.setView(dialoglayout);
-            dialog=builder.create();
-            dialog.getWindow().getAttributes().windowAnimations=R.style.MyAnim_SearchWindow;
-            dialog.show();
-
-            btn_cancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialog.dismiss();
-                }
-            });
-
-            btn_search.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(et_search.getText().toString().length()==0){
-                        UIutill.ShowSnackBar(getActivity(),getString(R.string.empty_search));
-                    }
-                    else{
-                        dialog.dismiss();
-                        SearchResult result=new SearchResult();
-                        Bundle b=new Bundle();
-                        b.putString("searctext",et_search.getText().toString());
-                        result.setArguments(b);
-                        ((DashboardActivity)getActivity()).FragmentTransactions(R.id.fragment_container,result,"searchresult");
-                    }
-                }
-            });
-        }
-
-
-    }
 
     @Override
     public void onSuccess(T s) {
@@ -259,51 +229,60 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                 JsonObject jsonreturn= (JsonObject)jsonParser.parse(value);
                 boolean IsSucess=jsonreturn.get("IsSucess").getAsBoolean();
                 if(IsSucess){
-                    if(jsonreturn.get("ResponseData").isJsonArray() && jsonreturn.get("ResponseData").getAsJsonArray().size()>=0){
-                        JsonArray ResponseData=jsonreturn.get("ResponseData").getAsJsonArray();
-                        System.out.println("response"+ResponseData);
-                        myfileslist.clear();
-                        for(int i=0;i<ResponseData.size();i++){
-                           JsonObject object=ResponseData.get(i).getAsJsonObject();
-                            MyFilesDataModel model=new MyFilesDataModel();
-                            model.setFileid(object.get("FileID").getAsInt());
-                            if(object.get("Type")!=null){
-                                model.setFiletype(object.get("Type").getAsString());
-                            }
-                            else{
-                                model.setFiletype("Unknown");
-                            }
-
-                            model.setFilepath(object.get("Path").getAsString());
-                            model.setFilename(object.get("FileName").getAsString());
-                            myfileslist.add(model);
-                        }
-
-
-                        layout_foldernames.setVisibility(View.VISIBLE);
-
-                                if (position == 1) {
-                                    stack.push(folderid);
-                                    foldernames.push(foldername);
-                                } else if (position == 2) {
-                                    stack.pop();
-                                    foldernames.pop();
-                                }
-                                if (stack.size() > 1) {
-                                    tv_back.setText(getString(R.string.back));
-                                    tv_back.setVisibility(View.VISIBLE);
-                                } else {
-                                    tv_back.setVisibility(View.GONE);
-                                }
-                                tv_foldername.setText(foldernames.lastElement());
-
-                                adapter = new MyFilesAdapter(getActivity(), myfileslist);
-                                lv_myfiles.setAdapter(adapter);
-                        lv_myfiles.setMenuCreator(creator);
-
+                    if(position==3 || position==4){
+                        UIutill.ShowSnackBar(getActivity(),jsonreturn.get("ResponseData").getAsString().trim());
                     }
-                    else{
-                        UIutill.ShowDialog(getActivity(),getString(R.string.error),getString(R.string.no_file));
+                    else if(position==1 || position==2){
+                        String message=jsonreturn.get("Message").getAsString().trim();
+                        if(!message.equalsIgnoreCase("")){
+                            UIutill.ShowSnackBar(getActivity(),message);
+                        }
+                        if(jsonreturn.get("ResponseData").isJsonArray() && jsonreturn.get("ResponseData").getAsJsonArray().size()>=0){
+                            JsonArray ResponseData=jsonreturn.get("ResponseData").getAsJsonArray();
+                            System.out.println("response"+ResponseData);
+                            myfileslist.clear();
+                            for(int i=0;i<ResponseData.size();i++){
+                                JsonObject object=ResponseData.get(i).getAsJsonObject();
+                                MyFilesDataModel model=new MyFilesDataModel();
+                                model.setFileid(object.get("FileID").getAsInt());
+                                if(object.get("Type")!=null){
+                                    model.setFiletype(object.get("Type").getAsString().trim());
+                                }
+                                else{
+                                    model.setFiletype("Unknown");
+                                }
+
+                                model.setFilepath(object.get("Path").getAsString().trim());
+                                model.setFilename(object.get("FileName").getAsString().trim());
+                                myfileslist.add(model);
+                            }
+
+
+                            layout_foldernames.setVisibility(View.VISIBLE);
+
+                            if (position == 1) {
+                                stack.push(folderid);
+                                foldernames.push(foldername);
+                            } else if (position == 2) {
+                                stack.pop();
+                                foldernames.pop();
+                            }
+                            if (stack.size() > 1) {
+                                tv_back.setText(getString(R.string.back));
+                                tv_back.setVisibility(View.VISIBLE);
+                            } else {
+                                tv_back.setVisibility(View.GONE);
+                            }
+                            tv_foldername.setText(foldernames.lastElement());
+
+                            adapter = new MyFilesAdapter(getActivity(), myfileslist);
+                            lv_myfiles.setAdapter(adapter);
+                            lv_myfiles.setMenuCreator(creator);
+
+                        }
+                        else{
+                            UIutill.ShowDialog(getActivity(),getString(R.string.error),getString(R.string.no_file));
+                        }
                     }
 
                 }
@@ -333,25 +312,375 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
         }
         String filetype=((MyFilesDataModel)parent.getItemAtPosition(positionn)).getFiletype();
         if(filetype.equalsIgnoreCase("folder")){
-            position=1;
-            folderid=((MyFilesDataModel) parent.getItemAtPosition(positionn))
-                    .getFileid();
-            foldername=((MyFilesDataModel) parent.getItemAtPosition(positionn))
-                    .getFilename();
-            Map<String,String> map=new HashMap<>();
-            System.out.println("userid"+getActivity().getSharedPreferences("Login",0).getString("UserID","")+"\n"+folderid+"\n"+foldername);
-            map.put("userId", getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
-            map.put("folderId",folderid+"");
-            methodClass.MakeGetRequestWithParams(map,URLS.GET_ROOT_FOLDER_FILES);
-        }
-        else{
+            if(methodClass.checkInternetConnection()){
+                position=1;
+                folderid=((MyFilesDataModel) parent.getItemAtPosition(positionn))
+                        .getFileid();
+                foldername=((MyFilesDataModel) parent.getItemAtPosition(positionn))
+                        .getFilename();
+                Map<String,String> map=new HashMap<>();
+                System.out.println("userid"+getActivity().getSharedPreferences("Login",0).getString("UserID","")+"\n"+folderid+"\n"+foldername);
+                map.put("userId", getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
+                map.put("folderId",folderid+"");
+                methodClass.MakeGetRequestWithParams(map,URLS.GET_ROOT_FOLDER_FILES);
+            }
+            else{
+                UIutill.ShowSnackBar(getActivity(),getString(R.string.no_network));
+            }
 
         }
     }
 
     @Override
     public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
-        System.out.println("position"+index);
+        System.out.println("listview position"+position);
+        String type=null;
+        String filetype=myfileslist.get(position).getFiletype();
+        if(filetype.equalsIgnoreCase("folder")){
+            type="0";
+        }
+        else{
+            type="1";
+        }
+        String fileid=myfileslist.get(position).getFileid()+"";
+        switch (index){
+            case 0:
+                ShowConfirmDialog(fileid,type);
+                break;
+            case 2:
+                String filenamee=myfileslist.get(position).getFilename();
+                ShareDialogView(filenamee,fileid,type);
+                break;
+            case 3:
+                String filename=myfileslist.get(position).getFilename();
+                RequestFolderView(fileid,filename);
+                break;
+            default:
+                break;
+        }
         return false;
     }
+
+
+
+    public void ShowSearch_CreateFolderDialog(final String show){
+        if (dialog==null || !dialog.isShowing()){
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            final View dialoglayout = inflater.inflate(R.layout.search_dialog, null);
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            TextView tv_search_for_file=(TextView)dialoglayout.findViewById(R.id.tv_search_for_file);
+            final EditText et_search=(EditText)dialoglayout.findViewById(R.id.et_search);
+            Button btn_search=(Button)dialoglayout.findViewById(R.id.btn_search);
+            Button btn_cancel=(Button)dialoglayout.findViewById(R.id.btn_cancel);
+            if(show.equalsIgnoreCase("createfolder")){
+                tv_search_for_file.setText(getString(R.string.createfolder));
+                et_search.setHint(getString(R.string.enter_folder_name));
+                btn_search.setText(getString(R.string.create));
+            }
+            tv_search_for_file.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+            et_search.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+            btn_search.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+            btn_cancel.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+            builder.setView(dialoglayout);
+            dialog=builder.create();
+            dialog.getWindow().getAttributes().windowAnimations=R.style.MyAnim_SearchWindow;
+            dialog.show();
+
+            btn_cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+
+            btn_search.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(show.equalsIgnoreCase("search")){
+                        if(et_search.getText().toString().trim().length()==0){
+                            UIutill.ShowSnackBar(getActivity(),getString(R.string.empty_search));
+                        }
+                        else{
+                            dialog.dismiss();
+                            SearchResult result=new SearchResult();
+                            Bundle b=new Bundle();
+                            b.putString("searctext",et_search.getText().toString());
+                            result.setArguments(b);
+                            ((DashboardActivity)getActivity()).FragmentTransactions(R.id.fragment_container,result,"searchresult");
+                        }
+                    }
+                    else if(show.equalsIgnoreCase("createfolder")){
+                        if(et_search.getText().toString().trim().length()==0){
+                            UIutill.ShowSnackBar(getActivity(),getString(R.string.empty_foldername));
+                        }
+                        else{
+                            dialog.dismiss();
+                            if(methodClass.checkInternetConnection()){
+                                Map<String,String> map=new HashMap<String, String>();
+                                map.put("userid",getActivity().getSharedPreferences("Login",0).getString("UserID",""));
+                                map.put("currentFolderId",stack.lastElement()+"");
+                                map.put("folderName",et_search.getText().toString().trim());
+                                methodClass.MakeGetRequestWithParams(map,URLS.CREATE_FOLDER);
+                            }
+                            else{
+                                UIutill.ShowSnackBar(getActivity(),getString(R.string.no_network));
+                            }
+
+                        }
+                    }
+
+                }
+            });
+        }
+
+
+    }
+    public void ShowConfirmDialog(final String fileid,final String type){
+        if(confirmdialog==null || !confirmdialog.isShowing()){
+            LayoutInflater inflater =LayoutInflater.from(getActivity());
+            final View dialoglayout = inflater.inflate(R.layout.confirmation_dialogview, null);
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            TextView tv_title=(TextView)dialoglayout.findViewById(R.id.tv_title);
+            tv_title.setText(getString(R.string.confirmation));
+            TextView tv_message=(TextView)dialoglayout.findViewById(R.id.tv_message);
+            if(type.equalsIgnoreCase("0")){
+                tv_message.setText(getString(R.string.delete_folder_message));
+            }
+            else if(type.equalsIgnoreCase("1")){
+                tv_message.setText(getString(R.string.delete_file_message));
+            }
+            Button btn_yes=(Button)dialoglayout.findViewById(R.id.btn_yes);
+            Button btn_no=(Button)dialoglayout.findViewById(R.id.btn_no);
+
+            tv_title.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+            tv_message.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+            btn_no.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+            btn_yes.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+
+            builder.setView(dialoglayout);
+            confirmdialog=builder.create();
+            confirmdialog.getWindow().getAttributes().windowAnimations=R.style.Animations_SmileWindow;
+            confirmdialog.show();
+
+            btn_no.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    confirmdialog.dismiss();
+                }
+            });
+            btn_yes.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    confirmdialog.dismiss();
+                    if(methodClass.checkInternetConnection()){
+                        position=0;
+                        Map<String,String> map=new HashMap<>();
+                        map.put("userId",getActivity().getSharedPreferences("Login",0).getString("UserID",""));
+                        map.put("folderIdFileId",fileid);
+                        map.put("type",type);
+                        map.put("currentFolderId",stack.lastElement()+"");
+                        methodClass.MakeGetRequestWithParams(map,URLS.PERMANENT_DELETE_FILE_FOLDER);
+                    }
+                    else{
+                        UIutill.ShowSnackBar(getActivity(),getString(R.string.no_network));
+                    }
+                }
+            });
+        }
+    }
+
+    public void RequestFolderView(final String folderid,final String foldername){
+        if(requestfolder==null || !requestfolder.isShowing()){
+            LayoutInflater inflater =LayoutInflater.from(getActivity());
+            final View dialoglayout = inflater.inflate(R.layout.requestfile_dialogview, null);
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            Button btn_cancel=(Button)dialoglayout.findViewById(R.id.btn_cancel);
+            btn_cancel.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+            Button btn_request=(Button)dialoglayout.findViewById(R.id.btn_request);
+            btn_request.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+            TextView tv_requestfolder=(TextView)dialoglayout.findViewById(R.id.tv_requestfolder);
+            tv_requestfolder.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+
+            TextView tv_email=(TextView)dialoglayout.findViewById(R.id.tv_email);
+            tv_email.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+
+            final  EditText et_email=(EditText)dialoglayout.findViewById(R.id.et_email);
+            et_email.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+
+            TextView tv_message=(TextView)dialoglayout.findViewById(R.id.tv_message);
+            tv_message.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+
+            TextView tv_expiry=(TextView)dialoglayout.findViewById(R.id.tv_expiry);
+            tv_expiry.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+
+            final EditText et_message=(EditText)dialoglayout.findViewById(R.id.et_message);
+            et_message.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+
+            final Spinner sp_select_expiry=(Spinner)dialoglayout.findViewById(R.id.sp_select_expiry);
+            ArrayAdapter<String> adapter=new ArrayAdapter<String>(getActivity(),android.R.layout.simple_dropdown_item_1line,getResources().getStringArray(R.array.expiry_value_array)){
+                public View getView(int position, View convertView, android.view.ViewGroup parent) {
+                    TextView v = (TextView) super.getView(position, convertView, parent);
+                    v.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+                    v.setTextSize(TypedValue.COMPLEX_UNIT_SP,16);
+                    v.setTextColor(getResources().getColor(R.color.search_box_txtclr));
+                    return v;
+                }
+
+                public View getDropDownView(int position, View convertView, android.view.ViewGroup parent) {
+                    TextView v = (TextView) super.getView(position, convertView, parent);
+                    v.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+                    v.setTextSize(TypedValue.COMPLEX_UNIT_SP,16);
+                    v.setTextColor(getResources().getColor(R.color.search_box_txtclr));
+                    return v;
+                }
+            };
+            sp_select_expiry.setAdapter(adapter);
+            builder.setView(dialoglayout);
+            requestfolder=builder.create();
+            requestfolder.getWindow().getAttributes().windowAnimations=R.style.MyAnim_SearchWindow;
+            requestfolder.show();
+            btn_cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    requestfolder.dismiss();
+                }
+            });
+            btn_request.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(et_email.getText().toString().trim().length()==0){
+                        UIutill.ShowSnackBar(getActivity(),getString(R.string.email_empty));
+                    }
+                    else if(!et_email.getText().toString()
+                            .matches(Patterns.EMAIL_ADDRESS.pattern())){
+                        UIutill.ShowSnackBar(getActivity(),getString(R.string.valied_Email));
+                    }
+                    else{
+                        if(methodClass.checkInternetConnection()){
+                            requestfolder.dismiss();
+                            position=3;
+                            Map<String,String> map=new HashMap<String, String>();
+                            map.put("userId",getActivity().getSharedPreferences("Login",0).getString("UserID",""));
+                            map.put("requestedFolderId",folderid);
+                            map.put("requestedFolderName",foldername);
+                            switch (sp_select_expiry.getSelectedItemPosition()){
+                                case 0:
+                                    map.put("expiryInDays","0");
+                                    break;
+                                case 1:
+                                    map.put("expiryInDays","1");
+                                    break;
+                                case 2:
+                                    map.put("expiryInDays","7");
+                                    break;
+                                default:
+                                    break;
+                            }
+                            map.put("emailId",et_email.getText().toString().trim());
+                            map.put("Message",et_message.getText().toString().trim());
+                            methodClass.MakeGetRequestWithParams(map,URLS.REQUEST_FILE);
+                        }
+                        else{
+                            UIutill.ShowSnackBar(getActivity(),getString(R.string.no_network));
+                        }
+
+                    }
+                }
+            });
+        }
+    }
+
+   public void ShareDialogView(final String filename,final String fileid,final String type){
+       if(sharedialog==null || !sharedialog.isShowing()){
+           LayoutInflater inflater =LayoutInflater.from(getActivity());
+           final View dialoglayout = inflater.inflate(R.layout.sharefolder_dialogview, null);
+           final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+           TextView tv_share_file_folder=(TextView)dialoglayout.findViewById(R.id.tv_share_file_folder);
+           tv_share_file_folder.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+
+           TextView tv_email=(TextView)dialoglayout.findViewById(R.id.tv_email);
+           tv_email.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+
+           final TextView et_email=(TextView)dialoglayout.findViewById(R.id.et_email);
+           et_email.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+
+           TextView tv_message=(TextView)dialoglayout.findViewById(R.id.tv_message);
+           tv_message.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+
+           final EditText et_message=(EditText)dialoglayout.findViewById(R.id.et_message);
+           et_message.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+
+           Button btn_share=(Button)dialoglayout.findViewById(R.id.btn_share);
+           btn_share.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+
+           Button btn_cancel=(Button)dialoglayout.findViewById(R.id.btn_cancel);
+           btn_cancel.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+
+
+           builder.setView(dialoglayout);
+           sharedialog=builder.create();
+           sharedialog.getWindow().getAttributes().windowAnimations=R.style.MyAnim_SearchWindow;
+           sharedialog.show();
+
+
+           btn_cancel.setOnClickListener(new View.OnClickListener() {
+               @Override
+               public void onClick(View v) {
+                   sharedialog.dismiss();
+               }
+           });
+
+           btn_share.setOnClickListener(new View.OnClickListener() {
+               @Override
+               public void onClick(View v) {
+                   if(et_email.getText().toString().trim().length()==0){
+                     UIutill.ShowSnackBar(getActivity(),getString(R.string.email_empty));
+                   }
+                   else{
+                       String emails[] = et_email.getText().toString().trim()
+                               .split(",");
+                       StringBuilder builder = new StringBuilder();
+                       for (int i = 0; i < emails.length; i++) {
+                           if (!emails[i].trim().matches(
+                                   Patterns.EMAIL_ADDRESS.pattern())
+                                   ) {
+                               UIutill.ShowSnackBar(getActivity(),getString(R.string.valied_Email));
+                               return;
+                           } else {
+                               builder.append(emails[i].trim());
+                               if (i != emails.length - 1) {
+                                   builder.append(",");
+                               }
+                           }
+                           if(methodClass.checkInternetConnection()){
+                               try{
+                                   sharedialog.dismiss();
+                                   position=4;
+                                   Map<String,String> map=new HashMap<String, String>();
+                                   map.put("emailIds",builder.toString());
+                                   map.put("userId",getActivity().getSharedPreferences("Login",0).getString("UserID",""));
+                                   map.put("message",et_message.getText().toString().trim());
+                                   map.put("type",type);
+                                   map.put("fileName",filename);
+                                   map.put("fileid",fileid);
+                                   methodClass.MakeGetRequestWithParams(map,URLS.SHARE_FILE);
+                               }
+                               catch (Exception e){
+                                   e.printStackTrace();
+                               }
+
+                           }
+                           else{
+                               UIutill.ShowSnackBar(getActivity(),getString(R.string.no_network));
+                           }
+
+                       }
+                   }
+
+               }
+           });
+       }
+   }
+
+
 }
