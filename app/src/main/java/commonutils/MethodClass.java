@@ -116,7 +116,7 @@ public class MethodClass<T> {
                 myretro.requestfile(map,new CallbackClass<T>(inter,cnt));
                 break;
             case URLS.SHARE_FILE:
-                myretro.sharefile(map, new CallbackClass<T>(inter, cnt));
+                myretro.sharefile(map,new CallbackClass<T>(inter,cnt));
                 break;
             default:
                 break;

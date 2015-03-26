@@ -131,7 +131,6 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                     }
                 }
             };
-
             if(methodClass.checkInternetConnection()){
                 position=1;
               methodClass.MakeGetRequest(URLS.GET_ROOT_FOLDER_FILES,getActivity().getSharedPreferences("Login",0).getString("UserID",""));
@@ -336,6 +335,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
         System.out.println("listview position"+position);
         String type=null;
         String filetype=myfileslist.get(position).getFiletype();
+        System.out.println("filetype"+filetype);
         if(filetype.equalsIgnoreCase("folder")){
             type="0";
         }
@@ -349,7 +349,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                 break;
             case 2:
                 String filenamee=myfileslist.get(position).getFilename();
-                ShareDialogView(filenamee,fileid,type);
+                ShareDialogView(filenamee,fileid,filetype);
                 break;
             case 3:
                 String filename=myfileslist.get(position).getFilename();
@@ -619,6 +619,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
 
            builder.setView(dialoglayout);
            sharedialog=builder.create();
+
            sharedialog.getWindow().getAttributes().windowAnimations=R.style.MyAnim_SearchWindow;
            sharedialog.show();
 
@@ -652,28 +653,28 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                                    builder.append(",");
                                }
                            }
-                           if(methodClass.checkInternetConnection()){
-                               try{
-                                   sharedialog.dismiss();
-                                   position=4;
-                                   Map<String,String> map=new HashMap<String, String>();
-                                   map.put("emailIds",builder.toString());
-                                   map.put("userId",getActivity().getSharedPreferences("Login",0).getString("UserID",""));
-                                   map.put("message",et_message.getText().toString().trim());
-                                   map.put("type",type);
-                                   map.put("fileName",filename);
-                                   map.put("fileid",fileid);
-                                   methodClass.MakeGetRequestWithParams(map,URLS.SHARE_FILE);
-                               }
-                               catch (Exception e){
-                                   e.printStackTrace();
-                               }
-
+                       }
+                       if(methodClass.checkInternetConnection()){
+                           try{
+                               sharedialog.dismiss();
+                               position=4;
+                               System.out.println("emailids"+builder.toString());
+                               Map<String,String> map=new HashMap<String, String>();
+                               map.put("emailIds",builder.toString());
+                               map.put("userId",getActivity().getSharedPreferences("Login",0).getString("UserID",""));
+                               map.put("message",et_message.getText().toString().trim());
+                               map.put("type",type);
+                               map.put("fileName",filename);
+                               map.put("fileId",fileid);
+                               methodClass.MakeGetRequestWithParams(map,URLS.SHARE_FILE);
                            }
-                           else{
-                               UIutill.ShowSnackBar(getActivity(),getString(R.string.no_network));
+                           catch (Exception e){
+                               e.printStackTrace();
                            }
 
+                       }
+                       else{
+                           UIutill.ShowSnackBar(getActivity(),getString(R.string.no_network));
                        }
                    }
 
