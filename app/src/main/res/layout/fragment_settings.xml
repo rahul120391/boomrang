@@ -1,6 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp"
+    >
+    <TextView
+        android:id="@+id/tv_settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/settings"
+        android:textColor="@color/search_for_file"
+        android:textSize="22sp"
+        />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
+        <TextView
+            android:id="@+id/tv_autosync"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:text="@string/auto_sync"
+            android:textColor="@color/search_for_file"
+            android:textSize="18sp"
+            />
+        <CheckBox
+            android:id="@+id/ch_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/toggle_selector"
+            android:button="@null"
+            />
+        </RelativeLayout>
 
+    <TextView
+        android:id="@+id/tv_interval"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/time_interval"
+        android:textColor="@color/search_for_file"
+        android:textSize="18sp"
+        />
+    <RelativeLayout
+        android:id="@+id/layout_Spinner"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/search_edittext_bg"  >
+        <Spinner
+            android:id="@+id/sp_timeinterval"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:minHeight="0dp"
+            android:paddingLeft="3dp"
+            android:spinnerMode="dropdown"
+            android:textSize="16sp" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="5dp"
+            android:padding="7dp"
+            android:src="@drawable/spinner_arrow" />
+    </RelativeLayout>
+    <Button
+        android:id="@+id/btn_save"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/button_bg"
+        android:gravity="center"
+        android:text="@string/save"
+        android:textColor="@color/all_indi_color"
+        android:visibility="visible"
+        />
 </LinearLayout>

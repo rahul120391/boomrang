@@ -3,6 +3,7 @@ package fragments;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -46,6 +47,8 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
     LinearLayout login_layout;
     SharedPreferences sharedprefs,checkremstate;
     CheckBox  ch_rememb;
+    String deviceId;
+    String s=null;
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         try{
@@ -53,6 +56,8 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
             checkremstate=getActivity().getSharedPreferences("RemState",0);
             methodClass=new MethodClass<T>(getActivity(),this);
             v=inflater.inflate(R.layout.fragment_login,null);
+            deviceId = Settings.Secure.getString(getActivity().getContentResolver(),
+                    Settings.Secure.ANDROID_ID);
             ch_rememb=(CheckBox)v.findViewById(R.id.ch_rememb);
             et_email=(EditText)v.findViewById(R.id.et_email);
             et_password=(EditText)v.findViewById(R.id.et_password);
@@ -120,6 +125,7 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
                              Map<String,String> values=new HashMap<String,String>();
                              values.put("EmailID",et_email.getText().toString().trim());
                              values.put("Password",et_password.getText().toString().trim());
+                             values.put("deviceId",deviceId);
                              System.out.println("urls"+ URLS.LOGIN);
                              System.out.println("values"+values);
                              methodClass.MakePostRequest(values, URLS.LOGIN);
@@ -142,6 +148,7 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
             String value=new Gson().toJson(s);
             JsonParser jsonParser = new JsonParser();
             JsonObject jsonreturn= (JsonObject)jsonParser.parse(value);
+            System.out.println("json return"+jsonreturn);
             boolean IsSucess=jsonreturn.get("IsSucess").getAsBoolean();
             if(IsSucess){
                 if(jsonreturn.get("ResponseData").isJsonArray()){
@@ -155,6 +162,8 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
                     e.putString("RegistrationDate",mainobject.get("RegistrationDate").getAsString().trim());
                     e.putString("emailID",mainobject.get("emailID").getAsString().trim());
                     e.putInt("DirectoryId",mainobject.get("DirectoryId").getAsInt());
+                    e.putBoolean("IsAutoSync",mainobject.get("IsAutoSync").getAsBoolean());
+                    e.putInt("SyncInterval",mainobject.get("SyncInterval").getAsInt());
                     if(mainobject.get("Company")!=null){
                         e.putString("Company",mainobject.get("Company").getAsString().trim());
                     }
@@ -202,7 +211,6 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
     @Override
     public void onFailure(RetrofitError error) {
         if(error!=null){
-
             UIutill.ShowDialog(getActivity(), getString(R.string.error), CustomErrorHandling.ShowError(error, getActivity()));
         }
     }

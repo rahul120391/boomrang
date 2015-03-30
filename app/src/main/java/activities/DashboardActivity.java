@@ -18,6 +18,7 @@ import Boomerang.R;
 import adapters.SideBarAdapter;
 import fragments.MyDashBoard;
 import fragments.MyFiles;
+import fragments.Settings;
 import fragments.UserProfile;
 
 
@@ -108,6 +109,14 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
                    case 3:
                        try{
                            FragmentTransactions(R.id.fragment_container,new MyDashBoard(),"dashboard");
+                       }
+                       catch (Exception e){
+                           e.printStackTrace();
+                       }
+                       break;
+                   case 5:
+                       try{
+                           FragmentTransactions(R.id.fragment_container,new Settings(),"settings");
                        }
                        catch (Exception e){
                            e.printStackTrace();

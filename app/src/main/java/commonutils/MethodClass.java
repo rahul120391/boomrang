@@ -9,12 +9,20 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.internal.bind.DateTypeAdapter;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
+import Boomerang.R;
+import retrofit.Callback;
 import retrofit.RestAdapter;
+import retrofit.RetrofitError;
 import retrofit.android.MainThreadExecutor;
+import retrofit.client.Response;
 import retrofit.converter.GsonConverter;
 import retrofit.mime.TypedFile;
 
@@ -52,6 +60,68 @@ public class MethodClass<T> {
     }
 /****************************************************************************************************************************/
 
+    public MethodClass(final Map<String,String> mapvalues,final String path,final Context cnt){
+        ProgressDialogClass.getDialog(cnt);
+        RestAdapter fileadapter=new RestAdapter.Builder().
+                setEndpoint(URLS.COMMON_URL).
+                setClient(new RetrofitHttpClient())
+               .build();
+        MyRetrofitInterface myretorfit=fileadapter.create(MyRetrofitInterface.class);
+        myretorfit.getFile(mapvalues,new Callback<Response>() {
+            @Override
+            public void success(Response response, Response response2) {
+                try {
+                    byte[] bytes = getBytesFromStream(response.getBody().in());
+                    saveBytesToFile(bytes,path);
+                    ProgressDialogClass.logout();
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void failure(RetrofitError retrofitError) {
+                if(retrofitError!=null){
+                    UIutill.ShowDialog(cnt,cnt.getString(R.string.error), CustomErrorHandling.ShowError(retrofitError,cnt));
+                }
+                ProgressDialogClass.logout();
+            }
+        });
+    }
+
+/********************************************************************************************************************************/
+
+    /*******************************************************************************************************/
+    public static byte[] getBytesFromStream(InputStream is) throws IOException {
+        int len;
+        int size = 1024;
+        byte[] buf;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        buf = new byte[size];
+        while((len = is.read(buf, 0, size)) != -1) {
+            bos.write(buf, 0, len);
+        }
+        buf = bos.toByteArray();
+        return buf;
+    }
+
+ /*******************************************************************************************************************************/
+
+    /******************************************************************************************************/
+    public static void saveBytesToFile(byte[] bytes, String path) {
+        FileOutputStream fileOuputStream=null;
+        try {
+            fileOuputStream = new FileOutputStream(path);
+            fileOuputStream.write(bytes);
+            fileOuputStream.close();
+
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    /*************************************************************************************************************************/
+
     /**
      * method to make retrofit get request without parameters
      *
@@ -68,7 +138,7 @@ public class MethodClass<T> {
         }
 
     }
-/********************************************************************************************************************************/
+
     /**
      * method to make post request
      *
@@ -90,7 +160,6 @@ public class MethodClass<T> {
         }
 
     }
-    /*************************************************************************************************************************/
 
     /**
      * method to make getrequest with params
@@ -118,13 +187,14 @@ public class MethodClass<T> {
             case URLS.SHARE_FILE:
                 myretro.sharefile(map,new CallbackClass<T>(inter,cnt));
                 break;
+            case URLS.SETTINGS:
+                myretro.savesettings(map,new CallbackClass<T>(inter,cnt));
+                break;
             default:
                 break;
         }
 
     }
-
-
 
     /***
      *

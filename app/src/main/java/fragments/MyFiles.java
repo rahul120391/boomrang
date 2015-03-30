@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.Fragment;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.util.Patterns;
 import android.util.TypedValue;
@@ -24,6 +25,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -108,13 +110,16 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                     item1.setWidth(dp2px(60));
                     item1.setIcon(R.drawable.iv_delete);
                     menu.addMenuItem(item1);
-                    SwipeMenuItem item2 = new SwipeMenuItem(
-                            getActivity());
 
-                    item2.setBackground(new ColorDrawable(getResources().getColor(R.color.login_box_bg)));
-                    item2.setWidth(dp2px(60));
-                    item2.setIcon(R.drawable.iv_download);
-                    menu.addMenuItem(item2);
+
+                    if (!myfileslist.get(viewtype).getFiletype().equalsIgnoreCase("folder")) {
+                        SwipeMenuItem item2 = new SwipeMenuItem(
+                                getActivity());
+                        item2.setBackground(new ColorDrawable(getResources().getColor(R.color.login_box_bg)));
+                        item2.setWidth(dp2px(60));
+                        item2.setIcon(R.drawable.iv_download);
+                        menu.addMenuItem(item2);
+                    }
                     SwipeMenuItem item3 = new SwipeMenuItem(
                             getActivity());
                     item3.setBackground(new ColorDrawable(getResources().getColor(R.color.login_box_bg)));
@@ -222,6 +227,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
     public void onSuccess(T s) {
             try{
                 System.out.println("inside on success");
+
                 String value=new Gson().toJson(s);
                 System.out.println("value"+value);
                 JsonParser jsonParser = new JsonParser();
@@ -333,6 +339,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
     @Override
     public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
         System.out.println("listview position"+position);
+        System.out.println("indexx"+index);
         String type=null;
         String filetype=myfileslist.get(position).getFiletype();
         System.out.println("filetype"+filetype);
@@ -347,13 +354,47 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
             case 0:
                 ShowConfirmDialog(fileid,type);
                 break;
-            case 2:
-                String filenamee=myfileslist.get(position).getFilename();
-                ShareDialogView(filenamee,fileid,filetype);
+            case 1:
+                if(type.equalsIgnoreCase("0")){
+                    String filenamee=myfileslist.get(position).getFilename();
+                    ShareDialogView(filenamee,fileid,filetype);
+                }
+                else {
+                    if (type.equalsIgnoreCase("1")) {
+                        Map<String, String> map = new HashMap<>();
+                        map.put("userId", getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
+                        map.put("folderFileId", fileid);
+                        map.put("type", "1");
+                        String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+                        String filename = myfileslist.get(position).getFilename();
+                        File directory=new File(path+"/"+"MyData");
+                        if(!directory.exists()){
+                            directory.mkdir();
+                        }
+                        String mypath = path+"/"+"MyData"+"/"+filename;
+                        System.out.println("path"+mypath);
+                        File file = new File(mypath);
+                        try{
+                            if(!file.exists()){
+                                file.createNewFile();
+                            }
+                         new MethodClass(map,mypath,getActivity());
+                        }
+                        catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                }
                 break;
-            case 3:
-                String filename=myfileslist.get(position).getFilename();
-                RequestFolderView(fileid,filename);
+            case 2:
+               if(type.equalsIgnoreCase("0")){
+                   String filename=myfileslist.get(position).getFilename();
+                   RequestFolderView(fileid,filename);
+               }
+                else{
+                   String filenamee=myfileslist.get(position).getFilename();
+                   ShareDialogView(filenamee,fileid,filetype);
+               }
                 break;
             default:
                 break;
