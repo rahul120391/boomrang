@@ -120,7 +120,7 @@
 
     <!--SearchResult Screen Strings-->
     <string name="no_result">No files found</string>
-
+    <string name="search_result">Search Result</string>
     <!--ConfirmDialog Strings-->
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -149,4 +149,11 @@
         <item>@string/fifty_minute</item>
         <item>@string/onehour</item>
     </string-array>
+
+
+    <string name="download_cmp">Download completed successfully</string>
+    <string name="downloading">Downloading\u002e\u002e\u002e</string>
+    <string name="download_start">Downloading started</string>
+    <string name="download_failed">Download failed</string>
+    <string name="sync_start">Sync started</string>
 </resources>

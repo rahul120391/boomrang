@@ -7,6 +7,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
@@ -43,20 +44,15 @@ public class UIutill {
     /**
      * this method is used to hidekeyboard
      *
-     * @param context -pass activity context as argument to hide keyboard on that activity
+     * @param activity -pass activity context as argument to hide keyboard on that activity
      */
-    public static  void HideKeyboard(Context context) {
+    public static  void HideKeyboard(Activity activity) {
         @SuppressWarnings("static-access")
-        InputMethodManager inputMethodManager = (InputMethodManager) context
-                .getSystemService(
-                        context.INPUT_METHOD_SERVICE);
-        if (inputMethodManager != null) {
-            if (((Activity) context).getCurrentFocus() != null) {
-                inputMethodManager.hideSoftInputFromWindow(((Activity) context)
-                        .getCurrentFocus().getWindowToken(), 0);
-            }
-
-        }
+        InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (inputManager != null)
+            System.out.println("inside input manager");
+            inputManager.hideSoftInputFromWindow(activity.getWindow().getDecorView().getApplicationWindowToken(), 0);
+        activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
     /***********************************************************************************************************************/
 

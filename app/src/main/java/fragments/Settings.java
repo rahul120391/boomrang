@@ -13,9 +13,9 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.appyvet.rangebar.RangeBar;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -27,6 +27,7 @@ import Boomerang.R;
 import commonutils.CustomErrorHandling;
 import commonutils.DataTransferInterface;
 import commonutils.MethodClass;
+import commonutils.SyncAlarmClass;
 import commonutils.UIutill;
 import commonutils.URLS;
 import retrofit.RetrofitError;
@@ -39,10 +40,11 @@ public class Settings<T>  extends Fragment implements View.OnClickListener, Data
 
     View v=null;
     CheckBox ch_state;
-    Spinner sp_timeinterval;
     Button btn_save;
+    RangeBar rangebar;
+    TextView tv_value;
     TextView tv_interval,tv_settings,tv_autosync;
-    RelativeLayout layout_Spinner;
+    RelativeLayout layout_rangebaar;
     MethodClass<T> methodClass;
     String deviceId;
     String timeinterval;
@@ -52,10 +54,14 @@ public class Settings<T>  extends Fragment implements View.OnClickListener, Data
         try{
             methodClass=new MethodClass<>(getActivity(),this);
             v=inflater.inflate(R.layout.fragment_settings,null);
+            layout_rangebaar=(RelativeLayout)v.findViewById(R.id.layout_rangebaar);
+            rangebar=(RangeBar)v.findViewById(R.id.rangebar);
+            tv_value=(TextView)v.findViewById(R.id.tv_value);
+            tv_value.setText(tv_value.getText().toString()+" "+"Min");
+            tv_value.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
             tv_interval=(TextView)v.findViewById(R.id.tv_interval);
             tv_settings=(TextView)v.findViewById(R.id.tv_settings);
             tv_autosync=(TextView)v.findViewById(R.id.tv_autosync);
-            layout_Spinner=(RelativeLayout)v.findViewById(R.id.layout_Spinner);
             deviceId = android.provider.Settings.Secure.getString(getActivity().getContentResolver(),
                     android.provider.Settings.Secure.ANDROID_ID);
             tv_interval.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
@@ -66,17 +72,22 @@ public class Settings<T>  extends Fragment implements View.OnClickListener, Data
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if(isChecked){
-                        layout_Spinner.setVisibility(View.VISIBLE);
+                        layout_rangebaar.setVisibility(View.VISIBLE);
                         tv_interval.setVisibility(View.VISIBLE);
                     }
                     else{
-                        layout_Spinner.setVisibility(View.GONE);
+                        layout_rangebaar.setVisibility(View.GONE);
                         tv_interval.setVisibility(View.GONE);
                     }
                 }
             });
+            rangebar.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
+                @Override
+                public void onRangeChangeListener(RangeBar rangeBar, int i, int i2, String s, String s2) {
+                    tv_value.setText(s2+" "+"Min");
+                }
+            });
             ch_state.setChecked(getActivity().getSharedPreferences("Login",0).getBoolean("IsAutoSync",false));
-            sp_timeinterval=(Spinner)v.findViewById(R.id.sp_timeinterval);
             ArrayAdapter<String> adapter=new ArrayAdapter<String>(getActivity(),android.R.layout.simple_dropdown_item_1line,getResources().getStringArray(R.array.time_interval)){
                 public View getView(int position, View convertView, android.view.ViewGroup parent) {
                     TextView v = (TextView) super.getView(position, convertView, parent);
@@ -94,10 +105,9 @@ public class Settings<T>  extends Fragment implements View.OnClickListener, Data
                     return v;
                 }
             };
-            sp_timeinterval.setAdapter(adapter);
             if(ch_state.isChecked()){
                 int selectpos=0;
-                layout_Spinner.setVisibility(View.VISIBLE);
+                layout_rangebaar.setVisibility(View.VISIBLE);
                 tv_interval.setVisibility(View.VISIBLE);
                 int synctime=getActivity().getSharedPreferences("Login",0).getInt("SyncInterval",0);
                 String timeintervals[]=getResources().getStringArray(R.array.time_interval);
@@ -108,11 +118,10 @@ public class Settings<T>  extends Fragment implements View.OnClickListener, Data
                        selectpos=i;
                    }
                 }
-                sp_timeinterval.setSelection(selectpos);
             }
             else{
                 tv_interval.setVisibility(View.GONE);
-                layout_Spinner.setVisibility(View.GONE);
+                layout_rangebaar.setVisibility(View.GONE);
             }
             btn_save=(Button)v.findViewById(R.id.btn_save);
             btn_save.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
@@ -135,9 +144,7 @@ public class Settings<T>  extends Fragment implements View.OnClickListener, Data
                           values.put("IsMobile","1");
                           if(ch_state.isChecked()){
                               values.put("IsAutoSync","1");
-                              String value= (String) sp_timeinterval.getSelectedItem();
-                              timeinterval=value.substring(0,2);
-                              System.out.println("timeinterval"+timeinterval);
+                              timeinterval=tv_value.getText().toString().substring(0,2);
                               values.put("SyncInterval",timeinterval);
                           }
                           else{
@@ -176,6 +183,11 @@ public class Settings<T>  extends Fragment implements View.OnClickListener, Data
                     edit.putInt("SyncInterval",Integer.parseInt("0"));
                  }
                 edit.commit();
+                if(getActivity().getSharedPreferences("Login",0).getBoolean("IsAutoSync",false)){
+                    int time=getActivity().getSharedPreferences("Login",0).getInt("SyncInterval",0);
+                    SyncAlarmClass.StopAlarm();
+                    SyncAlarmClass.FireAlarm(getActivity(),time);
+                }
             }
             else{
                 UIutill.ShowDialog(getActivity(), getString(R.string.error), jsonreturn.get("Message").getAsString());

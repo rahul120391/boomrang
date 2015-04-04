@@ -16,5 +16,5 @@ public class URLS {
     public static final String REQUEST_FILE="/RequestFile";
     public static final String SHARE_FILE="/ShareAFile";
     public static final String SETTINGS="/SaveSettings";
-    public static final String DOWNLOAD="/DownloadTest";
+    public static final String DOWNLOAD="/Download";
 }

@@ -16,6 +16,15 @@ public class GalleryDataModel implements Serializable {
     private String filepath;
     private Bitmap bitmap;
     private boolean status;
+    private String from;
+
+    public String getFrom() {
+        return from;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
+    }
 
     public boolean isStatus() {
         return status;

@@ -1,4 +1,4 @@
-package activities;
+package adapters;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -13,6 +13,7 @@ import java.util.List;
 
 import Boomerang.R;
 import commonutils.UIutill;
+import modelclasses.Item;
 
 
 public class FileArrayAdapter extends ArrayAdapter<Item>{

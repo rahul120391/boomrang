@@ -110,6 +110,7 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
         switch (v.getId()){
             case R.id.btn_login:
               try{
+                  UIutill.HideKeyboard(getActivity());
                      if(et_email.getText().toString().trim().length()==0){
                          UIutill.ShowSnackBar(getActivity(),getString(R.string.empty_email));
                      }

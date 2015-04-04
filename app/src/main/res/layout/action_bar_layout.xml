@@ -12,10 +12,10 @@
   <ImageView
       android:id="@+id/iv_toggle"
       android:layout_width="wrap_content"
-      android:layout_height="32dp"
+      android:layout_height="wrap_content"
       android:layout_alignParentLeft="true"
       android:background="@drawable/circular_shape"
-      android:padding="10dp"
+      android:padding="8dp"
       android:src="@drawable/ic_toggle"
       />
     <LinearLayout
@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:background="@drawable/circular_shape"
-            android:padding="10dp"
+            android:padding="8dp"
             android:src="@drawable/ic_logout"
             />
 

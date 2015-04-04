@@ -37,4 +37,6 @@ dependencies {
     compile 'com.balysv:material-ripple:1.0.1'
     compile 'com.github.sd6352051.niftydialogeffects:niftydialogeffects:1.0.0@aar'
     compile 'de.hdodenhof:circleimageview:1.2.2'
+    compile 'de.greenrobot:eventbus:2.2.1'
+    compile 'com.appyvet:materialrangebar:1.0'
 }

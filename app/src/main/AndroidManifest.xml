@@ -21,16 +21,15 @@
             android:windowSoftInputMode="stateHidden|adjustResize" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name="activities.DashboardActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_dashboard"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustResize|adjustPan"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
              >
         </activity>
         <activity
@@ -53,6 +52,13 @@
             <action android:name="activities.FileChooser" />
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
+        <receiver android:name="reciever.DownloadCompleteReciever"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.DOWNLOAD_COMPLETE"></action>
+            </intent-filter>
+        </receiver>
+        <receiver android:name="reciever.CheckFragmentVisibilityBroadcast"></receiver>
     </application>
 
 </manifest>

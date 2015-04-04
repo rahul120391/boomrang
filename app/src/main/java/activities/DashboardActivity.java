@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import Boomerang.R;
 import adapters.SideBarAdapter;
+import commonutils.SyncAlarmClass;
 import fragments.MyDashBoard;
 import fragments.MyFiles;
 import fragments.Settings;
@@ -24,7 +25,7 @@ import fragments.UserProfile;
 
 public class DashboardActivity extends FragmentActivity implements AdapterView.OnItemClickListener,View.OnClickListener{
     public static SlidingPaneLayout slidingpane;
-    FragmentManager fragmentManager;
+    public static FragmentManager fragmentManager;
     ListView lv_drawer;
     private ActionBar actionBar;
     @Override
@@ -52,6 +53,18 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
         }
 
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        System.out.println("inside on resume");
+        boolean IsAutoSync=getSharedPreferences("Login", 0).getBoolean("IsAutoSync",false);
+        if(IsAutoSync){
+            int time=getSharedPreferences("Login", 0).getInt("SyncInterval",0);
+            SyncAlarmClass.FireAlarm(this,time);
+        }
+    }
+
     /**************************************************************************************************************************/
     /***
      * This method is used for replacing one fragment with another
@@ -66,6 +79,7 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
     {
         Fragment _fragment = getFragmentManager().findFragmentByTag(tag);
         fragmentManager = getFragmentManager();
+
         if (null == _fragment) {
             FragmentTransaction fragmentTransaction = fragmentManager
                     .beginTransaction();
@@ -178,5 +192,11 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        System.out.println("inside on stop");
+        SyncAlarmClass.StopAlarm();
     }
 }

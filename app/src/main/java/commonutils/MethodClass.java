@@ -10,6 +10,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.internal.bind.DateTypeAdapter;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,12 +18,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
-import Boomerang.R;
-import retrofit.Callback;
 import retrofit.RestAdapter;
-import retrofit.RetrofitError;
 import retrofit.android.MainThreadExecutor;
-import retrofit.client.Response;
 import retrofit.converter.GsonConverter;
 import retrofit.mime.TypedFile;
 
@@ -60,61 +57,88 @@ public class MethodClass<T> {
     }
 /****************************************************************************************************************************/
 
+  /*  *//***
+     *
+     * @param mapvalues
+     * -values to be send with url
+     * @param path
+     * -path where the file will be saved
+     * @param cnt
+     * -current activity/fragment context
+     *//*
     public MethodClass(final Map<String,String> mapvalues,final String path,final Context cnt){
-        ProgressDialogClass.getDialog(cnt);
+        new Download(path,cnt).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,mapvalues);
+      *//*  ProgressDialogClass.getDialog(cnt);
         RestAdapter fileadapter=new RestAdapter.Builder().
-                setEndpoint(URLS.COMMON_URL).
-                setClient(new RetrofitHttpClient())
-               .build();
+                setEndpoint(URLS.COMMON_URL)
+                .build();
         MyRetrofitInterface myretorfit=fileadapter.create(MyRetrofitInterface.class);
-        myretorfit.getFile(mapvalues,new Callback<Response>() {
+        myretorfit.download(mapvalues,new Callback<Response>() {
             @Override
             public void success(Response response, Response response2) {
-                try {
-                    byte[] bytes = getBytesFromStream(response.getBody().in());
-                    saveBytesToFile(bytes,path);
+                   System.out.println("success"+response);
+                try{
+                    byte[] byteses=getBytesFromStream(response.getBody().in());
+                    saveBytesToFile(byteses,path);
                     ProgressDialogClass.logout();
+                    UIutill.ShowSnackBar(cnt,cnt.getString(R.string.download_cmp));
                 }
                 catch (Exception e){
                     e.printStackTrace();
                 }
             }
             @Override
-            public void failure(RetrofitError retrofitError) {
-                if(retrofitError!=null){
-                    UIutill.ShowDialog(cnt,cnt.getString(R.string.error), CustomErrorHandling.ShowError(retrofitError,cnt));
+            public void failure(RetrofitError error) {
+                if(error!=null){
+                    UIutill.ShowDialog(cnt, cnt.getString(R.string.error), CustomErrorHandling.ShowError(error,cnt));
                 }
                 ProgressDialogClass.logout();
             }
-        });
-    }
+        });*//*
+    }*/
+  /*  public MethodClass(Context cnt,String path,String url){
+        System.out.println("url"+url);
+        new DownloadFile(cnt,path).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,url);
+    }*/
 
 /********************************************************************************************************************************/
-
-    /*******************************************************************************************************/
-    public static byte[] getBytesFromStream(InputStream is) throws IOException {
+    /***
+     *
+     * @param is
+     * -input stream returned from response
+     * @return
+     * @throws IOException
+     */
+    public  byte[] getBytesFromStream(InputStream is) throws IOException {
         int len;
-        int size = 1024;
         byte[] buf;
+        int size=1024;
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         buf = new byte[size];
-        while((len = is.read(buf, 0, size)) != -1) {
+        while((len = is.read(buf, 0,size)) != -1) {
             bos.write(buf, 0, len);
         }
         buf = bos.toByteArray();
+        is.close();
         return buf;
     }
 
  /*******************************************************************************************************************************/
-
-    /******************************************************************************************************/
-    public static void saveBytesToFile(byte[] bytes, String path) {
+    /***
+     *
+     * @param bytes
+     * -bytes returned from input stream
+     * @param path
+     * -path where the file will be saved
+     */
+    public void saveBytesToFile(byte[] bytes, String path) {
         FileOutputStream fileOuputStream=null;
         try {
-            fileOuputStream = new FileOutputStream(path);
+            File file = new File(path);
+            fileOuputStream = new FileOutputStream(file);
             fileOuputStream.write(bytes);
+            fileOuputStream.flush();
             fileOuputStream.close();
-
         }
         catch (Exception e){
             e.printStackTrace();
@@ -190,6 +214,9 @@ public class MethodClass<T> {
             case URLS.SETTINGS:
                 myretro.savesettings(map,new CallbackClass<T>(inter,cnt));
                 break;
+            case URLS.DOWNLOAD:
+                myretro.download(map,new CallbackClass<T>(inter,cnt));
+                break;
             default:
                 break;
         }
@@ -246,4 +273,120 @@ public class MethodClass<T> {
 
         return false;
     }
+
+/*
+ class Download extends AsyncTask<Map<String,String>,String,String> {
+        Response response;
+        String path;
+        Context cnt;
+        public Download(String path,Context cnt){
+            this.path=path;
+            this.cnt=cnt;
+        }
+        @Override
+        protected String doInBackground(Map<String,String>... params) {
+            RestAdapter fileadapter=new RestAdapter.Builder().
+                     setEndpoint(URLS.COMMON_URL)
+                    .build();
+            MyRetrofitInterface myretorfit=fileadapter.create(MyRetrofitInterface.class);
+            response=myretorfit.getfile(params[0]);
+            try{
+                System.out.println("response"+response);
+                //byte[] byteses=getBytesFromStream(response.getBody().in());
+                //saveBytesToFile(byteses,path);
+                writeedata(response.getBody().in(),path);
+            }
+           catch (Exception e){
+               e.printStackTrace();
+           }
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            ProgressDialogClass.getDialog(cnt);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if(response==null){
+                UIutill.ShowSnackBar(cnt,"No response");
+            }
+            else{
+                UIutill.ShowSnackBar(cnt,"Download Complete");
+            }
+            ProgressDialogClass.logout();
+
+        }
+    }
+
+    public class DownloadFile extends AsyncTask<String,String,String>{
+
+        Context cnt;
+        String path;
+        public DownloadFile(Context cnt,String path){
+            this.cnt=cnt;
+            this.path=path;
+        }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            ProgressDialogClass.getDialog(cnt);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            ProgressDialogClass.logout();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                int count=0;
+                URL url = new URL(params[0]);
+                URLConnection conection = url.openConnection();
+                conection.connect();
+                int lenghtOfFile = conection.getContentLength();
+                System.out.println("length"+lenghtOfFile);
+                InputStream input = new BufferedInputStream(url.openStream());
+                OutputStream output = new FileOutputStream(path);
+                byte data[] = new byte[1024];
+                while ((count = input.read(data)) != -1) {
+                    output.write(data, 0, count);
+                }
+                output.flush();
+                output.close();
+                input.close();
+            } catch (Exception e) {
+                Log.e("Error: ", e.getMessage());
+                ProgressDialogClass.logout();
+            }
+            return null;
+        }
+    }
+
+    public void writeedata(InputStream is,String path){
+        try{
+            DataInputStream dis = new DataInputStream(is);
+            long bytes=is.available();
+            System.out.println("bytes"+bytes);
+            byte[] buffer = new byte[1024];
+            int length;
+            FileOutputStream fos = new FileOutputStream(path);
+            while ((length = dis.read(buffer))>0) {
+                fos.write(buffer, 0, length);
+            }
+            fos.flush();
+            fos.close();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+
+    }*/
+
 }

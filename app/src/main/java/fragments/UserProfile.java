@@ -55,7 +55,8 @@ public class UserProfile extends Fragment {
 
             SharedPreferences prefs=getActivity().getSharedPreferences("Login",0);
             tv_emailvalue.setText(prefs.getString("emailID",""));
-            tv_passwordvalue.setText(prefs.getString("Password",""));
+            String newpass=allStar(prefs.getString("Password",""));
+            tv_passwordvalue.setText(newpass);
             tv_companyvalue.setText(prefs.getString("Company",""));
             tv_regvalue.setText(prefs.getString("RegistrationDate",""));
             tv_zipcodevalue.setText(prefs.getString("ZipCode",""));
@@ -64,5 +65,12 @@ public class UserProfile extends Fragment {
             e.printStackTrace();
         }
         return v;
+    }
+    public String allStar(String s) {
+        StringBuilder sb = new StringBuilder(s.length());
+        for (int i = 0; i < s.length(); i++) {
+            sb.append('*');
+        }
+        return sb.toString();
     }
 }

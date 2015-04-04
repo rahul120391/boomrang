@@ -2,23 +2,34 @@ package fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.DownloadManager;
 import android.app.Fragment;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.util.Patterns;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -26,6 +37,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,12 +54,15 @@ import adapters.MyFilesAdapter;
 import commonutils.CustomErrorHandling;
 import commonutils.DataTransferInterface;
 import commonutils.MethodClass;
+import commonutils.ProgressDialogClass;
 import commonutils.UIutill;
 import commonutils.URLS;
 import customviews.SwipeMenu;
 import customviews.SwipeMenuCreator;
 import customviews.SwipeMenuItem;
+import customviews.SwipeMenuLayout;
 import customviews.SwipeMenuListView;
+import de.greenrobot.event.EventBus;
 import modelclasses.MyFilesDataModel;
 import retrofit.RetrofitError;
 
@@ -51,7 +71,7 @@ import retrofit.RetrofitError;
  */
 public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTransferInterface<T>,AdapterView.OnItemClickListener, SwipeMenuListView.OnMenuItemClickListener{
     View v=null;
-    RelativeLayout layout_myfiles,layout_search,layout_refresh,layout_upload,layout_createfolder;
+    RelativeLayout layout_myfiles,layout_sync,layout_search,layout_upload,layout_createfolder;
     TextView tv_foldername,tv_back;
     customviews.SwipeMenuListView lv_myfiles;
     ArrayList<MyFilesDataModel> myfileslist=new ArrayList<>();
@@ -67,10 +87,13 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
     MyFilesAdapter adapter;
     Dialog confirmdialog,requestfolder,sharedialog;
     String searchstring;
+    LinearLayout mainlayout;
+    int listviewpositionclick=0;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         try{
+            EventBus.getDefault().register(this);
             methodClass=new MethodClass<>(getActivity(),this);
             v=inflater.inflate(R.layout.fragment_myfiles,null);
             foldername=getString(R.string.myfiles);
@@ -79,14 +102,31 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
             foldernames.clear();
             stack.clear();
             layout_foldernames.setVisibility(View.GONE);
+            mainlayout=(LinearLayout)v.findViewById(R.id.layout_main);
+            mainlayout.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if(lv_myfiles.getCount()>0)
+                    {
+                        if (listviewpositionclick >= lv_myfiles.getFirstVisiblePosition()
+                                && listviewpositionclick <= lv_myfiles.getLastVisiblePosition()) {
+                            View view = lv_myfiles.getChildAt(listviewpositionclick - lv_myfiles.getFirstVisiblePosition());
+                            if (view instanceof SwipeMenuLayout) {
+                                ((SwipeMenuLayout) view).smoothCloseMenu();
+                            }
+                        }
+                    }
+                    return false;
+                }
+            });
             layout_myfiles=(RelativeLayout)v.findViewById(R.id.layout_myfiles);
-            layout_search=(RelativeLayout)v.findViewById(R.id.layout_search);
-            layout_refresh=(RelativeLayout)v.findViewById(R.id.layout_refresh);
+            layout_sync=(RelativeLayout)v.findViewById(R.id.layout_sync);
             layout_upload=(RelativeLayout)v.findViewById(R.id.layout_upload);
             layout_createfolder=(RelativeLayout)v.findViewById(R.id.layout_createfolder);
-            layout_myfiles.setOnClickListener(this);
+            layout_search=(RelativeLayout)v.findViewById(R.id.layout_search);
             layout_search.setOnClickListener(this);
-            layout_refresh.setOnClickListener(this);
+            layout_myfiles.setOnClickListener(this);
+            layout_sync.setOnClickListener(this);
             layout_upload.setOnClickListener(this);
             layout_createfolder.setOnClickListener(this);
             lv_myfiles=(customviews.SwipeMenuListView)v.findViewById(R.id.lv_myfiles);
@@ -161,36 +201,55 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
         switch (v.getId()){
             case R.id.layout_myfiles:
                 layout_myfiles.setBackgroundColor(getResources().getColor(R.color.myfiles_selected));
+                layout_sync.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
                 layout_search.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
-                layout_refresh.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
                 layout_upload.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
+                layout_createfolder.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
                 break;
             case R.id.layout_search:
                 layout_myfiles.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
+                layout_sync.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
                 layout_search.setBackgroundColor(getResources().getColor(R.color.myfiles_selected));
-                layout_refresh.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
                 layout_upload.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
+                layout_createfolder.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
                 ShowSearch_CreateFolderDialog("search");
                 break;
-            case R.id.layout_refresh:
+            case R.id.layout_sync:
                 layout_myfiles.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
+                layout_sync.setBackgroundColor(getResources().getColor(R.color.myfiles_selected));
                 layout_search.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
-                layout_refresh.setBackgroundColor(getResources().getColor(R.color.myfiles_selected));
                 layout_upload.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
+                layout_createfolder.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
+                if(methodClass.checkInternetConnection()){
+                    UIutill.ShowSnackBar(getActivity(),"Sync started");
+                }
+                else{
+                     UIutill.ShowSnackBar(getActivity(),getString(R.string.sync_start));
+                }
                 break;
             case R.id.layout_upload:
                 layout_myfiles.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
+                layout_sync.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
                 layout_search.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
-                layout_refresh.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
                 layout_upload.setBackgroundColor(getResources().getColor(R.color.myfiles_selected));
-                UploadFiles files=new UploadFiles();
-                Bundle b=new Bundle();
-                b.putInt("folderid",stack.lastElement());
-                files.setArguments(b);
-                ((DashboardActivity)getActivity()).FragmentTransactions(R.id.fragment_container,files,"uploadfiles");
+                layout_createfolder.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
+                if(stack.size()>0){
+                    UploadFiles files=new UploadFiles();
+                    Bundle b=new Bundle();
+                    b.putInt("folderid",stack.lastElement());
+                    files.setArguments(b);
+                    ((DashboardActivity)getActivity()).FragmentTransactions(R.id.fragment_container,files,"uploadfiles");
+                }
                 break;
             case R.id.layout_createfolder:
-                ShowSearch_CreateFolderDialog("createfolder");
+                layout_myfiles.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
+                layout_sync.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
+                layout_search.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
+                layout_upload.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
+                layout_createfolder.setBackgroundColor(getResources().getColor(R.color.myfiles_selected));
+                if(stack.size()>0){
+                    ShowSearch_CreateFolderDialog("createfolder");
+                }
                 break;
             case R.id.tv_back:
                 try{
@@ -227,22 +286,21 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
     public void onSuccess(T s) {
             try{
                 System.out.println("inside on success");
-
                 String value=new Gson().toJson(s);
                 System.out.println("value"+value);
                 JsonParser jsonParser = new JsonParser();
                 JsonObject jsonreturn= (JsonObject)jsonParser.parse(value);
                 boolean IsSucess=jsonreturn.get("IsSucess").getAsBoolean();
                 if(IsSucess){
-                    if(position==3 || position==4){
-                        UIutill.ShowSnackBar(getActivity(),jsonreturn.get("ResponseData").getAsString().trim());
-                    }
-                    else if(position==1 || position==2){
+                    System.out.println("position value"+position);
+                     if(position==0 || position==1 || position==2 || position==6)
+                      {
                         String message=jsonreturn.get("Message").getAsString().trim();
                         if(!message.equalsIgnoreCase("")){
                             UIutill.ShowSnackBar(getActivity(),message);
                         }
-                        if(jsonreturn.get("ResponseData").isJsonArray() && jsonreturn.get("ResponseData").getAsJsonArray().size()>=0){
+                        if(jsonreturn.get("ResponseData").isJsonArray() && jsonreturn.get("ResponseData").getAsJsonArray().size()>=0)
+                        {
                             JsonArray ResponseData=jsonreturn.get("ResponseData").getAsJsonArray();
                             System.out.println("response"+ResponseData);
                             myfileslist.clear();
@@ -278,18 +336,27 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                             } else {
                                 tv_back.setVisibility(View.GONE);
                             }
+                            if(myfileslist.size()>0){
+                                lv_myfiles.setMenuCreator(creator);
+                            }
                             tv_foldername.setText(foldernames.lastElement());
-
                             adapter = new MyFilesAdapter(getActivity(), myfileslist);
                             lv_myfiles.setAdapter(adapter);
-                            lv_myfiles.setMenuCreator(creator);
 
                         }
                         else{
                             UIutill.ShowDialog(getActivity(),getString(R.string.error),getString(R.string.no_file));
                         }
                     }
+                    else if(position==3 || position==4){
+                         UIutill.ShowSnackBar(getActivity(),jsonreturn.get("ResponseData").getAsString().trim());
+                    }
+                    else if(position==5){
+                         String fileurl=jsonreturn.get("ResponseData").getAsString();
+                         String filename=jsonreturn.get("CallBack").getAsString();
+                         DownloadFiles(filename,fileurl);
 
+                     }
                 }
                 else{
                     UIutill.ShowDialog(getActivity(),getString(R.string.error),jsonreturn.get("Message").getAsString());
@@ -312,6 +379,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
     public void onItemClick(AdapterView<?> parent, View view, int positionn, long id) {
 
         System.out.println("item click"+positionn);
+        listviewpositionclick=positionn;
         if(DashboardActivity.slidingpane.isOpen()){
             DashboardActivity.slidingpane.closePane();
         }
@@ -337,11 +405,11 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
     }
 
     @Override
-    public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
-        System.out.println("listview position"+position);
+    public boolean onMenuItemClick(int positionn, SwipeMenu menu, int index) {
+        System.out.println("listview position"+positionn);
         System.out.println("indexx"+index);
         String type=null;
-        String filetype=myfileslist.get(position).getFiletype();
+        String filetype=myfileslist.get(positionn).getFiletype();
         System.out.println("filetype"+filetype);
         if(filetype.equalsIgnoreCase("folder")){
             type="0";
@@ -349,50 +417,63 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
         else{
             type="1";
         }
-        String fileid=myfileslist.get(position).getFileid()+"";
+        String fileid=myfileslist.get(positionn).getFileid()+"";
         switch (index){
             case 0:
                 ShowConfirmDialog(fileid,type);
                 break;
             case 1:
                 if(type.equalsIgnoreCase("0")){
-                    String filenamee=myfileslist.get(position).getFilename();
+                    String filenamee=myfileslist.get(positionn).getFilename();
                     ShareDialogView(filenamee,fileid,filetype);
                 }
                 else {
                     if (type.equalsIgnoreCase("1")) {
-                        Map<String, String> map = new HashMap<>();
-                        map.put("userId", getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
-                        map.put("folderFileId", fileid);
-                        map.put("type", "1");
-                        String path = Environment.getExternalStorageDirectory().getAbsolutePath();
-                        String filename = myfileslist.get(position).getFilename();
-                        File directory=new File(path+"/"+"MyData");
-                        if(!directory.exists()){
-                            directory.mkdir();
-                        }
-                        String mypath = path+"/"+"MyData"+"/"+filename;
-                        System.out.println("path"+mypath);
-                        File file = new File(mypath);
-                        try{
-                            if(!file.exists()){
-                                file.createNewFile();
+                        int state = getActivity().getPackageManager().getApplicationEnabledSetting("com.android.providers.downloads");
+                        if(state==PackageManager.COMPONENT_ENABLED_STATE_DISABLED||
+                                state==PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER
+                                ||state== PackageManager.COMPONENT_ENABLED_STATE_DISABLED_UNTIL_USED){
+                            try {
+                                Toast.makeText(getActivity(),"Enable Download Manager",Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                intent.setData(Uri.parse("package:" + "com.android.providers.downloads"));
+                                startActivity(intent);
+                            } catch ( ActivityNotFoundException e ) {
+                                Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(intent);
                             }
-                         new MethodClass(map,mypath,getActivity());
                         }
-                        catch (Exception e){
-                            e.printStackTrace();
+                        else{
+                            String deviceId = android.provider.Settings.Secure.getString(getActivity().getContentResolver(),
+                                    android.provider.Settings.Secure.ANDROID_ID);
+                            Map<String, String> map = new HashMap<>();
+                            map.put("userId", getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
+                            System.out.println("fileid" + fileid);
+                            map.put("folderFileId", fileid);
+                            map.put("type", "1");
+                            map.put("deviceId",deviceId);
+                            if(methodClass.checkInternetConnection()){
+                                position=5;
+                                System.out.println("position"+position);
+                                methodClass.MakeGetRequestWithParams(map,URLS.DOWNLOAD);
+                            }
+                            else{
+                                UIutill.ShowSnackBar(getActivity(),getString(R.string.no_network));
+                            }
                         }
+
                     }
                 }
                 break;
             case 2:
                if(type.equalsIgnoreCase("0")){
-                   String filename=myfileslist.get(position).getFilename();
+                   String filename=myfileslist.get(positionn).getFilename();
                    RequestFolderView(fileid,filename);
                }
                 else{
-                   String filenamee=myfileslist.get(position).getFilename();
+                   String filenamee=myfileslist.get(positionn).getFilename();
                    ShareDialogView(filenamee,fileid,filetype);
                }
                 break;
@@ -437,6 +518,8 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
             btn_search.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(),0);
                     if(show.equalsIgnoreCase("search")){
                         if(et_search.getText().toString().trim().length()==0){
                             UIutill.ShowSnackBar(getActivity(),getString(R.string.empty_search));
@@ -451,12 +534,14 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                         }
                     }
                     else if(show.equalsIgnoreCase("createfolder")){
+
                         if(et_search.getText().toString().trim().length()==0){
                             UIutill.ShowSnackBar(getActivity(),getString(R.string.empty_foldername));
                         }
                         else{
                             dialog.dismiss();
                             if(methodClass.checkInternetConnection()){
+                                position=6;
                                 Map<String,String> map=new HashMap<String, String>();
                                 map.put("userid",getActivity().getSharedPreferences("Login",0).getString("UserID",""));
                                 map.put("currentFolderId",stack.lastElement()+"");
@@ -675,6 +760,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
            btn_share.setOnClickListener(new View.OnClickListener() {
                @Override
                public void onClick(View v) {
+                   UIutill.HideKeyboard(getActivity());
                    if(et_email.getText().toString().trim().length()==0){
                      UIutill.ShowSnackBar(getActivity(),getString(R.string.email_empty));
                    }
@@ -724,5 +810,107 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
        }
    }
 
+   public void DownloadFiles(String filename,String url){
+       int state = getActivity().getPackageManager().getApplicationEnabledSetting("com.android.providers.downloads");
+       if(state==PackageManager.COMPONENT_ENABLED_STATE_DISABLED||
+               state==PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER
+               ||state== PackageManager.COMPONENT_ENABLED_STATE_DISABLED_UNTIL_USED){
+           try {
+               Toast.makeText(getActivity(),"Enable Download Manager",Toast.LENGTH_SHORT).show();
+               Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+               intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+               intent.setData(Uri.parse("package:" + "com.android.providers.downloads"));
+               startActivity(intent);
+           } catch ( ActivityNotFoundException e ) {
+               Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS);
+               intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+               startActivity(intent);
+           }
+       }
+       else{
+           UIutill.ShowSnackBar(getActivity(),getString(R.string.download_start));
+           String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+           File directory=new File(path+"/"+"MyData");
+           System.out.println("url"+url);
+           if(!directory.exists()){
+               directory.mkdir();
+           }
+           String mypath = path+"/"+"MyData"+"/"+filename;
+           System.out.println("path"+mypath);
+           File file = new File(mypath);
+           if(file.exists()){
+               file.delete();
+           }
+           DownloadManager manager = (DownloadManager)getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
+           DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+           request.setTitle(filename);
+           request.setDescription(getString(R.string.downloading));
+           request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
+           request.setDestinationInExternalPublicDir("/MyData",filename);
+           manager.enqueue(request);
 
+
+       }
+
+   }
+
+    public void onEvent(String event) {
+        System.out.println("event is fired"+event);
+        if(stack.size()>0){
+            int folderid=stack.lastElement();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        EventBus.getDefault().unregister(this);
+    }
+
+    class DownloadApk extends AsyncTask<String,String,String>{
+
+        String filename;
+        public DownloadApk(String filename){
+            this.filename=filename;
+        }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            ProgressDialogClass.getDialog(getActivity());
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                URL url = new URL(params[0]);
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.setDoOutput(true);
+                urlConnection.connect();
+                File sdcard = Environment.getExternalStorageDirectory();
+                File file = new File(sdcard,"HelloWorldProject.apk");
+                FileOutputStream fileOutput = new FileOutputStream(file);
+                InputStream inputStream = urlConnection.getInputStream();
+
+                byte[] buffer = new byte[1024];
+                int bufferLength = 0;
+
+                while ( (bufferLength = inputStream.read(buffer)) > 0 ) {
+                    fileOutput.write(buffer, 0, bufferLength);
+                }
+                fileOutput.close();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            ProgressDialogClass.logout();
+        }
+    }
 }

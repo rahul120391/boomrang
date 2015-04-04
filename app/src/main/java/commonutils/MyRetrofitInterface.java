@@ -3,7 +3,6 @@ package commonutils;
 import java.util.Map;
 
 import retrofit.Callback;
-import retrofit.client.Response;
 import retrofit.http.GET;
 import retrofit.http.Multipart;
 import retrofit.http.POST;
@@ -11,7 +10,6 @@ import retrofit.http.Part;
 import retrofit.http.PartMap;
 import retrofit.http.Query;
 import retrofit.http.QueryMap;
-import retrofit.http.Streaming;
 import retrofit.mime.TypedFile;
 
 /**
@@ -57,7 +55,6 @@ public interface MyRetrofitInterface<T> {
     void savesettings(@QueryMap Map<String,String> map,Callback<T> object);
 
     @GET(URLS.DOWNLOAD)
-    @Streaming
-    void getFile(@QueryMap Map<String,String> map,Callback<Response> response);
+    void download(@QueryMap Map<String,String> mymap,Callback<T> object);
 
 }

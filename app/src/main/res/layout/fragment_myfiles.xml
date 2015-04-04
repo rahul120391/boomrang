@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/White"
@@ -41,7 +42,7 @@
             />
     </RelativeLayout>
     <RelativeLayout
-        android:id="@+id/layout_refresh"
+        android:id="@+id/layout_sync"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
@@ -52,7 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:paddingTop="10dp"
-            android:src="@drawable/iv_sidesync"
+            android:src="@drawable/iv_sidesync1"
             />
         </RelativeLayout>
     <RelativeLayout

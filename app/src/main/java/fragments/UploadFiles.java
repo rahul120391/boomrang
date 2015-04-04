@@ -251,13 +251,12 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super.onActivityResult(requestCode, resultCode, data);
-        int pos=0;
         ArrayList<String> valueslist=new ArrayList<>();
         if(data!=null){
 
             if(requestCode==RequestCodes.REQUEST_IMAGE){
                ArrayList<GalleryDataModel> returnedlist= (ArrayList<GalleryDataModel>)data.getBundleExtra("bundle").getSerializable("list");
-                pos=1;
+
                 for(GalleryDataModel values:list){
                     valueslist.add(values.getFiletitle());
                 }
@@ -266,6 +265,7 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                     if(!valueslist.contains(name)){
                         GalleryDataModel mymodel=new GalleryDataModel();
                         mymodel.setFilepath(model.getImage_path());
+                        mymodel.setFrom("image");
                         String title=model.getFiletitle()+"."+model.getFilemimetype().split("/")[1];
                         mymodel.setFiletitle(title);
                         mymodel.setFilemimetype(model.getFilemimetype());
@@ -280,17 +280,16 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                 Uri tempUri = getImageUri(getActivity(), photo);
                 String values[]=getRealPathFromURI(tempUri);
                 GalleryDataModel mymodel=new GalleryDataModel();
+                mymodel.setFrom("image");
                 mymodel.setFilepath(values[0]);
                 String typee[]=values[2].split("/");
                 mymodel.setFiletitle(values[1]+"."+typee[1]);
                 mymodel.setFilemimetype(values[2]);
                 mymodel.setImage_path(values[0]);
                 list.add(mymodel);
-                pos=1;
             }
             else if(requestCode==RequestCodes.REQUEST_VIDEO){
                 ArrayList<GalleryDataModel> returnedlist= (ArrayList<GalleryDataModel>)data.getBundleExtra("bundle").getSerializable("list");
-                pos=2;
                 for(GalleryDataModel values:list){
                     valueslist.add(values.getFiletitle());
                 }
@@ -301,6 +300,7 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                         mymodel.setFilepath(model.getVideo_path());
                         mymodel.setFiletitle(model.getFiletitle() + "." + model.getFilemimetype().split("/")[1]);
                         mymodel.setFilemimetype(model.getFilemimetype());
+                        mymodel.setFrom("image");
                         mymodel.setImage_path(model.getImage_path());
                         list.add(mymodel);
                     }
@@ -328,35 +328,39 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                 Uri tempUri = getImageUri(getActivity(), thumbnail);
                 String values[]=getRealPathFromURI(tempUri);
                 mymodel.setImage_path(values[0]);
+                mymodel.setFrom("image");
                 list.add(mymodel);
-                pos=2;
             }
             else if(requestCode==RequestCodes.REQUEST_FILE_BROWSER){
                 String curFileName = data.getStringExtra("GetFileName");
                 System.out.println("name"+curFileName);
                 String path=data.getStringExtra("GetPath");
                 String image=data.getStringExtra("image");
+                System.out.println("image"+image);
                 GalleryDataModel mymodel=new GalleryDataModel();
                 mymodel.setFiletitle(curFileName);
                 mymodel.setFilepath(path);
                 mymodel.setFilethumnbail(image);
                 if(getMimeType(path)!=null){
+                    System.out.println("path"+path);
                     mymodel.setFilemimetype(getMimeType(path));
-                    String uri = "drawable/" + image;
-                    int imageResource = getActivity().getResources().getIdentifier(uri, null, getActivity().getPackageName());
+                    String urii = "drawable/" + image;
+                    System.out.println("urii"+urii);
+                    int imageResource = getActivity().getResources().getIdentifier(urii, null, getActivity().getPackageName());
                     Drawable imagee = getActivity().getResources().getDrawable(imageResource);
                     Bitmap thumbnail = ((BitmapDrawable)imagee).getBitmap();
                     mymodel.setBitmap(thumbnail);
+                    mymodel.setFrom("browser");
                     list.add(mymodel);
-                    pos=3;
                 }
                 else{
                     UIutill.ShowSnackBar(getActivity(),getString(R.string.mime_type_error));
                 }
 
             }
-            lv_myfiles.setAdapter(null);
-            adapter=new MyUploadFilesAdapter(getActivity(),list,pos);
+            //lv_myfiles.setAdapter(null);
+            System.out.println("listt"+list);
+            adapter=new MyUploadFilesAdapter(getActivity(),list);
             lv_myfiles.setAdapter(adapter);
 
         }
@@ -433,9 +437,7 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
         ImageView iv_image, iv_delete;
         TextView tv_name;
         AQuery aq;
-        int pos;
-        public MyUploadFilesAdapter(Context context, ArrayList<GalleryDataModel> mylist,int pos) {
-            this.pos=pos;
+        public MyUploadFilesAdapter(Context context, ArrayList<GalleryDataModel> mylist) {
             this.context = context;
             this.mylist = mylist;
             inf = LayoutInflater.from(context);
@@ -466,11 +468,12 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                 tv_name.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
                 iv_image=(ImageView)convertView.findViewById(R.id.iv_image);
                 tv_name.setText(mylist.get(position).getFiletitle());
-                if(pos==1 || pos==2){
+                if(mylist.get(position).getFrom().equalsIgnoreCase("image")){
                     aq.id(iv_image).image(mylist.get(position).getImage_path(), false, true, 100,
                             0, null, 0, 1.0f / 1.0f);
                 }
-                else if(position==3){
+                else if(mylist.get(position).getFrom().equalsIgnoreCase("browser")){
+                    System.out.println("bitmapp"+mylist.get(position).getBitmap());
                     aq.id(iv_image).image(mylist.get(position).getBitmap(),1.0f/1.0f);
                 }
             }

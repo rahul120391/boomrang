@@ -81,7 +81,7 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
             foldernames.clear();
             position=1;
             fileid=searchtext;
-            foldername=getString(R.string.myfiles);
+            foldername=getString(R.string.search_result);
             if(methodclass.checkInternetConnection()){
                 Map<String,String> map=new HashMap<String,String>();
                 map.put("userId",getActivity().getSharedPreferences("Login",0).getString("UserID",""));
@@ -130,7 +130,7 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
              JsonObject jsonreturn= (JsonObject)jsonParser.parse(value);
              boolean IsSucess=jsonreturn.get("IsSucess").getAsBoolean();
              if(IsSucess) {
-                 if (jsonreturn.get("ResponseData").isJsonArray() && jsonreturn.get("ResponseData").getAsJsonArray().size() >= 0) {
+                 if (jsonreturn.get("ResponseData").isJsonArray() && jsonreturn.get("ResponseData").getAsJsonArray().size() >=0) {
                      JsonArray ResponseData = jsonreturn.get("ResponseData").getAsJsonArray();
                      System.out.println("response" + ResponseData);
                      mylist.clear();
@@ -165,9 +165,10 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
                          } else {
                              tv_back.setVisibility(View.GONE);
                          }
-                          tv_foldername.setText(foldernames.lastElement());
-                          adapter=new MyFilesAdapter(getActivity(),mylist);
-                          lv_myfiles.setAdapter(adapter);
+                         tv_foldername.setText(foldernames.lastElement());
+                         adapter=new MyFilesAdapter(getActivity(),mylist);
+                         lv_myfiles.setAdapter(adapter);
+
                  }
                  else{
                      UIutill.ShowSnackBar(getActivity(),getString(R.string.no_result));
