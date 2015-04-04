@@ -106,18 +106,11 @@ public class Settings<T>  extends Fragment implements View.OnClickListener, Data
                 }
             };
             if(ch_state.isChecked()){
-                int selectpos=0;
                 layout_rangebaar.setVisibility(View.VISIBLE);
                 tv_interval.setVisibility(View.VISIBLE);
                 int synctime=getActivity().getSharedPreferences("Login",0).getInt("SyncInterval",0);
-                String timeintervals[]=getResources().getStringArray(R.array.time_interval);
-                for(int i=0;i<timeintervals.length;i++){
-                   String values=timeintervals[i].substring(0,2);
-                   int time=Integer.parseInt(values);
-                   if(time==synctime){
-                       selectpos=i;
-                   }
-                }
+                tv_value.setText(synctime+" "+"Min");
+                rangebar.setSeekPinByValue((float)synctime);
             }
             else{
                 tv_interval.setVisibility(View.GONE);
