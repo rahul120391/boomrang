@@ -894,16 +894,19 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
      */
     public void onEvent(String event) {
         System.out.println("event is fired"+event);
-        if(stack.size()>0){
+        if(stack !=null && stack.size()>0){
             int folderid=stack.lastElement();
+
+
         }
     }
 
     /********************************************************************************************************/
     @Override
     public void onPause() {
-        super.onPause();
         EventBus.getDefault().unregister(this);
+        super.onPause();
+
     }
 
    /********************************************************************************************************/
