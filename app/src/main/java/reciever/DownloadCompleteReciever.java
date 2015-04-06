@@ -3,6 +3,7 @@ package reciever;
 import android.app.DownloadManager;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -30,6 +31,7 @@ public class DownloadCompleteReciever extends BroadcastReceiver {
             DownloadManager.Query query = new DownloadManager.Query();
             query.setFilterById(downloadId);
             Cursor c = manager.query(query);
+
             if (c.moveToFirst()) {
                 int status = c
                         .getColumnIndex(DownloadManager.COLUMN_STATUS);
@@ -41,15 +43,32 @@ public class DownloadCompleteReciever extends BroadcastReceiver {
                         .getInt(status)) {
                     int title = c
                             .getColumnIndex(DownloadManager.COLUMN_TITLE);
+
                     Toast.makeText(context, context.getString(R.string.download_cmp), Toast.LENGTH_SHORT).show();
+
                     String name=c.getString(title);
+
+                    int ur=c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI);
+                    String uri=c.getString(ur);
+                    Uri urii=Uri.parse(uri);
+
+                    int media_type=c.getColumnIndex(DownloadManager.COLUMN_MEDIA_TYPE);
+                    String mime_type=c.getString(media_type);
+
                     Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+                    Intent filelocation = new Intent(Intent.ACTION_VIEW);
+                    filelocation.setDataAndType(urii,mime_type);
+                    PendingIntent contentIntent = PendingIntent.getActivity(context, 0,filelocation,0);
+
                     Notification mNotification = new Notification.Builder(context)
                     .setContentTitle(name)
                     .setContentText("Downloaded")
+                    .setContentIntent(contentIntent)
                     .setSmallIcon(R.drawable.appicon)
                     .setSound(soundUri)
                     .build();
+
                     mNotification.flags |= Notification.FLAG_AUTO_CANCEL;
                     NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
 
@@ -62,4 +81,5 @@ public class DownloadCompleteReciever extends BroadcastReceiver {
             }
         }
     }
+    /**************************************************************************************************************************/
 }

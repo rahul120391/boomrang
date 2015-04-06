@@ -66,6 +66,15 @@ public class UserProfile extends Fragment {
         }
         return v;
     }
+    /********************************************************************************************************/
+
+    /**
+     * this methiod is used to encrypt the password inform of *
+     * @param s
+     * -pass the password string to convert to *
+     * @return
+     * -returns the password in teh encrypted format
+     */
     public String allStar(String s) {
         StringBuilder sb = new StringBuilder(s.length());
         for (int i = 0; i < s.length(); i++) {
@@ -73,4 +82,5 @@ public class UserProfile extends Fragment {
         }
         return sb.toString();
     }
+    /**************************************************************************************************************************/
 }

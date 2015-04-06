@@ -125,6 +125,7 @@ public class Settings<T>  extends Fragment implements View.OnClickListener, Data
         }
         return v;
     }
+    /********************************************************************************************************/
 
     @Override
     public void onClick(View v) {
@@ -154,6 +155,8 @@ public class Settings<T>  extends Fragment implements View.OnClickListener, Data
                   default:
               }
     }
+
+    /********************************************************************************************************/
 
     @Override
     public void onSuccess(T s) {
@@ -190,6 +193,7 @@ public class Settings<T>  extends Fragment implements View.OnClickListener, Data
             e.printStackTrace();
         }
     }
+    /********************************************************************************************************/
 
     @Override
     public void onFailure(RetrofitError error) {
@@ -197,4 +201,6 @@ public class Settings<T>  extends Fragment implements View.OnClickListener, Data
             UIutill.ShowDialog(getActivity(), getString(R.string.error), CustomErrorHandling.ShowError(error, getActivity()));
         }
     }
+    /********************************************************************************************************/
+
 }

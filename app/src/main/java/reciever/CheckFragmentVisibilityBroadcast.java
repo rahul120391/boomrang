@@ -17,13 +17,16 @@ public class CheckFragmentVisibilityBroadcast extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         try{
             System.out.println("broadcast is fired");
-            Fragment fragment= DashboardActivity.fragmentManager.findFragmentByTag("myfiles");
-            if(fragment instanceof MyFiles){
-                EventBus.getDefault().post("fromcheck");
+            if(DashboardActivity.fragmentManager!=null){
+                Fragment fragment= DashboardActivity.fragmentManager.findFragmentByTag("myfiles");
+                if(fragment instanceof MyFiles){
+                    EventBus.getDefault().post("fromcheck");
+                }
+                else{
+                    System.out.println("inside else");
+                }
             }
-            else{
-                System.out.println("inside else");
-            }
+
         }
         catch (Exception e){
             e.printStackTrace();

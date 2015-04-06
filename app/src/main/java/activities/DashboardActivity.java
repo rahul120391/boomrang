@@ -199,4 +199,5 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
         System.out.println("inside on stop");
         SyncAlarmClass.StopAlarm();
     }
+    /**************************************************************************************************************************/
 }

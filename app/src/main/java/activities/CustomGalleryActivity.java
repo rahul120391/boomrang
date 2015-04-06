@@ -114,6 +114,7 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
 
     }
 
+    /**************************************************************************************************************************/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -122,6 +123,7 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
         return true;
     }
 
+    /**************************************************************************************************************************/
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -136,12 +138,21 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
 
         return super.onOptionsItemSelected(item);
     }
+
+    /**************************************************************************************************************************/
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putString("value",getIntent().getStringExtra("value"));
         super.onSaveInstanceState(outState);
     }
 
+    /**************************************************************************************************************************/
+    /**
+     * this method is used to fetch the images inside phone/tablet
+     * @return
+     * -returns array of imagedata
+     */
     public ArrayList<GalleryDataModel> GetImageData(){
         ArrayList<GalleryDataModel> data = new ArrayList<GalleryDataModel>();
         String projection[] = { MediaStore.Images.Media.DATA,
@@ -165,6 +176,13 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
         return data;
     }
 
+    /**************************************************************************************************************************/
+
+    /**
+     * this method is used to get videos stored inside phone/tablet
+     * @return
+     * -returns the arraylist of videodata
+     */
     public ArrayList<GalleryDataModel> GetVideoData(){
         ArrayList<GalleryDataModel> data = new ArrayList<GalleryDataModel>();
         String projection[] = { MediaStore.Video.Media.DATA,
@@ -202,6 +220,18 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
         }
         return data;
     }
+
+    /**************************************************************************************************************************/
+
+    /**
+     * this method is used to fetch the image uri
+     * @param inContext
+     * -pass the context of the fragment/activity
+     * @param inImage
+     * -pass the bitmap of the image
+     * @return
+     * -returns the image uri
+     */
     public Uri getImageUri(Context inContext, Bitmap inImage) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
@@ -210,12 +240,23 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
         return Uri.parse(path);
     }
 
+    /**************************************************************************************************************************/
+
+    /**
+     * this method is used to fetch the realpath of the image
+     * @param uri
+     * -uri of the image file
+     * @return
+     * -returns the actual path of tyhe image
+     */
     public String getRealPathFromURI(Uri uri) {
         Cursor cursor = getContentResolver().query(uri, null, null, null, null);
         cursor.moveToFirst();
         int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
         return cursor.getString(idx);
     }
+
+    /**************************************************************************************************************************/
 
     @Override
     public void onClick(View v) {
@@ -263,6 +304,7 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
         }
     }
 
+    /**************************************************************************************************************************/
 
     class MyAdapter extends BaseAdapter{
 
@@ -334,10 +376,11 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                });
                ch_check.setChecked(mylist.get(position).isStatus());
            }
-           catch (Exception e){
+           catch (Exception e) {
                e.printStackTrace();
            }
            return convertView;
        }
    }
+    /**************************************************************************************************************************/
 }

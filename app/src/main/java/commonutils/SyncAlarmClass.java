@@ -13,6 +13,14 @@ import reciever.CheckFragmentVisibilityBroadcast;
 public class SyncAlarmClass {
     static AlarmManager manager;
     static PendingIntent pintent;
+
+    /**
+     * this method is used to set repeated alarm for specified time
+     * @param context
+     * -pass the context of fragment/activity to set the alarm on that specific fragment/activity
+     * @param time
+     * -time for the alarm
+     */
     public static void FireAlarm(Context context,int time){
         if(manager==null){
             manager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
@@ -23,6 +31,9 @@ public class SyncAlarmClass {
         }
     }
 
+    /**
+     * this method is used to stop the alarm
+     */
     public static void StopAlarm(){
      if(manager!=null){
          manager.cancel(pintent);

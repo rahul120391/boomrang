@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -24,11 +26,12 @@ public class MyFilesAdapter extends BaseAdapter {
     ImageView iv_file_folder;
     TextView tv_file_folder;
     LayoutInflater inflator;
-
+    Animation anim;
     public MyFilesAdapter(Context context, ArrayList<MyFilesDataModel> myfileslist) {
         this.context = context;
         this.myfileslist = myfileslist;
         inflator = LayoutInflater.from(context);
+        anim= AnimationUtils.loadAnimation(context, R.anim.fade_in);
     }
 
     @Override
@@ -68,6 +71,7 @@ public class MyFilesAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = inflator.inflate(R.layout.myfiles_folder_rowitem, null);
         }
+
         iv_file_folder = (ImageView) convertView.findViewById(R.id.iv_file_folder);
         tv_file_folder = (TextView) convertView.findViewById(R.id.tv_file_folder);
         tv_file_folder.setTypeface(UIutill.SetFont(context, "segoeuilght.ttf"));
@@ -217,6 +221,8 @@ public class MyFilesAdapter extends BaseAdapter {
         else{
             iv_file_folder.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_default));
         }
+        convertView.startAnimation(anim);
         return convertView;
     }
+    /**************************************************************************************************************************/
 }

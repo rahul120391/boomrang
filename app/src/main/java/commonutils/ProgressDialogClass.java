@@ -15,6 +15,11 @@ import customviews.CircularProgressDrawable;
 public class ProgressDialogClass {
     static ProgressDialog dialog;
 
+    /**
+     * -this method is used to show custom progress dialog
+     * @param cnt
+     * -pass the context of the activity/fragment to show the progress dialog
+     */
     public static void getDialog(Context cnt) {
         if (dialog == null || !dialog.isShowing()) {
             dialog = new ProgressDialog(cnt, R.style.ProgressDialogTheme);
@@ -30,6 +35,9 @@ public class ProgressDialogClass {
         }
     }
 
+    /**
+     * -this method is used to dismiss the runing progress dialog
+     */
     public static void logout() {
         if (dialog != null || dialog.isShowing()) {
             dialog.dismiss();

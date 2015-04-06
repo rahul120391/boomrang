@@ -1,5 +1,6 @@
 package fragments;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -13,12 +14,11 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.webkit.MimeTypeMap;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -47,6 +47,7 @@ import commonutils.MethodClass;
 import commonutils.RequestCodes;
 import commonutils.UIutill;
 import commonutils.URLS;
+import customviews.ActionSheet;
 import customviews.SwipeDismissListViewTouchListener;
 import modelclasses.GalleryDataModel;
 import retrofit.RetrofitError;
@@ -55,7 +56,7 @@ import retrofit.mime.TypedFile;
 /**
  * Created by rahul on 3/18/2015.
  */
-public class UploadFiles<T> extends Fragment implements View.OnClickListener, DataTransferInterface<T>{
+public class UploadFiles<T> extends Fragment implements View.OnClickListener, DataTransferInterface<T>, ActionSheet.ActionSheetListener{
 
     View v=null;
     RelativeLayout layout_spinner;
@@ -65,12 +66,21 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
     ArrayList<GalleryDataModel> list=new ArrayList<GalleryDataModel>();
     MethodClass<T> method;
     int folderid;
+    Context cnt;
+    int pos;
     private PopupWindow pwindo;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        cnt=activity;
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         try{
+
             v=inflater.inflate(R.layout.fragment_fileupload,null);
             TextView tv_chooseoption=(TextView)v.findViewById(R.id.tv_chooseoption);
             tv_chooseoption.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
@@ -117,6 +127,7 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
         return v;
     }
 
+    /********************************************************************************************************/
     @Override
     public void onResume() {
         super.onResume();
@@ -127,6 +138,7 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
         }
     }
 
+    /********************************************************************************************************/
     @Override
     public void onClick(View v) {
         switch (v.getId()){
@@ -156,7 +168,13 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                 break;
             case R.id.layout_spinner:
                 try{
-                    getActivity().openContextMenu(v);
+                    pos=0;
+                   getActivity().setTheme(R.style.ActionSheetStyleIOS7);
+                    ActionSheet.createBuilder(cnt,getFragmentManager())
+                            .setCancelButtonTitle(getActivity().getString(R.string.cancel))
+                            .setOtherButtonTitles("Images", "Videos","File Browser")
+                            .setCancelableOnTouchOutside(true)
+                            .setListener(UploadFiles.this).show();
                 }
                 catch (Exception e){
                     e.printStackTrace();
@@ -166,29 +184,12 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                 break;
         }
     }
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v,
-                                    ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(0, v.getId(), 0, "Images");
-        menu.add(0, v.getId(), 0, "Videos");
-        menu.add(0, v.getId(), 0, "File browser");
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        if(item.getTitle().equals("Images")){
-               intiatepopup(1,getString(R.string.camera));
-        }
-        else if(item.getTitle().equals("Videos")){
-            intiatepopup(2,getString(R.string.video_record));
-        }
-        else{
-            Intent filechooser = new Intent(getActivity(), FileChooser.class);
-            startActivityForResult(filechooser,RequestCodes.REQUEST_FILE_BROWSER);
-        }
-        return true;
-    }
+    /********************************************************************************************************/
+    /**
+     *
+     * @param pos
+     * @param name
+     *//*
     public void intiatepopup(final int pos, String name){
         if (pwindo == null || !pwindo.isShowing()) {
             LayoutInflater inflator = LayoutInflater.from(getActivity());
@@ -247,7 +248,9 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
             });
         }
     }
+*/
 
+    /********************************************************************************************************/
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super.onActivityResult(requestCode, resultCode, data);
@@ -366,6 +369,17 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
         }
     }
 
+    /********************************************************************************************************/
+
+    /**
+     * this method is used to get the image uri
+     * @param inContext
+     * -pass the context of activity/fragment
+     * @param inImage
+     * -pass the bitmap of image to fetch the image uri
+     * @return
+     * -uri of the image
+     */
     public Uri getImageUri(Context inContext, Bitmap inImage) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
@@ -374,6 +388,15 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
         return Uri.parse(path);
     }
 
+    /********************************************************************************************************/
+
+    /**
+     * this method is use to the fetch the real path
+     * @param uri
+     * -uri of the file to fetch data about that particular file
+     * @return
+     * -return the string array of information about that file
+     */
     public String[] getRealPathFromURI(Uri uri) {
         Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
         cursor.moveToFirst();
@@ -383,6 +406,8 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
         String values[]={cursor.getString(idx),cursor.getString(idy),cursor.getString(idz)};
         return values;
     }
+
+    /********************************************************************************************************/
 
     @Override
     public void onSuccess(T s) {
@@ -404,6 +429,8 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
           }
     }
 
+    /********************************************************************************************************/
+
     @Override
     public void onFailure(RetrofitError error) {
         if(error!=null){
@@ -411,7 +438,15 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
             UIutill.ShowDialog(getActivity(), getString(R.string.error), CustomErrorHandling.ShowError(error, getActivity()));
         }
     }
+    /********************************************************************************************************/
 
+    /**
+     * this method is used to fetch the mimetype of the file
+     * @param path
+     * -pass path of the file to fethc the mimetype
+     * @return
+     * -return the mimetype as string
+     */
   public String getMimeType(String path){
       String type=null;
       if(path.lastIndexOf(".") != -1) {
@@ -424,11 +459,96 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
       return type;
   }
 
-     @Override
+    /********************************************************************************************************/
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
          outState.putInt("folderid",folderid);
          super.onSaveInstanceState(outState);
     }
+
+    /********************************************************************************************************/
+
+    @Override
+    public void onDismiss(ActionSheet actionSheet, boolean isCancel) {
+
+    }
+    /********************************************************************************************************/
+
+    @Override
+    public void onOtherButtonClick(ActionSheet actionSheet, int index) {
+        System.out.println("indexx"+index);
+        switch (index){
+            case 0:
+                switch (pos){
+                    case 0:
+                        pos=1;
+                        getActivity().setTheme(R.style.ActionSheetStyleIOS7);
+                        ActionSheet.createBuilder(cnt,getFragmentManager())
+                                .setCancelButtonTitle(getActivity().getString(R.string.cancel))
+                                .setOtherButtonTitles("Gallery", "Camera")
+                                .setCancelableOnTouchOutside(true)
+                                .setListener(UploadFiles.this).show();
+                        break;
+                    case 1:
+                        //gallery of image
+                        Intent imagegallery = new Intent();
+                        imagegallery.setAction(getString(R.string.choose_multipleaction));
+                        imagegallery.putExtra("value", "images");
+                        startActivityForResult(imagegallery, RequestCodes.REQUEST_IMAGE);
+                        break;
+                    case 2:
+                        //gallery of video
+                        Intent videogallery = new Intent();
+                        videogallery.setAction(getString(R.string.choose_multipleaction));
+                        videogallery.putExtra("value", "videos");
+                        startActivityForResult(videogallery, RequestCodes.REQUEST_VIDEO);
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case 1:
+                switch (pos){
+                    case 0:
+                        pos=2;
+                        getActivity().setTheme(R.style.ActionSheetStyleIOS7);
+                        ActionSheet.createBuilder(cnt,getFragmentManager())
+                                .setCancelButtonTitle(getActivity().getString(R.string.cancel))
+                                .setOtherButtonTitles("Gallery", "Record video")
+                                .setCancelableOnTouchOutside(true)
+                                .setListener(UploadFiles.this).show();
+                        break;
+                    case 1:
+                        //camera of image
+                        Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        startActivityForResult(camera, RequestCodes.REQUEST_CAMERA);
+
+                        break;
+                    case 2:
+                        //record video
+                        Intent record = new Intent(
+                                MediaStore.ACTION_VIDEO_CAPTURE);
+                        if (record.resolveActivity(getActivity().getPackageManager()) != null) {
+                            startActivityForResult(record, RequestCodes.REQUEST_VIDEO_RECORD);
+                        } else {
+                            UIutill.ShowSnackBar(getActivity(),getString(R.string.task_error));
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case 2:
+                Intent filechooser = new Intent(getActivity(), FileChooser.class);
+                startActivityForResult(filechooser,RequestCodes.REQUEST_FILE_BROWSER);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /********************************************************************************************************/
 
     class  MyUploadFilesAdapter extends BaseAdapter{
         Context context;
@@ -437,9 +557,11 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
         ImageView iv_image, iv_delete;
         TextView tv_name;
         AQuery aq;
+        Animation anim;
         public MyUploadFilesAdapter(Context context, ArrayList<GalleryDataModel> mylist) {
             this.context = context;
             this.mylist = mylist;
+            anim= AnimationUtils.loadAnimation(cnt,R.anim.fade_in);
             inf = LayoutInflater.from(context);
             aq = new AQuery(context);
         }
@@ -480,7 +602,9 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
             catch (Exception e){
                 e.printStackTrace();
             }
+            convertView.startAnimation(anim);
             return convertView;
         }
     }
+    /**************************************************************************************************************************/
 }

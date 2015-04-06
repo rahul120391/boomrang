@@ -45,4 +45,5 @@ public class MainActivity extends FragmentActivity {
          fragmentTransaction.replace(id, _newfrag,null);
          fragmentTransaction.commit();
      }
+    /**************************************************************************************************************************/
 }

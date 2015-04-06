@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
@@ -37,12 +36,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,7 +47,6 @@ import adapters.MyFilesAdapter;
 import commonutils.CustomErrorHandling;
 import commonutils.DataTransferInterface;
 import commonutils.MethodClass;
-import commonutils.ProgressDialogClass;
 import commonutils.UIutill;
 import commonutils.URLS;
 import customviews.SwipeMenu;
@@ -147,7 +139,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                     SwipeMenuItem item1 = new SwipeMenuItem(
                             getActivity());
                     item1.setBackground(new ColorDrawable(getResources().getColor(R.color.login_box_bg)));
-                    item1.setWidth(dp2px(60));
+                    item1.setWidth(UIutill.dp2px(60, getActivity()));
                     item1.setIcon(R.drawable.iv_delete);
                     menu.addMenuItem(item1);
 
@@ -156,21 +148,21 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                         SwipeMenuItem item2 = new SwipeMenuItem(
                                 getActivity());
                         item2.setBackground(new ColorDrawable(getResources().getColor(R.color.login_box_bg)));
-                        item2.setWidth(dp2px(60));
+                        item2.setWidth(UIutill.dp2px(60, getActivity()));
                         item2.setIcon(R.drawable.iv_download);
                         menu.addMenuItem(item2);
                     }
                     SwipeMenuItem item3 = new SwipeMenuItem(
                             getActivity());
                     item3.setBackground(new ColorDrawable(getResources().getColor(R.color.login_box_bg)));
-                    item3.setWidth(dp2px(60));
+                    item3.setWidth(UIutill.dp2px(60, getActivity()));
                     item3.setIcon(R.drawable.iv_share);
                     menu.addMenuItem(item3);
                     if (myfileslist.get(viewtype).getFiletype().equalsIgnoreCase("folder")) {
                         SwipeMenuItem item4 = new SwipeMenuItem(
                                 getActivity());
                         item4.setBackground(new ColorDrawable(getResources().getColor(R.color.login_box_bg)));
-                        item4.setWidth(dp2px(60));
+                        item4.setWidth(UIutill.dp2px(60, getActivity()));
                         item4.setIcon(R.drawable.iv_requestfile);
                         menu.addMenuItem(item4);
                     }
@@ -190,12 +182,9 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
         }
         return v;
     }
-    private int dp2px(int dp) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
-                getResources().getDisplayMetrics());
-    }
 
 
+    /********************************************************************************************************/
     @Override
     public void onClick(View v) {
         switch (v.getId()){
@@ -281,7 +270,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
         }
     }
 
-
+    /********************************************************************************************************/
     @Override
     public void onSuccess(T s) {
             try{
@@ -366,6 +355,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                 e.printStackTrace();
             }
     }
+    /********************************************************************************************************/
 
     @Override
     public void onFailure(RetrofitError error) {
@@ -375,6 +365,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
         }
     }
 
+    /********************************************************************************************************/
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int positionn, long id) {
 
@@ -403,6 +394,8 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
 
         }
     }
+
+    /********************************************************************************************************/
 
     @Override
     public boolean onMenuItemClick(int positionn, SwipeMenu menu, int index) {
@@ -483,8 +476,12 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
         return false;
     }
 
-
-
+   /********************************************************************************************************/
+    /**
+     * this method is used to show search/create dialog
+     * @param show
+     * -value used to decide which dialog will be displayed.
+     */
     public void ShowSearch_CreateFolderDialog(final String show){
         if (dialog==null || !dialog.isShowing()){
             LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -558,9 +555,17 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                 }
             });
         }
-
-
     }
+
+    /********************************************************************************************************/
+
+    /**
+     * this method is used to confirm file deletion
+     * @param fileid
+     * -pass fileid of the file to delete
+     * @param type
+     * -pass the type of the file to delete(0 for folder delete and 1 for file delete)
+     */
     public void ShowConfirmDialog(final String fileid,final String type){
         if(confirmdialog==null || !confirmdialog.isShowing()){
             LayoutInflater inflater =LayoutInflater.from(getActivity());
@@ -615,6 +620,14 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
         }
     }
 
+    /********************************************************************************************************/
+    /**
+     * this method is used to request a folder
+     * @param folderid
+     * -folder of the folder to request
+     * @param foldername
+     * -name of the folder
+     */
     public void RequestFolderView(final String folderid,final String foldername){
         if(requestfolder==null || !requestfolder.isShowing()){
             LayoutInflater inflater =LayoutInflater.from(getActivity());
@@ -631,13 +644,13 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
             tv_email.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
 
             final  EditText et_email=(EditText)dialoglayout.findViewById(R.id.et_email);
-            et_email.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+            et_email.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
 
             TextView tv_message=(TextView)dialoglayout.findViewById(R.id.tv_message);
             tv_message.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
 
             TextView tv_expiry=(TextView)dialoglayout.findViewById(R.id.tv_expiry);
-            tv_expiry.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+            tv_expiry.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
 
             final EditText et_message=(EditText)dialoglayout.findViewById(R.id.et_message);
             et_message.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
@@ -716,13 +729,23 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
         }
     }
 
+    /********************************************************************************************************/
+    /**
+     * this method is used to show share dilaog
+     * @param filename
+     * -filename to share
+     * @param fileid
+     * -fileid of that particluar file
+     * @param type
+     * -type of that particular file
+     */
    public void ShareDialogView(final String filename,final String fileid,final String type){
        if(sharedialog==null || !sharedialog.isShowing()){
            LayoutInflater inflater =LayoutInflater.from(getActivity());
            final View dialoglayout = inflater.inflate(R.layout.sharefolder_dialogview, null);
            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
            TextView tv_share_file_folder=(TextView)dialoglayout.findViewById(R.id.tv_share_file_folder);
-           tv_share_file_folder.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+           tv_share_file_folder.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
 
            TextView tv_email=(TextView)dialoglayout.findViewById(R.id.tv_email);
            tv_email.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
@@ -740,7 +763,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
            btn_share.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
 
            Button btn_cancel=(Button)dialoglayout.findViewById(R.id.btn_cancel);
-           btn_cancel.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
+           btn_cancel.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
 
 
            builder.setView(dialoglayout);
@@ -810,6 +833,15 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
        }
    }
 
+    /********************************************************************************************************/
+
+    /**
+     * this method is used to download files using default android download manager
+     * @param filename
+     * -name of the file to download
+     * @param url
+     * -url from where the file to download
+     */
    public void DownloadFiles(String filename,String url){
        int state = getActivity().getPackageManager().getApplicationEnabledSetting("com.android.providers.downloads");
        if(state==PackageManager.COMPONENT_ENABLED_STATE_DISABLED||
@@ -854,6 +886,12 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
 
    }
 
+    /********************************************************************************************************/
+    /**
+     * this method is used to check the visibility of the screen
+     * @param event
+     * -event to be fired at certian time
+     */
     public void onEvent(String event) {
         System.out.println("event is fired"+event);
         if(stack.size()>0){
@@ -861,56 +899,13 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
         }
     }
 
+    /********************************************************************************************************/
     @Override
     public void onPause() {
         super.onPause();
         EventBus.getDefault().unregister(this);
     }
 
-    class DownloadApk extends AsyncTask<String,String,String>{
+   /********************************************************************************************************/
 
-        String filename;
-        public DownloadApk(String filename){
-            this.filename=filename;
-        }
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            ProgressDialogClass.getDialog(getActivity());
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-                URL url = new URL(params[0]);
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.setDoOutput(true);
-                urlConnection.connect();
-                File sdcard = Environment.getExternalStorageDirectory();
-                File file = new File(sdcard,"HelloWorldProject.apk");
-                FileOutputStream fileOutput = new FileOutputStream(file);
-                InputStream inputStream = urlConnection.getInputStream();
-
-                byte[] buffer = new byte[1024];
-                int bufferLength = 0;
-
-                while ( (bufferLength = inputStream.read(buffer)) > 0 ) {
-                    fileOutput.write(buffer, 0, bufferLength);
-                }
-                fileOutput.close();
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            ProgressDialogClass.logout();
-        }
-    }
 }

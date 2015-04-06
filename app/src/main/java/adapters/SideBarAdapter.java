@@ -52,4 +52,5 @@ public class SideBarAdapter extends BaseAdapter {
         tv_itemname.setText(drawer_text[position]);
         return convertView;
     }
+    /**************************************************************************************************************************/
 }

@@ -105,6 +105,8 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
         return v;
     }
 
+    /**************************************************************************************************************************/
+
     @Override
     public void onClick(View v) {
         switch (v.getId()){
@@ -143,6 +145,9 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
                 break;
         }
     }
+
+    /**************************************************************************************************************************/
+
     @Override
     public void onSuccess(T s) {
         try{
@@ -209,10 +214,13 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
         }
     }
 
+    /**************************************************************************************************************************/
+
     @Override
     public void onFailure(RetrofitError error) {
         if(error!=null){
             UIutill.ShowDialog(getActivity(), getString(R.string.error), CustomErrorHandling.ShowError(error, getActivity()));
         }
     }
+    /**************************************************************************************************************************/
 }

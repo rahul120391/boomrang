@@ -3,7 +3,6 @@ package fragments;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,10 +98,8 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
         }
         return v;
     }
-    private int dp2px(int dp) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
-                getResources().getDisplayMetrics());
-    }
+
+    /********************************************************************************************************/
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int positionn, long id) {
@@ -119,6 +116,8 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
         }
 
     }
+
+    /********************************************************************************************************/
 
     @Override
     public void onSuccess(T s)
@@ -179,6 +178,7 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
              e.printStackTrace();
          }
     }
+    /********************************************************************************************************/
 
     @Override
     public void onFailure(RetrofitError error) {
@@ -187,12 +187,14 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
             UIutill.ShowDialog(getActivity(),getString(R.string.error), CustomErrorHandling.ShowError(error, getActivity()));
         }
     }
+    /********************************************************************************************************/
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putString("searchtext",searchtext);
         super.onSaveInstanceState(outState);
     }
+    /********************************************************************************************************/
 
     @Override
     public void onClick(View v) {
@@ -218,9 +220,13 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
                 break;
         }
     }
+    /********************************************************************************************************/
 
     @Override
     public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
         return false;
     }
+
+   /********************************************************************************************************/
+
 }

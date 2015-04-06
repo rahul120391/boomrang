@@ -16,7 +16,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,7 +26,6 @@ import commonutils.DataTransferInterface;
 import commonutils.MethodClass;
 import commonutils.UIutill;
 import commonutils.URLS;
-import customviews.ProgressItem;
 import retrofit.RetrofitError;
 
 /**
@@ -41,13 +39,6 @@ public class MyDashBoard<T> extends Fragment implements View.OnClickListener, Da
     LinearLayout layout_myfiles,layout_myprofile;
     TextView tv_myfiles,tv_myprofile,tv_spacestats;
     MethodClass<T> methodClass;
-    private ArrayList<ProgressItem> progressItemList;
-    private ProgressItem mProgressItem;
-    private float totalSpan = 1500;
-    private float redSpan = 200;
-    private float blueSpan = 300;
-    private float greenSpan = 400;
-    private float yellowSpan = 150;
     private float darkGreySpan;
 
     @Nullable
@@ -90,24 +81,8 @@ public class MyDashBoard<T> extends Fragment implements View.OnClickListener, Da
         }
         return v;
     }
-/*    private void initDataToSeekbar() {
-        progressItemList = new ArrayList<ProgressItem>();
-        mProgressItem = new ProgressItem();
-        mProgressItem.progressItemPercentage = ((redSpan / totalSpan) * 100);
-        Log.i("Mainactivity", mProgressItem.progressItemPercentage + "");
-        mProgressItem.color = R.color.all_indi_color;
-        progressItemList.add(mProgressItem);
-        mProgressItem = new ProgressItem();
-        mProgressItem.progressItemPercentage = (blueSpan / totalSpan) * 100;
-        mProgressItem.color = R.color.consume_indi_color;
-        progressItemList.add(mProgressItem);
-        mProgressItem = new ProgressItem();
-        mProgressItem.progressItemPercentage = (greenSpan / totalSpan) * 100;
-        mProgressItem.color = R.color.remaining_indi_color;
-        progressItemList.add(mProgressItem);
-        customseekbar.initData(progressItemList);
-        customseekbar.invalidate();
-    }*/
+
+    /**************************************************************************************************************************/
 
     @Override
     public void onClick(View v) {
@@ -120,6 +95,8 @@ public class MyDashBoard<T> extends Fragment implements View.OnClickListener, Da
                 break;
         }
     }
+
+    /**************************************************************************************************************************/
 
     @Override
     public void onSuccess(T s) {
@@ -148,6 +125,8 @@ public class MyDashBoard<T> extends Fragment implements View.OnClickListener, Da
             }
     }
 
+    /**************************************************************************************************************************/
+
     @Override
     public void onFailure(RetrofitError error) {
         if(error!=null){
@@ -156,35 +135,6 @@ public class MyDashBoard<T> extends Fragment implements View.OnClickListener, Da
 
     }
 
-    public Double UnitConvert(String value){
-        Double a=0.0;
-        String finalvalue=value.substring(0,value.length()-3);
-        if(value.endsWith("KB")){
-            a=Double.valueOf(finalvalue)*1024;
-        }
-        else if(value.endsWith("MB")){
-             a=Double.valueOf(finalvalue)*1024*1024;
-        }
-        else if(value.endsWith("GB")){
-             a=Double.valueOf(finalvalue)*1024*1024*1024;
-        }
-        else if(value.endsWith("TB")){
-             a=Double.valueOf(finalvalue)*1024*1024*1024*1024;
-        }
-        else if(value.endsWith("PB")){
-             a=Double.valueOf(finalvalue)*1024*1024*1024*1024*1024;
-        }
-        else if(value.endsWith("EB")){
-             a=Double.valueOf(finalvalue)*1024*1024*1024*1024*1024*1024;
-        }
-        else if(value.endsWith("ZB")){
-            a=Double.valueOf(finalvalue)*1024*1024*1024*1024*1024*1024*1024;
-        }
-        else if(value.endsWith("YB")){
-            a=Double.valueOf(finalvalue)*1024*1024*1024*1024*1024*1024*1024*1024;
-        }
-        return a;
-    }
-
+    /**************************************************************************************************************************/
 
 }

@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -68,6 +69,7 @@ public class UIutill {
                 textColor(context.getResources().getColor(R.color.email_password_txtclr)));
     }
 
+    /***********************************************************************************************************************/
     /***
      * this method is used to show dialog
      * @param cnt
@@ -102,4 +104,19 @@ public class UIutill {
             });
         }
     }
+    /***********************************************************************************************************************/
+    /**
+     * this method is used to convert density pixel to pixel
+     * @param dp
+     * -pass dp to convert to px
+     * @param cnt
+     * -context of the fragment/activity
+     * @return
+     * -returns the pixel in integer form
+     */
+    public static int dp2px(int dp,Context cnt) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
+                cnt.getResources().getDisplayMetrics());
+    }
+
 }

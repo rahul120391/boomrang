@@ -46,6 +46,9 @@ public class FileChooser extends Activity {
         currentDir = new File("/sdcard/");
         fill(currentDir); 
     }
+
+    /**************************************************************************************************************************/
+
     private void fill(File f)
     {
     	File[]dirs = f.listFiles(); 
@@ -224,6 +227,7 @@ public class FileChooser extends Activity {
 		 adapter = new FileArrayAdapter(FileChooser.this, R.layout.file_view,dir);
         lv_files.setAdapter(adapter);
     }
+    /**************************************************************************************************************************/
 
     private void onFileClick(Item o)
     {
@@ -235,4 +239,5 @@ public class FileChooser extends Activity {
         setResult(RESULT_OK, intent);
         finish();
     }
+    /**************************************************************************************************************************/
 }

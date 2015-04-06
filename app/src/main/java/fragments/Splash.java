@@ -1,20 +1,15 @@
 package fragments;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
-import com.daimajia.androidanimations.library.Techniques;
-import com.daimajia.androidanimations.library.YoYo;
-
 import Boomerang.R;
-import activities.DashboardActivity;
 import activities.MainActivity;
 
 /**
@@ -38,7 +33,7 @@ public class Splash extends android.app.Fragment {
             iv_logo.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    YoYo.with(Techniques.FadeIn).duration(2000).playOn(iv_logo);
+                    iv_logo.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.fade_in));
                     iv_logo.setVisibility(View.VISIBLE);
                 }
             },1000);
@@ -64,4 +59,5 @@ public class Splash extends android.app.Fragment {
         }
         return v;
     }
+    /**************************************************************************************************************************/
 }
