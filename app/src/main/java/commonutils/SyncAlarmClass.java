@@ -26,7 +26,7 @@ public class SyncAlarmClass {
             manager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
             Intent intent = new Intent(context, CheckFragmentVisibilityBroadcast.class);
             pintent = PendingIntent.getBroadcast(context, 0, intent, 0);
-            manager.setRepeating(AlarmManager.RTC_WAKEUP,System.currentTimeMillis(),
+            manager.setRepeating(AlarmManager.RTC_WAKEUP,System.currentTimeMillis()+1000 * 60 * time,
                     1000 * 60 * time, pintent);
         }
     }

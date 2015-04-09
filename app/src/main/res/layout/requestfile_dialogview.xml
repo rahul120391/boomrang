@@ -39,6 +39,7 @@
         android:hint="@string/enter_email"
         android:inputType="textEmailAddress"
         android:padding="10dp"
+        android:singleLine="true"
         android:textColor="@color/search_box_txtclr"
         android:textColorHint="@color/search_box_txtclr"
         android:textCursorDrawable="@drawable/edittext_cursor_drawable"

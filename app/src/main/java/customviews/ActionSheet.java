@@ -326,14 +326,14 @@ public class ActionSheet extends android.app.Fragment implements OnClickListener
 		}
 	}
 
-ublic static interface ActionSheetListener {
+public static interface ActionSheetListener {
 
 		void onDismiss(ActionSheet actionSheet, boolean isCancel);
 
 		void onOtherButtonClick(ActionSheet actionSheet, int index);
 	}
 
-	p
+
 	private static class Attributes {
 		Drawable background;
 		Drawable cancelButtonBackground;
@@ -382,8 +382,8 @@ ublic static interface ActionSheetListener {
 		}
 	}
 
-	p
-ublic static class Builder {
+
+ public static class Builder {
 
 		private Context mContext;
 		private android.app.FragmentManager mFragmentManager;

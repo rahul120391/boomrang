@@ -57,4 +57,9 @@ public interface MyRetrofitInterface<T> {
     @GET(URLS.DOWNLOAD)
     void download(@QueryMap Map<String,String> mymap,Callback<T> object);
 
+    @GET(URLS.UPDATEPROFILE)
+    void updateprofile(@QueryMap Map<String,String> map,Callback<T> object);
+
+    @GET(URLS.SYNCFILES)
+    void syncfiles(@QueryMap Map<String,String> map,Callback<T> object);
 }

@@ -3,8 +3,12 @@ package commonutils;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +17,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.gitonway.lee.niftymodaldialogeffects.lib.NiftyDialogBuilder;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.SnackbarManager;
 
@@ -25,10 +28,9 @@ import Boomerang.R;
 public class UIutill {
 
     static Typeface font;
-    static NiftyDialogBuilder dialogBuilder;
     static Dialog dialog;
     static AlertDialog mydialog;
-
+    static int notificationid=0;
     /**
      * this method is used to set font on the views
      *
@@ -118,5 +120,33 @@ public class UIutill {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
                 cnt.getResources().getDisplayMetrics());
     }
+
+    /***********************************************************************************************************************/
+
+    /**
+     * this methos is used to generate notifications
+     * @param context
+     * -pass the context of fragment/activity
+     * @param messages
+     * -message to be shown inside notification
+     */
+    public static void generateNotification(Context context,String messages){
+        Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Notification mNotification=null;
+        notificationid=notificationid+1;
+        mNotification = new Notification.Builder(context)
+        .setContentTitle("Notification")
+        .setContentText(messages)
+        .setSmallIcon(R.drawable.appicon)
+        .setSound(soundUri)
+        .build();
+
+        mNotification.flags |= Notification.FLAG_AUTO_CANCEL;
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+
+        notificationManager.notify(notificationid, mNotification);
+    }
+
+
 
 }

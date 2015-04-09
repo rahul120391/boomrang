@@ -17,6 +17,7 @@ import android.widget.TextView;
 import Boomerang.R;
 import adapters.SideBarAdapter;
 import commonutils.SyncAlarmClass;
+import fragments.ContactUs;
 import fragments.MyDashBoard;
 import fragments.MyFiles;
 import fragments.Settings;
@@ -128,6 +129,14 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
                            e.printStackTrace();
                        }
                        break;
+                   case 4:
+                       try{
+                           FragmentTransactions(R.id.fragment_container,new ContactUs(),"contactus");
+                       }
+                       catch (Exception e){
+                           e.printStackTrace();
+                       }
+                       break;
                    case 5:
                        try{
                            FragmentTransactions(R.id.fragment_container,new Settings(),"settings");
@@ -195,9 +204,9 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
     }
     @Override
     protected void onStop() {
-        super.onStop();
         System.out.println("inside on stop");
         SyncAlarmClass.StopAlarm();
+        super.onStop();
     }
     /**************************************************************************************************************************/
 }

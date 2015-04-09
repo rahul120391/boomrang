@@ -23,6 +23,7 @@
         android:background="@drawable/search_edittext_bg"
         android:hint="@string/search_file_folder"
         android:padding="10dp"
+        android:singleLine="true"
         android:textColor="@color/search_box_txtclr"
         android:textColorHint="@color/search_box_txtclr"
         android:textCursorDrawable="@drawable/edittext_cursor_drawable"

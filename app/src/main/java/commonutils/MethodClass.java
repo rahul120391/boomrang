@@ -7,14 +7,13 @@ import android.net.NetworkInfo;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.internal.bind.DateTypeAdapter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
+import java.text.DateFormat;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
@@ -42,10 +41,12 @@ public class MethodClass<T> {
     public MethodClass(Context cnt, DataTransferInterface<T> inter) {
         this.cnt = cnt;
         this.inter = inter;
-        gson = new GsonBuilder()
-                .setFieldNamingPolicy(
-                        FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                .registerTypeAdapter(Date.class, new DateTypeAdapter())
+        Gson gson = new GsonBuilder()
+                .enableComplexMapKeySerialization()
+                .setDateFormat(DateFormat.LONG)
+                .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
+                .setPrettyPrinting()
+                .setVersion(1.0)
                 .create();
         adapter = new RestAdapter.Builder()
                 .setEndpoint(URLS.COMMON_URL)
@@ -216,6 +217,12 @@ public class MethodClass<T> {
                 break;
             case URLS.DOWNLOAD:
                 myretro.download(map,new CallbackClass<T>(inter,cnt));
+                break;
+            case URLS.UPDATEPROFILE:
+                myretro.updateprofile(map,new CallbackClass<T>(inter,cnt));
+                break;
+            case URLS.SYNCFILES:
+                myretro.syncfiles(map,new CallbackClass<T>(inter,cnt));
                 break;
             default:
                 break;

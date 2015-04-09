@@ -24,22 +24,29 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.io.File;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import Boomerang.R;
 import activities.DashboardActivity;
@@ -47,6 +54,8 @@ import adapters.MyFilesAdapter;
 import commonutils.CustomErrorHandling;
 import commonutils.DataTransferInterface;
 import commonutils.MethodClass;
+import commonutils.MyRetrofitInterface;
+import commonutils.ProgressDialogClass;
 import commonutils.UIutill;
 import commonutils.URLS;
 import customviews.SwipeMenu;
@@ -56,7 +65,12 @@ import customviews.SwipeMenuLayout;
 import customviews.SwipeMenuListView;
 import de.greenrobot.event.EventBus;
 import modelclasses.MyFilesDataModel;
+import retrofit.Callback;
+import retrofit.RestAdapter;
 import retrofit.RetrofitError;
+import retrofit.android.MainThreadExecutor;
+import retrofit.client.Response;
+import retrofit.converter.GsonConverter;
 
 /**
  * Created by rahul on 3/11/2015.
@@ -64,7 +78,8 @@ import retrofit.RetrofitError;
 public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTransferInterface<T>,AdapterView.OnItemClickListener, SwipeMenuListView.OnMenuItemClickListener{
     View v=null;
     RelativeLayout layout_myfiles,layout_sync,layout_search,layout_upload,layout_createfolder;
-    TextView tv_foldername,tv_back;
+    TextView tv_foldername;
+    ImageView iv_back;
     customviews.SwipeMenuListView lv_myfiles;
     ArrayList<MyFilesDataModel> myfileslist=new ArrayList<>();
     SwipeMenuCreator creator;
@@ -81,11 +96,15 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
     String searchstring;
     LinearLayout mainlayout;
     int listviewpositionclick=0;
+    String deviceId;
+    ExecutorService executorService;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         try{
             EventBus.getDefault().register(this);
+            deviceId = android.provider.Settings.Secure.getString(getActivity().getContentResolver(),
+                    android.provider.Settings.Secure.ANDROID_ID);
             methodClass=new MethodClass<>(getActivity(),this);
             v=inflater.inflate(R.layout.fragment_myfiles,null);
             foldername=getString(R.string.myfiles);
@@ -125,10 +144,9 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
             lv_myfiles.setOnItemClickListener(this);
 
             lv_myfiles.setOnMenuItemClickListener(this);
-            tv_back=(TextView)v.findViewById(R.id.tv_back);
+            iv_back=(ImageView)v.findViewById(R.id.iv_back);
             tv_foldername=(TextView)v.findViewById(R.id.tv_foldername);
-            tv_back.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
-            tv_back.setOnClickListener(this);
+            iv_back.setOnClickListener(this);
             tv_foldername.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
 
 
@@ -210,10 +228,18 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                 layout_upload.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
                 layout_createfolder.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
                 if(methodClass.checkInternetConnection()){
-                    UIutill.ShowSnackBar(getActivity(),"Sync started");
+                    if(stack!=null && stack.size()>0){
+                        position=7;
+                        UIutill.ShowSnackBar(getActivity(),"Sync started");
+                        Map<String,String> map=new HashMap<>();
+                        map.put("userId",getActivity().getSharedPreferences("Login",0).getString("UserID",""));
+                        map.put("deviceId",deviceId);
+                        map.put("folderId",stack.lastElement()+"");
+                        methodClass.MakeGetRequestWithParams(map,URLS.SYNCFILES);
+                    }
                 }
                 else{
-                     UIutill.ShowSnackBar(getActivity(),getString(R.string.sync_start));
+                    UIutill.ShowSnackBar(getActivity(),getString(R.string.no_network));
                 }
                 break;
             case R.id.layout_upload:
@@ -222,7 +248,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                 layout_search.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
                 layout_upload.setBackgroundColor(getResources().getColor(R.color.myfiles_selected));
                 layout_createfolder.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
-                if(stack.size()>0){
+                if( stack!=null && stack.size()>0){
                     UploadFiles files=new UploadFiles();
                     Bundle b=new Bundle();
                     b.putInt("folderid",stack.lastElement());
@@ -240,7 +266,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                     ShowSearch_CreateFolderDialog("createfolder");
                 }
                 break;
-            case R.id.tv_back:
+            case R.id.iv_back:
                 try{
                     if(methodClass.checkInternetConnection()){
                         position=2;
@@ -280,27 +306,24 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                 JsonParser jsonParser = new JsonParser();
                 JsonObject jsonreturn= (JsonObject)jsonParser.parse(value);
                 boolean IsSucess=jsonreturn.get("IsSucess").getAsBoolean();
-                if(IsSucess){
-                    System.out.println("position value"+position);
-                     if(position==0 || position==1 || position==2 || position==6)
-                      {
-                        String message=jsonreturn.get("Message").getAsString().trim();
-                        if(!message.equalsIgnoreCase("")){
-                            UIutill.ShowSnackBar(getActivity(),message);
+                if(IsSucess) {
+                    System.out.println("position value" + position);
+                    if (position == 0 || position == 1 || position == 2 || position == 6) {
+                        String message = jsonreturn.get("Message").getAsString().trim();
+                        if (!message.equalsIgnoreCase("")) {
+                            UIutill.ShowSnackBar(getActivity(), message);
                         }
-                        if(jsonreturn.get("ResponseData").isJsonArray() && jsonreturn.get("ResponseData").getAsJsonArray().size()>=0)
-                        {
-                            JsonArray ResponseData=jsonreturn.get("ResponseData").getAsJsonArray();
-                            System.out.println("response"+ResponseData);
+                        if (jsonreturn.get("ResponseData").isJsonArray() && jsonreturn.get("ResponseData").getAsJsonArray().size() >= 0) {
+                            JsonArray ResponseData = jsonreturn.get("ResponseData").getAsJsonArray();
+                            System.out.println("response" + ResponseData);
                             myfileslist.clear();
-                            for(int i=0;i<ResponseData.size();i++){
-                                JsonObject object=ResponseData.get(i).getAsJsonObject();
-                                MyFilesDataModel model=new MyFilesDataModel();
+                            for (int i = 0; i < ResponseData.size(); i++) {
+                                JsonObject object = ResponseData.get(i).getAsJsonObject();
+                                MyFilesDataModel model = new MyFilesDataModel();
                                 model.setFileid(object.get("FileID").getAsInt());
-                                if(object.get("Type")!=null){
+                                if (object.get("Type") != null) {
                                     model.setFiletype(object.get("Type").getAsString().trim());
-                                }
-                                else{
+                                } else {
                                     model.setFiletype("Unknown");
                                 }
 
@@ -320,35 +343,72 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                                 foldernames.pop();
                             }
                             if (stack.size() > 1) {
-                                tv_back.setText(getString(R.string.back));
-                                tv_back.setVisibility(View.VISIBLE);
+                                iv_back.setVisibility(View.VISIBLE);
                             } else {
-                                tv_back.setVisibility(View.GONE);
+                                iv_back.setVisibility(View.GONE);
                             }
-                            if(myfileslist.size()>0){
+                            if (myfileslist.size() > 0) {
                                 lv_myfiles.setMenuCreator(creator);
                             }
                             tv_foldername.setText(foldernames.lastElement());
                             adapter = new MyFilesAdapter(getActivity(), myfileslist);
                             lv_myfiles.setAdapter(adapter);
 
+                        } else {
+                            UIutill.ShowSnackBar(getActivity(), getString(R.string.no_result));
                         }
-                        else{
-                            UIutill.ShowDialog(getActivity(),getString(R.string.error),getString(R.string.no_file));
-                        }
-                    }
-                    else if(position==3 || position==4){
-                         UIutill.ShowSnackBar(getActivity(),jsonreturn.get("ResponseData").getAsString().trim());
-                    }
-                    else if(position==5){
-                         String fileurl=jsonreturn.get("ResponseData").getAsString();
-                         String filename=jsonreturn.get("CallBack").getAsString();
-                         DownloadFiles(filename,fileurl);
+                    } else if (position == 3 || position == 4) {
+                        UIutill.ShowSnackBar(getActivity(), jsonreturn.get("ResponseData").getAsString().trim());
+                    } else if (position == 5) {
+                        ProgressDialogClass.logout();
+                        String fileurl = jsonreturn.get("ResponseData").getAsString();
+                        String filename = jsonreturn.get("CallBack").getAsString();
+                        DownloadFiles(filename, fileurl);
+                    } else if (position == 7) {
+                        JsonObject ResponseData = jsonreturn.getAsJsonObject("ResponseData");
+                        JsonArray Table = ResponseData.getAsJsonArray("Table");
+                        if (Table.isJsonArray() && Table.size() > 0) {
+                            ArrayList<Integer> myfiledata=new ArrayList<>();
+                            for(MyFilesDataModel dataModel:myfileslist){
+                                myfiledata.add(dataModel.getFileid());
+                            }
+                            for (int x = 0; x < Table.size(); x++) {
+                                JsonObject object = Table.get(x).getAsJsonObject();
+                                System.out.println("objectt"+object.get("status").getAsInt());
+                                if (object.get("status").getAsInt() == 0) {
+                                    if(myfiledata.contains(object.get("FileId").getAsInt())){
+                                        continue;
+                                    }
+                                    else{
+                                        MyFilesDataModel model = new MyFilesDataModel();
+                                        model.setFileid(object.get("FileId").getAsInt());
+                                        if (object.get("Type") != null) {
+                                            model.setFiletype(object.get("Type").getAsString().trim());
+                                        } else {
+                                            model.setFiletype("Unknown");
+                                        }
+                                        model.setFilename(object.get("FileName").getAsString().trim());
+                                        myfileslist.add(0, model);
+                                    }
+                                } else if (object.get("status").getAsInt() == 1) {
+                                    int fileid = object.get("FileId").getAsInt();
+                                    Iterator<MyFilesDataModel> modell=myfileslist.iterator();
+                                    while (modell.hasNext()){
+                                        MyFilesDataModel mymodel=modell.next();
+                                        if(mymodel.getFileid()==fileid){
+                                            modell.remove();
+                                        }
+                                    }
+                                }
 
+                            }
+                        }
+                        adapter = new MyFilesAdapter(getActivity(), myfileslist);
+                        lv_myfiles.setAdapter(adapter);
                      }
                 }
                 else{
-                    UIutill.ShowDialog(getActivity(),getString(R.string.error),jsonreturn.get("Message").getAsString());
+                    UIutill.ShowDialog(getActivity(), getString(R.string.error), jsonreturn.get("Message").getAsString());
                 }
             }
             catch (Exception e){
@@ -691,7 +751,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                     if(et_email.getText().toString().trim().length()==0){
                         UIutill.ShowSnackBar(getActivity(),getString(R.string.email_empty));
                     }
-                    else if(!et_email.getText().toString()
+                    else if(!et_email.getText().toString().trim()
                             .matches(Patterns.EMAIL_ADDRESS.pattern())){
                         UIutill.ShowSnackBar(getActivity(),getString(R.string.valied_Email));
                     }
@@ -881,8 +941,6 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
            request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
            request.setDestinationInExternalPublicDir("/MyData",filename);
            manager.enqueue(request);
-
-
        }
 
    }
@@ -896,7 +954,102 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
     public void onEvent(String event) {
         System.out.println("event is fired"+event);
         if(stack !=null && stack.size()>0){
-            int folderid=stack.lastElement();
+            if(methodClass.checkInternetConnection()){
+                Gson gson = new GsonBuilder()
+                        .enableComplexMapKeySerialization()
+                        .setDateFormat(DateFormat.LONG)
+                        .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
+                        .setPrettyPrinting()
+                        .setVersion(1.0)
+                        .create();
+                final int folderid=stack.lastElement();
+
+                Map<String,String> map=new HashMap<>();
+                map.put("userId",getActivity().getSharedPreferences("Login",0).getString("UserID",""));
+                map.put("deviceId",deviceId);
+                map.put("folderId",folderid+"");
+                executorService=Executors.newCachedThreadPool();
+                final RestAdapter restadapter=new RestAdapter.Builder().
+                        setEndpoint(URLS.COMMON_URL).
+                        setExecutors(executorService, new MainThreadExecutor()).
+                        setConverter(new GsonConverter(gson)).
+                        build();
+                MyRetrofitInterface<T> myretro=restadapter.create(MyRetrofitInterface.class);
+                myretro.syncfiles(map,new Callback<T>() {
+                    @Override
+                    public void success(T t, Response response) {
+                        try{
+                            String value=new Gson().toJson(t);
+                            System.out.println("value"+value);
+                            JsonParser jsonParser = new JsonParser();
+                            JsonObject jsonreturn= (JsonObject)jsonParser.parse(value);
+                            boolean IsSucess=jsonreturn.get("IsSucess").getAsBoolean();
+                            if(IsSucess){
+                               if(folderid==stack.lastElement()){
+                                   JsonObject ResponseData=jsonreturn.getAsJsonObject("ResponseData");
+                                   JsonArray Table=ResponseData.getAsJsonArray("Table");
+                                   if(Table.isJsonArray() && Table.size()>0){
+                                       ArrayList<Integer> list=new ArrayList<Integer>();
+                                       for(MyFilesDataModel mymodeldata:myfileslist){
+                                           list.add(mymodeldata.getFileid());
+                                       }
+                                       for(int x=0;x<Table.size();x++){
+                                           JsonObject object=Table.get(x).getAsJsonObject();
+                                           if(object.get("status").getAsInt()==0){
+                                               if(list.contains(object.get("FileId").getAsInt())){
+                                                   continue;
+                                               }
+                                               else{
+                                                   MyFilesDataModel model=new MyFilesDataModel();
+                                                   model.setFileid(object.get("FileId").getAsInt());
+                                                   if(object.get("Type")!=null){
+                                                       model.setFiletype(object.get("Type").getAsString().trim());
+                                                   }
+                                                   else{
+                                                       model.setFiletype("Unknown");
+                                                   }
+                                                   model.setFilename(object.get("FileName").getAsString().trim());
+                                                   myfileslist.add(0,model);
+                                               }
+                                           }
+                                           else if(object.get("status").getAsInt()==1){
+                                               int fileid = object.get("FileId").getAsInt();
+                                               Iterator<MyFilesDataModel> modell=myfileslist.iterator();
+                                               while (modell.hasNext()){
+                                                   MyFilesDataModel mymodel=modell.next();
+                                                   if(mymodel.getFileid()==fileid){
+                                                       modell.remove();
+                                                   }
+                                               }
+                                           }
+
+                                       }
+                                   }
+                                   JsonArray Table1=ResponseData.getAsJsonArray("Table1");
+                                   if(Table1.isJsonArray() && Table1.size()>0){
+                                       for(int i=0;i<Table1.size();i++){
+                                           JsonObject obj=Table1.get(i).getAsJsonObject();
+                                           String Description=obj.get("Description").getAsString();
+                                           UIutill.generateNotification(getActivity(),Description);
+                                       }
+                                   }
+                                   adapter=new MyFilesAdapter(getActivity(),myfileslist);
+                                   lv_myfiles.setAdapter(adapter);
+                               }
+
+                            }
+                        }
+                        catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void failure(RetrofitError retrofitError) {
+                        System.out.println(CustomErrorHandling.ShowError(retrofitError, getActivity()));
+                    }
+                });
+            }
 
 
         }
@@ -912,4 +1065,11 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
 
    /********************************************************************************************************/
 
+    @Override
+    public void onStop() {
+        if(executorService!=null){
+            executorService.shutdownNow();
+        }
+        super.onStop();
+    }
 }

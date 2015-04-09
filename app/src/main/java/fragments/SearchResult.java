@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -39,7 +40,8 @@ import retrofit.RetrofitError;
 public class SearchResult<T> extends Fragment implements AdapterView.OnItemClickListener, DataTransferInterface<T>,View.OnClickListener,SwipeMenuListView.OnMenuItemClickListener{
 
     View v=null;
-    TextView tv_foldername,tv_back;
+    TextView tv_foldername;
+    ImageView iv_back;
     ListView lv_myfiles;
     Stack<String> stack=new Stack<String>();
     Stack<String> foldernames=new Stack<>();
@@ -58,10 +60,9 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
         try{
             v=inflater.inflate(R.layout.fragment_search,null);
             tv_foldername=(TextView)v.findViewById(R.id.tv_foldername);
-            tv_back=(TextView)v.findViewById(R.id.tv_back);
+            iv_back=(ImageView)v.findViewById(R.id.iv_back);
             tv_foldername.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
-            tv_back.setTypeface(UIutill.SetFont(getActivity(),"segoeuilght.ttf"));
-            tv_back.setOnClickListener(this);
+            iv_back.setOnClickListener(this);
             layout_foldernames=(RelativeLayout)v.findViewById(R.id.layout_foldernames);
             layout_foldernames.setVisibility(View.GONE);
             methodclass=new MethodClass<>(getActivity(),this);
@@ -153,20 +154,27 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
                          if(position==1){
                              stack.push(searchtext);
                              foldernames.push(foldername);
+                             if(mylist.size()==0){
+                                 UIutill.ShowSnackBar(getActivity(),getString(R.string.nosearch));
+                             }
                          }
                          else if(position==2){
                              stack.pop();
                              foldernames.pop();
+                             if(mylist.size()==0){
+                                 UIutill.ShowSnackBar(getActivity(),getString(R.string.no_result));
+                             }
                          }
                          if (stack.size() > 1) {
-                             tv_back.setText(getString(R.string.back));
-                             tv_back.setVisibility(View.VISIBLE);
+                             iv_back.setVisibility(View.VISIBLE);
                          } else {
-                             tv_back.setVisibility(View.GONE);
+                             iv_back.setVisibility(View.GONE);
                          }
-                         tv_foldername.setText(foldernames.lastElement());
-                         adapter=new MyFilesAdapter(getActivity(),mylist);
-                         lv_myfiles.setAdapter(adapter);
+
+                     tv_foldername.setText(foldernames.lastElement());
+                     adapter=new MyFilesAdapter(getActivity(),mylist);
+                     lv_myfiles.setAdapter(adapter);
+
 
                  }
                  else{
@@ -199,7 +207,7 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.tv_back:
+            case R.id.iv_back:
                 position=2;
                 if(stack.size()>2){
                     System.out.println("insid eposition 2");

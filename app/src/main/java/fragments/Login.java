@@ -116,7 +116,7 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
                      if(et_email.getText().toString().trim().length()==0){
                          UIutill.ShowSnackBar(getActivity(),getString(R.string.empty_email));
                      }
-                     else if(!et_email.getText().toString()
+                     else if(!et_email.getText().toString().trim()
                              .matches(Patterns.EMAIL_ADDRESS.pattern())){
                          UIutill.ShowSnackBar(getActivity(),getString(R.string.valied_Email));
                      }

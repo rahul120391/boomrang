@@ -112,11 +112,15 @@ public class MyDashBoard<T> extends Fragment implements View.OnClickListener, Da
                     String allotedspace=mainobject.get("AllotedSpace").getAsString().trim();
                     String spaceConsumed=mainobject.get("spaceConsumed").getAsString().trim();
                     String spaceLeft=mainobject.get("spaceLeft").getAsString().trim();
-                    int progress=mainobject.get("Consumed%").getAsInt();
-                    customseekbar.setProgress(progress);
+                    float progress=mainobject.get("Consumed%").getAsFloat();
+                    float allotted=mainobject.get("Alloted%").getAsFloat();
+                    float remain=allotted-progress;
+                    // use \u0025 for %
+                    String remaining =remain+"\u0025";
+                    customseekbar.setProgress((int)progress);
                     tv_allowed.setText(Html.fromHtml("<font  color='#ffae9b'>" + getResources().getString(R.string.allowed) + "</font>" + "  " + "<font color='#FFFFFF'>" + "(" + allotedspace + ")" + "</font>"));
                     tv_consumed.setText(Html.fromHtml("<font  color='#ffae9b'>"+getResources().getString(R.string.consumed)+"</font>"+"  "+"<font color='#FFFFFF'>"+"("+spaceConsumed+")"+"</font>"));
-                    tv_remaining.setText(Html.fromHtml("<font  color='#ffae9b'>"+getResources().getString(R.string.remaining)+"</font>"+"  "+"<font color='#FFFFFF'>"+"("+spaceLeft+")"+"</font>"));
+                    tv_remaining.setText(Html.fromHtml("<font  color='#ffae9b'>"+getResources().getString(R.string.remaining)+"</font>"+"  "+"<font color='#FFFFFF'>"+"("+remaining+")"+"</font>"));
 
                 }
             }

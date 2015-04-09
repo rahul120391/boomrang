@@ -30,4 +30,8 @@ public class URLS {
     public static final String SETTINGS="/SaveSettings";
 
     public static final String DOWNLOAD="/Download";
+
+    public static final String UPDATEPROFILE="/UpdateUserProfile";
+
+    public static final String SYNCFILES="/SyncFiles";
 }

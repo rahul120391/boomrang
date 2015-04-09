@@ -17,8 +17,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.webkit.MimeTypeMap;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -557,11 +555,9 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
         ImageView iv_image, iv_delete;
         TextView tv_name;
         AQuery aq;
-        Animation anim;
         public MyUploadFilesAdapter(Context context, ArrayList<GalleryDataModel> mylist) {
             this.context = context;
             this.mylist = mylist;
-            anim= AnimationUtils.loadAnimation(cnt,R.anim.fade_in);
             inf = LayoutInflater.from(context);
             aq = new AQuery(context);
         }
@@ -602,7 +598,6 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
             catch (Exception e){
                 e.printStackTrace();
             }
-            convertView.startAnimation(anim);
             return convertView;
         }
     }
