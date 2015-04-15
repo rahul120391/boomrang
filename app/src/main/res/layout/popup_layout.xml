@@ -4,14 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/remaining_indi_color"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@color/login_box_bg"
         android:orientation="horizontal"
-        android:padding="10dp" >
+        android:padding="10dp">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -55,7 +55,8 @@
         android:text="@string/camera"
         android:textColor="@color/email_password_txtclr"
         android:textSize="18sp" />
-     <View
+
+    <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/listview_divider" />

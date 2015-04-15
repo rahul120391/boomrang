@@ -17,8 +17,8 @@ public class ProgressDialogClass {
 
     /**
      * -this method is used to show custom progress dialog
-     * @param cnt
-     * -pass the context of the activity/fragment to show the progress dialog
+     *
+     * @param cnt -pass the context of the activity/fragment to show the progress dialog
      */
     public static void getDialog(Context cnt) {
         if (dialog == null || !dialog.isShowing()) {

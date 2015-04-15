@@ -404,33 +404,37 @@ public class CircularProgressDrawable extends Drawable
             mColors = new int[]{color};
             return this;
         }
+
         public Builder colors(int[] colors) {
 
             CircularProgressBarUtils.checkColors(colors);
             mColors = colors;
             return this;
         }
+
         public Builder sweepSpeed(float sweepSpeed) {
             CircularProgressBarUtils.checkSpeed(sweepSpeed);
             mSweepSpeed = sweepSpeed;
             return this;
         }
-public Builder rotationSpeed(float rotationSpeed) {
+
+        public Builder rotationSpeed(float rotationSpeed) {
             CircularProgressBarUtils.checkSpeed(rotationSpeed);
             mRotationSpeed = rotationSpeed;
             return this;
         }
-                public Builder minSweepAngle(int minSweepAngle) {
+
+        public Builder minSweepAngle(int minSweepAngle) {
             CircularProgressBarUtils.checkAngle(minSweepAngle);
             mMinSweepAngle = minSweepAngle;
             return this;
-        }private Interpolator mSweepInterpolator = DEFAULT_SWEEP_INTERPOLATOR;
+        }
 
-public Builder maxSweepAngle(int maxSweepAngle) {
+        public Builder maxSweepAngle(int maxSweepAngle) {
             CircularProgressBarUtils.checkAngle(maxSweepAngle);
             mMaxSweepAngle = maxSweepAngle;
             return this;
-        }
+        }        private Interpolator mSweepInterpolator = DEFAULT_SWEEP_INTERPOLATOR;
 
         public Builder strokeWidth(float strokeWidth) {
             CircularProgressBarUtils.checkPositiveOrZero(strokeWidth, "StrokeWidth");
@@ -438,7 +442,7 @@ public Builder maxSweepAngle(int maxSweepAngle) {
             return this;
         }
 
-public Builder style(Style style) {
+        public Builder style(Style style) {
             CircularProgressBarUtils.checkNotNull(style, "Style");
             mStyle = style;
             return this;
@@ -450,7 +454,7 @@ public Builder style(Style style) {
             return this;
         }
 
-public Builder angleInterpolator(Interpolator interpolator) {
+        public Builder angleInterpolator(Interpolator interpolator) {
             CircularProgressBarUtils.checkNotNull(interpolator, "Angle interpolator");
             mAngleInterpolator = interpolator;
             return this;
@@ -466,25 +470,11 @@ public Builder angleInterpolator(Interpolator interpolator) {
                     mStyle,
                     mAngleInterpolator,
                     mSweepInterpolator);
-        }private Interpolator mAngleInterpolator = DEFAULT_ROTATION_INTERPOLATOR;
+        }
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        private Interpolator mAngleInterpolator = DEFAULT_ROTATION_INTERPOLATOR;
 
 
     }

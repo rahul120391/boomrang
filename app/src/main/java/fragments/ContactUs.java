@@ -13,14 +13,14 @@ import Boomerang.R;
  * Created by rahul on 4/7/2015.
  */
 public class ContactUs extends Fragment {
-    View v=null;
+    View v = null;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        try{
-            v=inflater.inflate(R.layout.layout_contactus,null);
-        }
-        catch (Exception e){
+        try {
+            v = inflater.inflate(R.layout.layout_contactus, null);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return v;

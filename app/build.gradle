@@ -13,7 +13,7 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -34,5 +34,4 @@ dependencies {
     compile 'de.hdodenhof:circleimageview:1.2.2'
     compile 'de.greenrobot:eventbus:2.2.1'
     compile 'com.appyvet:materialrangebar:1.0'
-    compile 'com.mani:thindownloadmanager:1.0.0'
 }

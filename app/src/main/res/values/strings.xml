@@ -16,7 +16,13 @@
     <string name="client_timeout">Client connection timeout error</string>
     <string name="unknown_error">Unknown error</string>
     <string name="error">Error</string>
-
+    <string name="no_res">No response</string>
+    <string name="http_accep">Request accepted but not completed</string>
+    <string name="http_bad_method">Http method not allowed</string>
+    <string name="http_bad_request">The request had bad syntax</string>
+    <string name="http_conflict">Http conflict error</string>
+    <string name="http_created">Request fulfilled but different resource created</string>
+    <string name="http_ent_too_large">Request entity is larger than server willing</string>
     <!-- Login Screen Strings -->
     <string name="email_address">Email address</string>
     <string name="password">Password</string>
@@ -126,11 +132,13 @@
     <string name="select_file">Please select atleast one file</string>
     <string name="file_max_limit">Only 5 items can be selected at times</string>
     <string name="mime_type_error">Mime type of file is null</string>
+    <string name="select">Select</string>
 
     <!--SearchResult Screen Strings-->
     <string name="no_result">No files found</string>
     <string name="search_result">Search Result</string>
     <string name="nosearch">No search result found</string>
+
     <!--ConfirmDialog Strings-->
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -146,6 +154,7 @@
     <string name="fname_hint">First name</string>
     <string name="lname_hint">Last name</string>
     <string name="edit">Edit</string>
+
     <!--Settings String-->
     <string name="settings">Settings</string>
     <string name="auto_sync">Auto sync</string>
@@ -159,18 +168,18 @@
     <string name="fifty_minute">50 Min</string>
     <string name="onehour">60 Min</string>
     <string-array name="time_interval">
-        <item>@string/ten_minute</item>
-        <item>@string/twenty_minute</item>
-        <item>@string/thirty_minute</item>
-        <item>@string/fourty_minute</item>
-        <item>@string/fifty_minute</item>
-        <item>@string/onehour</item>
+    <item>@string/ten_minute</item>
+    <item>@string/twenty_minute</item>
+    <item>@string/thirty_minute</item>
+    <item>@string/fourty_minute</item>
+    <item>@string/fifty_minute</item>
+    <item>@string/onehour</item>
     </string-array>
-
-
+    <!--General Strings-->
     <string name="download_cmp">Download completed successfully</string>
     <string name="downloading">Downloading\u002e\u002e\u002e</string>
     <string name="download_start">Downloading started</string>
     <string name="download_failed">Download failed</string>
     <string name="sync_start">Sync started</string>
+    <string name="boomerang_not">Boomerang notification</string>
 </resources>

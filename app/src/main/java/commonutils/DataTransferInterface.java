@@ -7,6 +7,5 @@ import retrofit.RetrofitError;
  */
 public interface DataTransferInterface<T> {
     void onSuccess(T s);
-//
     void onFailure(RetrofitError error);
 }

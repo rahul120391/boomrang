@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.widget.SeekBar;
@@ -13,33 +12,33 @@ import java.util.ArrayList;
 
 public class CustomSeekBar extends SeekBar {
 
-	private ArrayList<ProgressItem> mProgressItemsList;
+    private ArrayList<ProgressItem> mProgressItemsList;
 
-	public CustomSeekBar(Context context) {
-		super(context);
-	}
+    public CustomSeekBar(Context context) {
+        super(context);
+    }
 
-	public CustomSeekBar(Context context, AttributeSet attrs) {
-		super(context, attrs);
-	}
+    public CustomSeekBar(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
 
-	public CustomSeekBar(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-	}
+    public CustomSeekBar(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+    }
 
-	public void initData(ArrayList<ProgressItem> progressItemsList) {
-		this.mProgressItemsList = progressItemsList;
-	}
+    public void initData(ArrayList<ProgressItem> progressItemsList) {
+        this.mProgressItemsList = progressItemsList;
+    }
 
-	@Override
-	protected synchronized void onMeasure(int widthMeasureSpec,
-			int heightMeasureSpec) {
-		// TODO Auto-generated method stub
-		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-	}
+    @Override
+    protected synchronized void onMeasure(int widthMeasureSpec,
+                                          int heightMeasureSpec) {
+        // TODO Auto-generated method stub
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
 
-	protected void onDraw(Canvas canvas) {
-        if(mProgressItemsList!=null){
+    protected void onDraw(Canvas canvas) {
+        if (mProgressItemsList != null) {
             if (mProgressItemsList.size() > 0) {
                 int progressBarWidth = getWidth();
                 int progressBarHeight = getHeight();
@@ -61,23 +60,22 @@ public class CustomSeekBar extends SeekBar {
                             && progressItemRight != progressBarWidth) {
                         progressItemRight = progressBarWidth;
                     }
-                    if(i==0){
+                    if (i == 0) {
                         RectF progressRect = new RectF();
                         progressRect.set(lastProgressX, thumboffset / 2,
                                 progressItemRight, progressBarHeight - thumboffset / 2);
-                        Path p=new Path();
-                        float radius[]={20,20,0,0,0,0,20,20};
-                        p.addRoundRect(progressRect,radius, Path.Direction.CCW);
-                        canvas.drawPath(p,progressPaint);
-                    }
-                    else if(i==1){
+                        Path p = new Path();
+                        float radius[] = {20, 20, 0, 0, 0, 0, 20, 20};
+                        p.addRoundRect(progressRect, radius, Path.Direction.CCW);
+                        canvas.drawPath(p, progressPaint);
+                    } else if (i == 1) {
                         RectF progressRect = new RectF();
                         progressRect.set(lastProgressX, thumboffset / 2,
                                 progressItemRight, progressBarHeight - thumboffset / 2);
-                        Path p=new Path();
-                        float radius[]={0,0,20,20,20,20,0,0};
-                        p.addRoundRect(progressRect,radius, Path.Direction.CCW);
-                        canvas.drawPath(p,progressPaint);
+                        Path p = new Path();
+                        float radius[] = {0, 0, 20, 20, 20, 20, 0, 0};
+                        p.addRoundRect(progressRect, radius, Path.Direction.CCW);
+                        canvas.drawPath(p, progressPaint);
                     }
                    /* else{
                         Rect progressRect = new Rect();
@@ -88,11 +86,11 @@ public class CustomSeekBar extends SeekBar {
                     //canvas.drawRect(progressRect, progressPaint);
                     lastProgressX = progressItemRight;
                 }
+            }
+
+            super.onDraw(canvas);
         }
 
-			super.onDraw(canvas);
-		}
-
-	}
+    }
 
 }

@@ -103,20 +103,18 @@ public class MethodClass<T> {
     }*/
 
 /********************************************************************************************************************************/
-    /***
-     *
-     * @param is
-     * -input stream returned from response
+    /**
+     * @param is -input stream returned from response
      * @return
      * @throws IOException
      */
-    public  byte[] getBytesFromStream(InputStream is) throws IOException {
+    public byte[] getBytesFromStream(InputStream is) throws IOException {
         int len;
         byte[] buf;
-        int size=1024;
+        int size = 1024;
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         buf = new byte[size];
-        while((len = is.read(buf, 0,size)) != -1) {
+        while ((len = is.read(buf, 0, size)) != -1) {
             bos.write(buf, 0, len);
         }
         buf = bos.toByteArray();
@@ -124,24 +122,20 @@ public class MethodClass<T> {
         return buf;
     }
 
- /*******************************************************************************************************************************/
-    /***
-     *
-     * @param bytes
-     * -bytes returned from input stream
-     * @param path
-     * -path where the file will be saved
+    /*******************************************************************************************************************************/
+    /**
+     * @param bytes -bytes returned from input stream
+     * @param path  -path where the file will be saved
      */
     public void saveBytesToFile(byte[] bytes, String path) {
-        FileOutputStream fileOuputStream=null;
+        FileOutputStream fileOuputStream = null;
         try {
             File file = new File(path);
             fileOuputStream = new FileOutputStream(file);
             fileOuputStream.write(bytes);
             fileOuputStream.flush();
             fileOuputStream.close();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -152,10 +146,10 @@ public class MethodClass<T> {
      *
      * @param url -url for getting the data
      */
-    public void MakeGetRequest(String url,String userid) {
+    public void MakeGetRequest(String url, String userid) {
         switch (url) {
             case URLS.GET_ROOT_FOLDER_FILES:
-                myretro.getrootfolderfiles(userid,new CallbackClass<T>(inter,cnt));
+                myretro.getrootfolderfiles(userid, new CallbackClass<T>(inter, cnt));
                 break;
 
             default:
@@ -170,15 +164,15 @@ public class MethodClass<T> {
      * @param map -map containing params to pass in the post request
      * @param url -url to fetch data
      */
-    public void MakePostRequest(Map<String,String> map, String url) {
+    public void MakePostRequest(Map<String, String> map, String url) {
         switch (url) {
             case URLS.LOGIN:
-                System.out.println("map"+map);
-                myretro.login(map,new CallbackClass<T>(inter, cnt));
+                System.out.println("map" + map);
+                myretro.login(map, new CallbackClass<T>(inter, cnt));
                 break;
             case URLS.GETSPACESTATS:
-                System.out.println("map"+map);
-                myretro.getspacestats(map,new CallbackClass<T>(inter, cnt));
+                System.out.println("map" + map);
+                myretro.getspacestats(map, new CallbackClass<T>(inter, cnt));
                 break;
             default:
                 break;
@@ -194,35 +188,35 @@ public class MethodClass<T> {
      */
     public void MakeGetRequestWithParams(Map<String, String> map, String url) {
         switch (url) {
-              case URLS.GET_ROOT_FOLDER_FILES:
-                myretro.getrootsubfolderfiles(map,new CallbackClass<T>(inter,cnt));
+            case URLS.GET_ROOT_FOLDER_FILES:
+                myretro.getrootsubfolderfiles(map, new CallbackClass<T>(inter, cnt));
                 break;
             case URLS.SEARCH_FILE_FOLDER:
-                myretro.searchfilefolder(map,new CallbackClass<T>(inter,cnt));
+                myretro.searchfilefolder(map, new CallbackClass<T>(inter, cnt));
                 break;
             case URLS.CREATE_FOLDER:
-                myretro.createfolder(map,new CallbackClass<T>(inter,cnt));
+                myretro.createfolder(map, new CallbackClass<T>(inter, cnt));
                 break;
             case URLS.PERMANENT_DELETE_FILE_FOLDER:
-                myretro.permamnentdelfilefolder(map,new CallbackClass<T>(inter,cnt));
+                myretro.permamnentdelfilefolder(map, new CallbackClass<T>(inter, cnt));
                 break;
             case URLS.REQUEST_FILE:
-                myretro.requestfile(map,new CallbackClass<T>(inter,cnt));
+                myretro.requestfile(map, new CallbackClass<T>(inter, cnt));
                 break;
             case URLS.SHARE_FILE:
-                myretro.sharefile(map,new CallbackClass<T>(inter,cnt));
+                myretro.sharefile(map, new CallbackClass<T>(inter, cnt));
                 break;
             case URLS.SETTINGS:
-                myretro.savesettings(map,new CallbackClass<T>(inter,cnt));
+                myretro.savesettings(map, new CallbackClass<T>(inter, cnt));
                 break;
             case URLS.DOWNLOAD:
-                myretro.download(map,new CallbackClass<T>(inter,cnt));
+                myretro.download(map, new CallbackClass<T>(inter, cnt));
                 break;
             case URLS.UPDATEPROFILE:
-                myretro.updateprofile(map,new CallbackClass<T>(inter,cnt));
+                myretro.updateprofile(map, new CallbackClass<T>(inter, cnt));
                 break;
             case URLS.SYNCFILES:
-                myretro.syncfiles(map,new CallbackClass<T>(inter,cnt));
+                myretro.syncfiles(map, new CallbackClass<T>(inter, cnt));
                 break;
             default:
                 break;
@@ -230,35 +224,31 @@ public class MethodClass<T> {
 
     }
 
-    /***
-     *
-     * @param userid
-     * -useridof the logged in person
-     * @param folderid
-     * -current folder id
-     * @param files
-     * -file map containing files to upload
-     * @param url
-     * -url to uplaod file
+    /**
+     * @param userid   -useridof the logged in person
+     * @param folderid -current folder id
+     * @param files    -file map containing files to upload
+     * @param url      -url to uplaod file
      */
-    public void UploadFiles(String userid,String  folderid,Map<String,TypedFile> files,String url){
-       switch (url){
-           case URLS.UPLOAD_FILES:
-               System.out.println("userid" + userid);
-               System.out.println("folderid"+folderid);
-               System.out.println("file"+files);
-                myretro.fileupload(userid,folderid,files,new CallbackClass<T>(inter, cnt));
-               break;
-           default:
-               break;
-       }
+    public void UploadFiles(String userid, String folderid, Map<String, TypedFile> files, String url) {
+        switch (url) {
+            case URLS.UPLOAD_FILES:
+                System.out.println("userid" + userid);
+                System.out.println("folderid" + folderid);
+                System.out.println("file" + files);
+                myretro.fileupload(userid, folderid, files, new CallbackClass<T>(inter, cnt));
+                break;
+            default:
+                break;
+        }
     }
 
-    /***
+    /**
      * Check Internet connection
+     *
      * @return
      */
-    public  boolean checkInternetConnection() {
+    public boolean checkInternetConnection() {
         ConnectivityManager cm = (ConnectivityManager) cnt
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo wifiNetwork = cm
@@ -280,120 +270,4 @@ public class MethodClass<T> {
 
         return false;
     }
-
-/*
- class Download extends AsyncTask<Map<String,String>,String,String> {
-        Response response;
-        String path;
-        Context cnt;
-        public Download(String path,Context cnt){
-            this.path=path;
-            this.cnt=cnt;
-        }
-        @Override
-        protected String doInBackground(Map<String,String>... params) {
-            RestAdapter fileadapter=new RestAdapter.Builder().
-                     setEndpoint(URLS.COMMON_URL)
-                    .build();
-            MyRetrofitInterface myretorfit=fileadapter.create(MyRetrofitInterface.class);
-            response=myretorfit.getfile(params[0]);
-            try{
-                System.out.println("response"+response);
-                //byte[] byteses=getBytesFromStream(response.getBody().in());
-                //saveBytesToFile(byteses,path);
-                writeedata(response.getBody().in(),path);
-            }
-           catch (Exception e){
-               e.printStackTrace();
-           }
-            return null;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            ProgressDialogClass.getDialog(cnt);
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            if(response==null){
-                UIutill.ShowSnackBar(cnt,"No response");
-            }
-            else{
-                UIutill.ShowSnackBar(cnt,"Download Complete");
-            }
-            ProgressDialogClass.logout();
-
-        }
-    }
-
-    public class DownloadFile extends AsyncTask<String,String,String>{
-
-        Context cnt;
-        String path;
-        public DownloadFile(Context cnt,String path){
-            this.cnt=cnt;
-            this.path=path;
-        }
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            ProgressDialogClass.getDialog(cnt);
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            ProgressDialogClass.logout();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-                int count=0;
-                URL url = new URL(params[0]);
-                URLConnection conection = url.openConnection();
-                conection.connect();
-                int lenghtOfFile = conection.getContentLength();
-                System.out.println("length"+lenghtOfFile);
-                InputStream input = new BufferedInputStream(url.openStream());
-                OutputStream output = new FileOutputStream(path);
-                byte data[] = new byte[1024];
-                while ((count = input.read(data)) != -1) {
-                    output.write(data, 0, count);
-                }
-                output.flush();
-                output.close();
-                input.close();
-            } catch (Exception e) {
-                Log.e("Error: ", e.getMessage());
-                ProgressDialogClass.logout();
-            }
-            return null;
-        }
-    }
-
-    public void writeedata(InputStream is,String path){
-        try{
-            DataInputStream dis = new DataInputStream(is);
-            long bytes=is.available();
-            System.out.println("bytes"+bytes);
-            byte[] buffer = new byte[1024];
-            int length;
-            FileOutputStream fos = new FileOutputStream(path);
-            while ((length = dis.read(buffer))>0) {
-                fos.write(buffer, 0, length);
-            }
-            fos.flush();
-            fos.close();
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-
-
-    }*/
-
 }

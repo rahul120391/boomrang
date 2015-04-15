@@ -1,27 +1,42 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/White"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/btn_done"
+    <RelativeLayout
+        android:id="@+id/layout_top"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true"
         android:background="@drawable/button_bg"
-        android:gravity="center"
-        android:padding="10dp"
-        android:text="@string/done"
-        android:textColor="@color/all_indi_color"
-        android:textSize="18sp"
-        />
+        android:padding="10dp">
+
+        <ImageView
+            android:id="@+id/iv_done"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/iv_done" />
+
+        <TextView
+            android:id="@+id/tv_select"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Select"
+            android:textColor="@color/all_indi_color"
+            android:textSize="24sp" />
+    </RelativeLayout>
+
     <ListView
         android:id="@+id/lv_files"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/btn_done"
-        android:scrollbars="none"
-        ></ListView>
+        android:layout_below="@id/layout_top"
+        android:scrollbars="none"></ListView>
+
     <TextView
         android:id="@+id/tv_nofiles"
         android:layout_width="match_parent"
@@ -32,6 +47,5 @@
         android:text="Name"
         android:textColor="@color/email_password_txtclr"
         android:textSize="18sp"
-        android:visibility="gone"
-        />
+        android:visibility="gone" />
 </RelativeLayout>

@@ -16,17 +16,16 @@ public class SyncAlarmClass {
 
     /**
      * this method is used to set repeated alarm for specified time
-     * @param context
-     * -pass the context of fragment/activity to set the alarm on that specific fragment/activity
-     * @param time
-     * -time for the alarm
+     *
+     * @param context -pass the context of fragment/activity to set the alarm on that specific fragment/activity
+     * @param time    -time for the alarm
      */
-    public static void FireAlarm(Context context,int time){
-        if(manager==null){
-            manager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+    public static void FireAlarm(Context context, int time) {
+        if (manager == null) {
+            manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             Intent intent = new Intent(context, CheckFragmentVisibilityBroadcast.class);
             pintent = PendingIntent.getBroadcast(context, 0, intent, 0);
-            manager.setRepeating(AlarmManager.RTC_WAKEUP,System.currentTimeMillis()+1000 * 60 * time,
+            manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 1000 * 60 * time,
                     1000 * 60 * time, pintent);
         }
     }
@@ -34,10 +33,10 @@ public class SyncAlarmClass {
     /**
      * this method is used to stop the alarm
      */
-    public static void StopAlarm(){
-     if(manager!=null){
-         manager.cancel(pintent);
-     }
+    public static void StopAlarm() {
+        if (manager != null) {
+            manager.cancel(pintent);
+        }
     }
 
 }

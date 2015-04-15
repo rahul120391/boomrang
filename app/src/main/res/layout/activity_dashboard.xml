@@ -1,8 +1,7 @@
 <android.support.v4.widget.SlidingPaneLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/slidingpane"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
 
     <ListView
         android:id="@+id/lv_drawer"
@@ -13,13 +12,11 @@
         android:choiceMode="singleChoice"
         android:divider="@color/navigation_divider"
         android:dividerHeight="0.5dp"
-        android:scrollbars="none">
-    </ListView>
+        android:scrollbars="none"></ListView>
 
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-    </FrameLayout>
+        android:layout_height="match_parent"></FrameLayout>
 
 </android.support.v4.widget.SlidingPaneLayout>

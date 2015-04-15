@@ -15,10 +15,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.androidquery.AQuery;
@@ -34,21 +34,29 @@ import modelclasses.GalleryDataModel;
 public class CustomGalleryActivity extends Activity implements View.OnClickListener{
 
     ListView lv_files;
-    Button btn_done;
     TextView tv_nofiles;
     ArrayList<GalleryDataModel> files_list=new ArrayList<>();
     Bundle statesave;
     MyAdapter adapter;
+    RelativeLayout layout_top;
+    TextView tv_select;
+    ImageView iv_done;
     ArrayList<GalleryDataModel> datalist=null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         statesave=savedInstanceState;
         setContentView(R.layout.activity_custom_gallery);
+        layout_top=(RelativeLayout)findViewById(R.id.layout_top);
+
+        tv_select=(TextView)findViewById(R.id.tv_select);
+        tv_select.setTypeface(UIutill.SetFont(this, "segoeuilght.ttf"));
+
+        iv_done=(ImageView)findViewById(R.id.iv_done);
+        iv_done.setOnClickListener(this);
+
         lv_files=(ListView)findViewById(R.id.lv_files);
-        btn_done=(Button)findViewById(R.id.btn_done);
-        btn_done.setTypeface(UIutill.SetFont(this, "segoeuilght.ttf"));
-        btn_done.setOnClickListener(this);
+
         tv_nofiles=(TextView)findViewById(R.id.tv_nofiles);
         tv_nofiles.setTypeface(UIutill.SetFont(this, "segoeuilght.ttf"));
 
@@ -56,9 +64,10 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
             if(getIntent().getStringExtra("value").equalsIgnoreCase("images")){
                   datalist=GetImageData();
                 if(datalist.size()==0){
-                     btn_done.setVisibility(View.GONE);
+                     layout_top.setVisibility(View.GONE);
                      tv_nofiles.setText(getString(R.string.no_image_avail));
                      tv_nofiles.setVisibility(View.VISIBLE);
+
                      lv_files.setVisibility(View.GONE);
                 }
                 else{
@@ -70,14 +79,14 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                     "videos")){
                 datalist=GetVideoData();
                 if(datalist.size()==0){
-                    btn_done.setVisibility(View.GONE);
+                    layout_top.setVisibility(View.GONE);
                     tv_nofiles.setText(getString(R.string.no_video_avail));
                     tv_nofiles.setVisibility(View.VISIBLE);
                     lv_files.setVisibility(View.GONE);
                 }
                 else{
                      adapter=new MyAdapter(this,datalist,2);
-                    lv_files.setAdapter(adapter);
+                     lv_files.setAdapter(adapter);
                 }
             }
         }
@@ -85,7 +94,7 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
            if(savedInstanceState.getString("value").equals("images")){
                datalist=GetImageData();
                if(datalist.size()==0){
-                   btn_done.setVisibility(View.GONE);
+                   layout_top.setVisibility(View.GONE);
                    tv_nofiles.setText(getString(R.string.no_image_avail));
                    tv_nofiles.setVisibility(View.VISIBLE);
                    lv_files.setVisibility(View.GONE);
@@ -99,13 +108,12 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                    "videos")){
                datalist=GetVideoData();
                if(datalist.size()==0){
-                   btn_done.setVisibility(View.GONE);
+                   layout_top.setVisibility(View.GONE);
                    tv_nofiles.setText(getString(R.string.no_video_avail));
                    tv_nofiles.setVisibility(View.VISIBLE);
                    lv_files.setVisibility(View.GONE);
                }
                else{
-
                    adapter=new MyAdapter(this,datalist,2);
                    lv_files.setAdapter(adapter);
                }
@@ -155,10 +163,12 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
      */
     public ArrayList<GalleryDataModel> GetImageData(){
         ArrayList<GalleryDataModel> data = new ArrayList<GalleryDataModel>();
+
         String projection[] = { MediaStore.Images.Media.DATA,
                 MediaStore.Images.Media.TITLE,MediaStore.Images.Media.MIME_TYPE};
         Cursor cr = managedQuery(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 projection, null, null, null);
+
         if(cr!=null){
            while(cr.moveToNext()){
                String path=cr.getString(0);
@@ -185,9 +195,11 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
      */
     public ArrayList<GalleryDataModel> GetVideoData(){
         ArrayList<GalleryDataModel> data = new ArrayList<GalleryDataModel>();
+
         String projection[] = { MediaStore.Video.Media.DATA,
                 MediaStore.Video.Media.TITLE,MediaStore.Video.Media.MIME_TYPE,MediaStore.Video.Media._ID};
         String Thumbnail_projection[]={MediaStore.Video.Thumbnails.DATA};
+
         Cursor cr = managedQuery(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
                 projection, null, null, null);
         if (cr != null) {
@@ -261,7 +273,7 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.btn_done:
+            case R.id.iv_done:
                 try{
                     if(files_list.size()==0){
                          UIutill.ShowSnackBar(CustomGalleryActivity.this,getString(R.string.select_file));
@@ -316,7 +328,8 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
        TextView tv_name;
        CheckBox ch_check;
        int poss;
-       public MyAdapter(Context cnt,ArrayList<GalleryDataModel> mylist,int poss){
+
+        public MyAdapter(Context cnt,ArrayList<GalleryDataModel> mylist,int poss){
            this.cnt=cnt;
            this.poss=poss;
            this.mylist=mylist;

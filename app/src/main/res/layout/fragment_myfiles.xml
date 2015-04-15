@@ -5,96 +5,97 @@
     android:layout_height="match_parent"
     android:background="@color/White"
     android:orientation="vertical">
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="50dp"
-    android:orientation="horizontal"
-    android:weightSum="5"
-    >
-   <RelativeLayout
-       android:id="@+id/layout_myfiles"
-       android:layout_width="0dp"
-       android:layout_height="match_parent"
-       android:layout_weight="1"
-       android:background="@color/myfiles_selected"
-       >
-       <ImageView
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:layout_centerInParent="true"
-           android:paddingTop="10dp"
-           android:src="@drawable/ic_myfiles"
-           />
-       </RelativeLayout>
-    <RelativeLayout
-        android:id="@+id/layout_search"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="@color/myfiles_unselelcted"
-        >
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:paddingTop="10dp"
-            android:src="@drawable/ic_searchicon"
-            />
-    </RelativeLayout>
-    <RelativeLayout
-        android:id="@+id/layout_sync"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="@color/myfiles_unselelcted"
-        >
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:paddingTop="10dp"
-            android:src="@drawable/iv_sidesync1"
-            />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:weightSum="5">
+
+        <RelativeLayout
+            android:id="@+id/layout_myfiles"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/myfiles_selected">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:paddingTop="10dp"
+                android:src="@drawable/ic_myfiles" />
         </RelativeLayout>
-    <RelativeLayout
-        android:id="@+id/layout_upload"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="@color/myfiles_unselelcted"
-        >
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:paddingTop="10dp"
-            android:src="@drawable/ic_uploadicon"
-            />
+
+        <RelativeLayout
+            android:id="@+id/layout_search"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/myfiles_unselelcted">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:paddingTop="10dp"
+                android:src="@drawable/ic_searchicon" />
         </RelativeLayout>
-    <RelativeLayout
-        android:id="@+id/layout_createfolder"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="@color/myfiles_unselelcted"
-        >
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:paddingTop="10dp"
-            android:src="@drawable/ic_createfolder"
-            />
-    </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_sync"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/myfiles_unselelcted">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:paddingTop="10dp"
+                android:src="@drawable/iv_sidesync1" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_upload"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/myfiles_unselelcted">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:paddingTop="10dp"
+                android:src="@drawable/ic_uploadicon" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_createfolder"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/myfiles_unselelcted">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:paddingTop="10dp"
+                android:src="@drawable/ic_createfolder" />
+        </RelativeLayout>
     </LinearLayout>
+
     <RelativeLayout
         android:id="@+id/layout_foldernames"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/myfiles_selected"
         android:padding="10dp"
-        android:visibility="gone"
-        >
+        android:visibility="gone">
+
         <TextView
             android:id="@+id/tv_foldername"
             android:layout_width="wrap_content"
@@ -102,25 +103,24 @@
             android:layout_alignParentLeft="true"
             android:layout_marginTop="5dp"
             android:textColor="@color/email_password_txtclr"
-            android:textSize="18sp"
-            />
+            android:textSize="18sp" />
+
         <ImageView
             android:id="@+id/iv_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_marginTop="5dp"
-            android:src="@drawable/iv_back"
-            />
-        </RelativeLayout>
+            android:src="@drawable/iv_back" />
+    </RelativeLayout>
+
     <customviews.SwipeMenuListView
         android:id="@+id/lv_myfiles"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:divider="@color/divider_color"
         android:dividerHeight="1dp"
-        android:scrollbars="none"
-        >
+        android:scrollbars="none">
 
-        </customviews.SwipeMenuListView>
+    </customviews.SwipeMenuListView>
 </LinearLayout>

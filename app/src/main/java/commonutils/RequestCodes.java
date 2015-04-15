@@ -5,13 +5,13 @@ package commonutils;
  */
 public class RequestCodes {
     //code to open the image gallery
-    public static final int REQUEST_IMAGE=111;
+    public static final int REQUEST_IMAGE = 111;
     //code to open the video gallery
-    public static final int REQUEST_VIDEO=222;
+    public static final int REQUEST_VIDEO = 222;
     //code to open the camera
-    public static final int REQUEST_CAMERA=333;
+    public static final int REQUEST_CAMERA = 333;
     //code to open the vidoe recorder
-    public static final int REQUEST_VIDEO_RECORD=444;
+    public static final int REQUEST_VIDEO_RECORD = 444;
     //code to open the custom file browser
-    public static final int REQUEST_FILE_BROWSER=555;
+    public static final int REQUEST_FILE_BROWSER = 555;
 }

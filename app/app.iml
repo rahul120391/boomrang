@@ -93,7 +93,6 @@
     <orderEntry type="library" exported="" name="android-query-full.0.26.8" level="project" />
     <orderEntry type="library" exported="" name="retrofit-1.9.0" level="project" />
     <orderEntry type="library" exported="" name="materialrangebar-1.0" level="project" />
-    <orderEntry type="library" exported="" name="thindownloadmanager-1.0.0" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-21.0.3" level="project" />
     <orderEntry type="library" exported="" name="material-ripple-1.0.1" level="project" />
     <orderEntry type="library" exported="" name="okhttp-2.0.0" level="project" />

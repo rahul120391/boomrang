@@ -18,48 +18,48 @@ import retrofit.mime.TypedFile;
 public interface MyRetrofitInterface<T> {
 
     @POST(URLS.LOGIN)
-    void login(@QueryMap Map<String,String> map,Callback<T> object);
+    void login(@QueryMap Map<String, String> map, Callback<T> object);
 
     @POST(URLS.GETSPACESTATS)
-    void getspacestats(@QueryMap Map<String,String> map,Callback<T> object);
+    void getspacestats(@QueryMap Map<String, String> map, Callback<T> object);
 
     @Multipart
     @POST(URLS.UPLOAD_FILES)
-    void fileupload(@Part("userid") String userid,@Part("folderid") String folderid,@PartMap Map<String,TypedFile> files,Callback<T> object);
+    void fileupload(@Part("userid") String userid, @Part("folderid") String folderid, @PartMap Map<String, TypedFile> files, Callback<T> object);
 
     @GET(URLS.GET_ROOT_FOLDER_FILES)
-    void getrootfolderfiles(@Query("userid") String userid,Callback<T> object);
+    void getrootfolderfiles(@Query("userid") String userid, Callback<T> object);
 
     @GET(URLS.GET_ROOT_FOLDER_FILES)
-    void getrootsubfolderfiles(@QueryMap Map<String,String> map,Callback<T> object);
+    void getrootsubfolderfiles(@QueryMap Map<String, String> map, Callback<T> object);
 
     @GET(URLS.TEMP_DELETE_FILE_FOLDER)
-    void tempdelfilefolder(@QueryMap Map<String,String> map,Callback<T> object);
+    void tempdelfilefolder(@QueryMap Map<String, String> map, Callback<T> object);
 
     @GET(URLS.PERMANENT_DELETE_FILE_FOLDER)
-    void permamnentdelfilefolder(@QueryMap Map<String,String> map,Callback<T> object);
+    void permamnentdelfilefolder(@QueryMap Map<String, String> map, Callback<T> object);
 
     @GET(URLS.SEARCH_FILE_FOLDER)
-    void searchfilefolder(@QueryMap Map<String,String> map,Callback<T> object);
+    void searchfilefolder(@QueryMap Map<String, String> map, Callback<T> object);
 
     @GET(URLS.CREATE_FOLDER)
-    void createfolder(@QueryMap Map<String,String> map,Callback<T> object);
+    void createfolder(@QueryMap Map<String, String> map, Callback<T> object);
 
     @GET(URLS.REQUEST_FILE)
-    void requestfile(@QueryMap Map<String,String> map,Callback<T> object);
+    void requestfile(@QueryMap Map<String, String> map, Callback<T> object);
 
     @GET(URLS.SHARE_FILE)
-    void sharefile(@QueryMap Map<String,String> map,Callback<T> object);
+    void sharefile(@QueryMap Map<String, String> map, Callback<T> object);
 
     @GET(URLS.SETTINGS)
-    void savesettings(@QueryMap Map<String,String> map,Callback<T> object);
+    void savesettings(@QueryMap Map<String, String> map, Callback<T> object);
 
     @GET(URLS.DOWNLOAD)
-    void download(@QueryMap Map<String,String> mymap,Callback<T> object);
+    void download(@QueryMap Map<String, String> mymap, Callback<T> object);
 
     @GET(URLS.UPDATEPROFILE)
-    void updateprofile(@QueryMap Map<String,String> map,Callback<T> object);
+    void updateprofile(@QueryMap Map<String, String> map, Callback<T> object);
 
     @GET(URLS.SYNCFILES)
-    void syncfiles(@QueryMap Map<String,String> map,Callback<T> object);
+    void syncfiles(@QueryMap Map<String, String> map, Callback<T> object);
 }

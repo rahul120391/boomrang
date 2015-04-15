@@ -7,24 +7,24 @@
     android:paddingBottom="8dp"
     android:paddingLeft="10dp"
     android:paddingRight="10dp"
-    android:paddingTop="8dp"
-    >
-  <ImageView
-      android:id="@+id/iv_toggle"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_alignParentLeft="true"
-      android:background="@drawable/circular_shape"
-      android:padding="8dp"
-      android:src="@drawable/ic_toggle"
-      />
+    android:paddingTop="8dp">
+
+    <ImageView
+        android:id="@+id/iv_toggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:background="@drawable/circular_shape"
+        android:padding="8dp"
+        android:src="@drawable/ic_toggle" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_alignParentRight="true"
         android:gravity="right"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
+
         <TextView
             android:id="@+id/tv_email"
             android:layout_width="wrap_content"
@@ -32,8 +32,8 @@
             android:layout_marginTop="7dp"
             android:paddingRight="10dp"
             android:text="@string/dummy_email"
-            android:textColor="@color/toggle_circle_color"
-            />
+            android:textColor="@color/toggle_circle_color" />
+
         <ImageView
             android:id="@+id/iv_logout"
             android:layout_width="wrap_content"
@@ -41,9 +41,8 @@
             android:layout_alignParentLeft="true"
             android:background="@drawable/circular_shape"
             android:padding="8dp"
-            android:src="@drawable/ic_logout"
-            />
+            android:src="@drawable/ic_logout" />
 
 
-        </LinearLayout>
+    </LinearLayout>
 </RelativeLayout>

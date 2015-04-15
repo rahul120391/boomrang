@@ -28,6 +28,7 @@ public class FileChooser extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filechooser);
+
         lv_files=(ListView)findViewById(R.id.lv_files);
         lv_files.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -43,6 +44,7 @@ public class FileChooser extends Activity {
                 }
             }
         });
+
         currentDir = new File("/sdcard/");
         fill(currentDir); 
     }
@@ -51,10 +53,10 @@ public class FileChooser extends Activity {
 
     private void fill(File f)
     {
-    	File[]dirs = f.listFiles(); 
-		 this.setTitle("Current Dir: "+f.getName());
-		 List<Item>dir = new ArrayList<Item>();
-		 List<Item>fls = new ArrayList<Item>();
+       	File[]dirs = f.listFiles();
+		this.setTitle("Current Dir: "+f.getName());
+		List<Item>dir = new ArrayList<Item>();
+		List<Item>fls = new ArrayList<Item>();
 		 try{
 			 for(File ff: dirs)
 			 { 
@@ -62,8 +64,6 @@ public class FileChooser extends Activity {
 				DateFormat formater = DateFormat.getDateTimeInstance();
 				String date_modify = formater.format(lastModDate);
 				if(ff.isDirectory()){
-					
-					
 					File[] fbuf = ff.listFiles(); 
 					int buf = 0;
 					if(fbuf != null){ 
@@ -73,7 +73,6 @@ public class FileChooser extends Activity {
 					String num_item = String.valueOf(buf);
 					if(buf == 0) num_item = num_item + " item";
 					else num_item = num_item + " items";
-					
 					//String formated = lastModDate.toString();
 					dir.add(new Item(ff.getName(),num_item,date_modify,ff.getAbsolutePath(),"ic_folder"));
 				}
@@ -217,15 +216,17 @@ public class FileChooser extends Activity {
 			 }
 		 }catch(Exception e)
 		 {    
-			 
+			 e.printStackTrace();
 		 }
 		 Collections.sort(dir);
 		 Collections.sort(fls);
 		 dir.addAll(fls);
-		 if(!f.getName().equalsIgnoreCase("sdcard"))
-			 dir.add(0,new Item("..","Parent Directory","",f.getParent(),"directory_up"));
-		 adapter = new FileArrayAdapter(FileChooser.this, R.layout.file_view,dir);
-        lv_files.setAdapter(adapter);
+
+         if(!f.getName().equalsIgnoreCase("sdcard"))
+	     dir.add(0,new Item("..","Parent Directory","",f.getParent(),"directory_up"));
+
+         adapter = new FileArrayAdapter(FileChooser.this, R.layout.file_view,dir);
+         lv_files.setAdapter(adapter);
     }
     /**************************************************************************************************************************/
 

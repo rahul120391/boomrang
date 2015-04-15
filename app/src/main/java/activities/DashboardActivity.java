@@ -34,15 +34,25 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
         try{
+            System.out.println("inside on resume");
+            boolean IsAutoSync=getSharedPreferences("Login", 0).getBoolean("IsAutoSync",false);
+            if(IsAutoSync){
+                int time=getSharedPreferences("Login", 0).getInt("SyncInterval",0);
+                SyncAlarmClass.FireAlarm(this,time);
+            }
             lv_drawer=(ListView)findViewById(R.id.lv_drawer);
             lv_drawer.setOnItemClickListener(this);
+
             slidingpane=(SlidingPaneLayout)findViewById(R.id.slidingpane);
+
             SideBarAdapter adapter=new SideBarAdapter(this);
             lv_drawer.setAdapter(adapter);
+
             ActionBar bar = getActionBar();
             bar.setDisplayShowHomeEnabled(false);
             bar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
             bar.setCustomView(R.layout.action_bar_layout);
+
             ((ImageView)findViewById(R.id.iv_logout)).setOnClickListener(this);
             ((TextView)findViewById(R.id.tv_email)).setText(getSharedPreferences("Login", 0).getString("emailID", ""));
             ((ImageView)findViewById(R.id.iv_toggle)).setOnClickListener(this);
@@ -58,12 +68,6 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
     @Override
     protected void onResume() {
         super.onResume();
-        System.out.println("inside on resume");
-        boolean IsAutoSync=getSharedPreferences("Login", 0).getBoolean("IsAutoSync",false);
-        if(IsAutoSync){
-            int time=getSharedPreferences("Login", 0).getInt("SyncInterval",0);
-            SyncAlarmClass.FireAlarm(this,time);
-        }
     }
 
     /**************************************************************************************************************************/
@@ -171,7 +175,9 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
             if (getFragmentManager().getBackStackEntryCount() > 1) {
                 getFragmentManager().popBackStack();
             } else {
-                super.onBackPressed();
+                System.out.println("activity finish");
+                SyncAlarmClass.StopAlarm();
+                finish();
             }
         }
 
@@ -201,12 +207,6 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-    }
-    @Override
-    protected void onStop() {
-        System.out.println("inside on stop");
-        SyncAlarmClass.StopAlarm();
-        super.onStop();
     }
     /**************************************************************************************************************************/
 }
