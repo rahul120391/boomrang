@@ -1,6 +1,8 @@
 package activities;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -8,8 +10,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SlidingPaneLayout;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -17,6 +21,7 @@ import android.widget.TextView;
 import Boomerang.R;
 import adapters.SideBarAdapter;
 import commonutils.SyncAlarmClass;
+import commonutils.UIutill;
 import fragments.ContactUs;
 import fragments.MyDashBoard;
 import fragments.MyFiles;
@@ -28,7 +33,9 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
     public static SlidingPaneLayout slidingpane;
     public static FragmentManager fragmentManager;
     ListView lv_drawer;
+    Dialog confirmdialog;
     private ActionBar actionBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +44,9 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
             System.out.println("inside on resume");
             boolean IsAutoSync=getSharedPreferences("Login", 0).getBoolean("IsAutoSync",false);
             if(IsAutoSync){
+                SyncAlarmClass.StopAlarm();
                 int time=getSharedPreferences("Login", 0).getInt("SyncInterval",0);
+                System.out.println("alaram started");
                 SyncAlarmClass.FireAlarm(this,time);
             }
             lv_drawer=(ListView)findViewById(R.id.lv_drawer);
@@ -84,7 +93,6 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
     {
         Fragment _fragment = getFragmentManager().findFragmentByTag(tag);
         fragmentManager = getFragmentManager();
-
         if (null == _fragment) {
             FragmentTransaction fragmentTransaction = fragmentManager
                     .beginTransaction();
@@ -97,6 +105,7 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
         } else {
             fragmentManager.popBackStack(tag, 0);
         }
+
     }
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -151,12 +160,7 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
                        break;
                    case 6:
                        try{
-                           getSharedPreferences("Login",0).edit().clear().commit();
-                           Intent logout = new Intent(this, MainActivity.class);
-                           logout.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-                                   | Intent.FLAG_ACTIVITY_NEW_TASK
-                                   | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                           startActivity(logout);
+                          Logout();
                        }
                        catch (Exception e){
                            e.printStackTrace();
@@ -188,8 +192,7 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
     public void onClick(View v) {
           switch (v.getId()) {
               case R.id.iv_logout:
-                  onItemClick(null,null,6,0);
-
+                  Logout();
                   break;
               case R.id.iv_toggle:
                   if(slidingpane.isOpen()) {
@@ -209,4 +212,54 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
         super.onSaveInstanceState(outState);
     }
     /**************************************************************************************************************************/
+    /**
+     * -This method is used to Logout from the account
+     */
+    public void Logout() {
+        if (confirmdialog == null || !confirmdialog.isShowing()) {
+            LayoutInflater inflater = LayoutInflater.from(DashboardActivity.this);
+            final View dialoglayout = inflater.inflate(R.layout.confirmation_dialogview, null);
+            final AlertDialog.Builder builder = new AlertDialog.Builder(DashboardActivity.this);
+            TextView tv_title = (TextView) dialoglayout.findViewById(R.id.tv_title);
+            tv_title.setText(getString(R.string.logout));
+            TextView tv_message = (TextView) dialoglayout.findViewById(R.id.tv_message);
+            tv_message.setText(getString(R.string.logout_msg));
+            Button btn_yes = (Button) dialoglayout.findViewById(R.id.btn_yes);
+            Button btn_no = (Button) dialoglayout.findViewById(R.id.btn_no);
+
+            tv_title.setTypeface(UIutill.SetFont(DashboardActivity.this, "segoeuilght.ttf"));
+            tv_message.setTypeface(UIutill.SetFont(DashboardActivity.this, "segoeuilght.ttf"));
+            btn_no.setTypeface(UIutill.SetFont(DashboardActivity.this, "segoeuilght.ttf"));
+            btn_yes.setTypeface(UIutill.SetFont(DashboardActivity.this, "segoeuilght.ttf"));
+
+            builder.setView(dialoglayout);
+            confirmdialog = builder.create();
+            confirmdialog.getWindow().getAttributes().windowAnimations = R.style.Animations_SmileWindow;
+            confirmdialog.show();
+
+            btn_no.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    confirmdialog.dismiss();
+                }
+            });
+            btn_yes.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    confirmdialog.dismiss();
+                    getSharedPreferences("Login",0).edit().clear().commit();
+                    SyncAlarmClass.StopAlarm();
+                    Intent logout = new Intent(DashboardActivity.this, MainActivity.class);
+                    logout.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            | Intent.FLAG_ACTIVITY_NEW_TASK
+                            | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(logout);
+                }
+            });
+        }
+    }
+/**************************************************************************************************************************/
+
+
+
 }

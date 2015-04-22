@@ -29,6 +29,7 @@ import Boomerang.R;
 import activities.DashboardActivity;
 import commonutils.CustomErrorHandling;
 import commonutils.DataTransferInterface;
+import commonutils.Devices;
 import commonutils.MethodClass;
 import commonutils.UIutill;
 import commonutils.URLS;
@@ -53,6 +54,7 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         try {
+            System.out.println("dv"+ Devices.getDeviceName());
             sharedprefs = getActivity().getSharedPreferences("Login", 0);
             checkremstate = getActivity().getSharedPreferences("RemState", 0);
             methodClass = new MethodClass<T>(getActivity(), this);
@@ -128,6 +130,7 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
                             values.put("EmailID", et_email.getText().toString().trim());
                             values.put("Password", et_password.getText().toString().trim());
                             values.put("deviceId", deviceId);
+                            values.put("deviceName",Devices.getDeviceName());
                             System.out.println("urls" + URLS.LOGIN);
                             System.out.println("values" + values);
                             methodClass.MakePostRequest(values, URLS.LOGIN);
@@ -156,7 +159,8 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
             System.out.println("json return" + jsonreturn);
             boolean IsSucess = jsonreturn.get("IsSucess").getAsBoolean();
             if (IsSucess) {
-                if (jsonreturn.get("ResponseData").isJsonArray()) {
+
+                if (jsonreturn.get("ResponseData")!=null && jsonreturn.get("ResponseData").isJsonArray()) {
                     JsonArray ResponseData = jsonreturn.get("ResponseData").getAsJsonArray();
                     JsonObject mainobject = ResponseData.get(0).getAsJsonObject();
                     SharedPreferences.Editor e = sharedprefs.edit();

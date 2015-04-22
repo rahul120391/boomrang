@@ -25,7 +25,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -47,6 +46,7 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Pattern;
 
 import Boomerang.R;
 import activities.DashboardActivity;
@@ -55,7 +55,6 @@ import commonutils.CustomErrorHandling;
 import commonutils.DataTransferInterface;
 import commonutils.MethodClass;
 import commonutils.MyRetrofitInterface;
-import commonutils.ProgressDialogClass;
 import commonutils.UIutill;
 import commonutils.URLS;
 import customviews.SwipeMenu;
@@ -89,15 +88,16 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
     Stack<Integer> stack = new Stack<Integer>();
     Stack<String> foldernames = new Stack<>();
     int folderid;
-    int position;
+    int position;          //0-temp delete file/folder, 1-get root file folders, 2-onbackpress in layoyt_foldername, 3-request file, 4-share file, 5-Download File, 6-create folder, 7-sync files
     String foldername;
     MyFilesAdapter adapter;
     Dialog confirmdialog, requestfolder, sharedialog;
     String searchstring;
-    LinearLayout mainlayout;
+    RelativeLayout mainlayout,layout_bottom;
     int listviewpositionclick = 0;
     String deviceId;
     ExecutorService executorService;
+    TextView tv_total_files,tv_total,tv_total_folders;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -113,7 +113,16 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
             foldernames.clear();
             stack.clear();
             layout_foldernames.setVisibility(View.GONE);
-            mainlayout = (LinearLayout) v.findViewById(R.id.layout_main);
+            layout_bottom=(RelativeLayout)v.findViewById(R.id.layout_bottom);
+            layout_bottom.setVisibility(View.GONE);
+            tv_total_folders=(TextView)v.findViewById(R.id.tv_total_folders);
+            tv_total_files=(TextView)v.findViewById(R.id.tv_total_files);
+            tv_total=(TextView)v.findViewById(R.id.tv_total);
+
+            tv_total_folders.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+            tv_total_files.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+            tv_total.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+            mainlayout = (RelativeLayout) v.findViewById(R.id.layout_main);
             mainlayout.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
@@ -310,97 +319,130 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                     if (!message.equalsIgnoreCase("")) {
                         UIutill.ShowSnackBar(getActivity(), message);
                     }
-                    if (jsonreturn.get("ResponseData").isJsonArray() && jsonreturn.get("ResponseData").getAsJsonArray().size() >= 0) {
-                        JsonArray ResponseData = jsonreturn.get("ResponseData").getAsJsonArray();
-                        System.out.println("response" + ResponseData);
-                        myfileslist.clear();
-                        for (int i = 0; i < ResponseData.size(); i++) {
-                            JsonObject object = ResponseData.get(i).getAsJsonObject();
-                            MyFilesDataModel model = new MyFilesDataModel();
-                            model.setFileid(object.get("FileID").getAsInt());
-                            if (object.get("Type") != null) {
-                                model.setFiletype(object.get("Type").getAsString().trim());
-                            } else {
-                                model.setFiletype("Unknown");
+
+                    if(jsonreturn.get("ResponseData")!=null){
+                        if (jsonreturn.get("ResponseData").isJsonArray() && jsonreturn.get("ResponseData").getAsJsonArray().size() >= 0) {
+                            JsonArray ResponseData = jsonreturn.get("ResponseData").getAsJsonArray();
+                            System.out.println("response" + ResponseData);
+                            myfileslist.clear();
+                            ArrayList<String> foldercount=new ArrayList<>();
+                            for (int i = 0; i < ResponseData.size(); i++) {
+                                JsonObject object = ResponseData.get(i).getAsJsonObject();
+                                MyFilesDataModel model = new MyFilesDataModel();
+                                model.setFileid(object.get("FileID").getAsInt());
+                                if (object.get("Type") != null) {
+                                    if(object.get("Type").getAsString().trim().equalsIgnoreCase("folder")){
+                                        foldercount.add((object.get("Type").getAsString().trim()));
+                                    }
+                                    model.setFiletype(object.get("Type").getAsString().trim());
+
+                                } else {
+                                    model.setFiletype("Unknown");
+                                }
+
+                                model.setFilepath(object.get("Path").getAsString().trim());
+                                model.setFilename(object.get("FileName").getAsString().trim());
+                                myfileslist.add(model);
                             }
+                            layout_foldernames.setVisibility(View.VISIBLE);
+                            Count(myfileslist,foldercount);
+                            if (position == 1) {
+                                stack.push(folderid);
+                                foldernames.push(foldername);
+                                if(myfileslist.size()==0){
+                                    UIutill.ShowSnackBar(getActivity(), getString(R.string.nofilefolder));
+                                }
+                            } else if (position == 2) {
+                                stack.pop();
+                                foldernames.pop();
+                            }
+                            if (stack.size() > 1) {
+                                iv_back.setVisibility(View.VISIBLE);
+                            } else {
+                                iv_back.setVisibility(View.GONE);
+                            }
+                            if (myfileslist.size() > 0) {
+                                lv_myfiles.setMenuCreator(creator);
+                            }
+                            tv_foldername.setText(foldernames.lastElement());
+                            adapter = new MyFilesAdapter(getActivity(), myfileslist);
+                            lv_myfiles.setAdapter(adapter);
 
-                            model.setFilepath(object.get("Path").getAsString().trim());
-                            model.setFilename(object.get("FileName").getAsString().trim());
-                            myfileslist.add(model);
-                        }
-
-
-                        layout_foldernames.setVisibility(View.VISIBLE);
-
-                        if (position == 1) {
-                            stack.push(folderid);
-                            foldernames.push(foldername);
-                        } else if (position == 2) {
-                            stack.pop();
-                            foldernames.pop();
-                        }
-                        if (stack.size() > 1) {
-                            iv_back.setVisibility(View.VISIBLE);
                         } else {
-                            iv_back.setVisibility(View.GONE);
+                            UIutill.ShowSnackBar(getActivity(), getString(R.string.no_result));
                         }
-                        if (myfileslist.size() > 0) {
-                            lv_myfiles.setMenuCreator(creator);
-                        }
-                        tv_foldername.setText(foldernames.lastElement());
-                        adapter = new MyFilesAdapter(getActivity(), myfileslist);
-                        lv_myfiles.setAdapter(adapter);
-
-                    } else {
-                        UIutill.ShowSnackBar(getActivity(), getString(R.string.no_result));
                     }
+
                 } else if (position == 3 || position == 4) {
                     UIutill.ShowSnackBar(getActivity(), jsonreturn.get("ResponseData").getAsString().trim());
                 } else if (position == 5) {
-                    ProgressDialogClass.logout();
                     String fileurl = jsonreturn.get("ResponseData").getAsString();
                     String filename = jsonreturn.get("CallBack").getAsString();
                     DownloadFiles(filename, fileurl);
                 } else if (position == 7) {
-                    JsonObject ResponseData = jsonreturn.getAsJsonObject("ResponseData");
-                    JsonArray Table = ResponseData.getAsJsonArray("Table");
-                    if (Table.isJsonArray() && Table.size() > 0) {
-                        ArrayList<Integer> myfiledata = new ArrayList<>();
-                        for (MyFilesDataModel dataModel : myfileslist) {
-                            myfiledata.add(dataModel.getFileid());
-                        }
-                        for (int x = 0; x < Table.size(); x++) {
-                            JsonObject object = Table.get(x).getAsJsonObject();
-                            System.out.println("objectt" + object.get("status").getAsInt());
-                            if (object.get("status").getAsInt() == 0) {
-                                if (myfiledata.contains(object.get("FileId").getAsInt())) {
-                                    continue;
-                                } else {
-                                    MyFilesDataModel model = new MyFilesDataModel();
-                                    model.setFileid(object.get("FileId").getAsInt());
-                                    if (object.get("Type") != null) {
-                                        model.setFiletype(object.get("Type").getAsString().trim());
-                                    } else {
-                                        model.setFiletype("Unknown");
-                                    }
-                                    model.setFilename(object.get("FileName").getAsString().trim());
-                                    myfileslist.add(0, model);
+                    if(jsonreturn.get("ResponseData")!=null){
+                        JsonObject ResponseData = jsonreturn.getAsJsonObject("ResponseData");
+                        if(ResponseData.get("Table")!=null){
+                            JsonArray Table = ResponseData.getAsJsonArray("Table");
+                            if (Table.isJsonArray() && Table.size() > 0) {
+                                ArrayList<Integer> myfiledata = new ArrayList<>();
+                                for (MyFilesDataModel dataModel : myfileslist) {
+                                    myfiledata.add(dataModel.getFileid());
                                 }
-                            } else if (object.get("status").getAsInt() == 1) {
-                                int fileid = object.get("FileId").getAsInt();
-                                Iterator<MyFilesDataModel> modell = myfileslist.iterator();
-                                while (modell.hasNext()) {
-                                    MyFilesDataModel mymodel = modell.next();
-                                    if (mymodel.getFileid() == fileid) {
-                                        modell.remove();
+                                for (int x = 0; x < Table.size(); x++) {
+                                    JsonObject object = Table.get(x).getAsJsonObject();
+                                    System.out.println("objectt" + object.get("status").getAsInt());
+                                    if (object.get("status").getAsInt() == 0) {
+                                        if (myfiledata.contains(object.get("FileId").getAsInt())) {
+                                            int index=myfiledata.indexOf(object.get("FileId").getAsInt());
+                                            String name=myfileslist.get(index).getFilename();
+                                            if(name.equalsIgnoreCase(object.get("FileName").getAsString().trim())){
+                                                continue;
+                                            }
+                                            else{
+                                                myfileslist.get(index).setFilename(object.get("FileName").getAsString().trim());
+                                            }
+                                        } else {
+                                            MyFilesDataModel model = new MyFilesDataModel();
+                                            model.setFileid(object.get("FileId").getAsInt());
+                                            if (object.get("Type") != null) {
+                                                model.setFiletype(object.get("Type").getAsString().trim());
+                                            } else {
+                                                model.setFiletype("Unknown");
+                                            }
+                                            model.setFilename(object.get("FileName").getAsString().trim());
+                                            myfileslist.add(0, model);
+                                        }
+                                    } else if (object.get("status").getAsInt() == 1) {
+                                        int fileid = object.get("FileId").getAsInt();
+                                        Iterator<MyFilesDataModel> modell = myfileslist.iterator();
+                                        while (modell.hasNext()) {
+                                            MyFilesDataModel mymodel = modell.next();
+                                            if (mymodel.getFileid() == fileid) {
+                                                modell.remove();
+                                            }
+                                        }
+                                    }  else if(object.get("status").getAsInt()==2){
+                                        System.out.println("inside rename");
+                                        int myindex=myfiledata.indexOf(object.get("FileId").getAsString().trim());
+                                        myfileslist.get(myindex).setFilename(object.get("FileName").getAsString().trim());
                                     }
-                                }
-                            }
 
+                                }
+                                ArrayList<String> foldercount=new ArrayList<>();
+                                for(MyFilesDataModel model:myfileslist){
+                                    if(model.getFiletype().equalsIgnoreCase("folder")){
+                                        foldercount.add(model.getFiletype());
+                                    }
+                                }
+                                Count(myfileslist,foldercount);
+                                adapter = new MyFilesAdapter(getActivity(), myfileslist);
+                                lv_myfiles.setAdapter(adapter);
+                            }
                         }
-                        adapter = new MyFilesAdapter(getActivity(), myfileslist);
-                        lv_myfiles.setAdapter(adapter);
+
                     }
+
 
                 }
             } else {
@@ -582,20 +624,40 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                             SearchResult result = new SearchResult();
                             Bundle b = new Bundle();
                             b.putString("searctext", et_search.getText().toString());
+                            b.putInt("parentid",stack.lastElement());
                             result.setArguments(b);
                             ((DashboardActivity) getActivity()).FragmentTransactions(R.id.fragment_container, result, "searchresult");
                         }
                     } else if (show.equalsIgnoreCase("createfolder")) {
-
-                        if (et_search.getText().toString().trim().length() == 0) {
+                        String spl_characters="<>*?/|\\\":";
+                        String pattern = ".*[" + Pattern.quote(spl_characters) + "].*";
+                        if (et_search.getText().toString().trim().length()==0) {
                             UIutill.ShowSnackBar(getActivity(), getString(R.string.empty_foldername));
-                        } else {
+                        }
+                        else if(et_search.getText().toString().trim().length()>80){
+                            UIutill.ShowSnackBar(getActivity(), getString(R.string.folder_name_length));
+                        }
+                        else if(et_search.getText().toString().trim().matches(pattern)){
+                            UIutill.ShowSnackBar(getActivity(), getString(R.string.special_ch_not_all));
+                        }
+                        else {
+
+                            for (MyFilesDataModel model:myfileslist){
+                                if(model.getFiletype().equalsIgnoreCase("folder")){
+                                    if(model.getFilename().trim().equalsIgnoreCase(et_search.getText().toString().trim())){
+                                        UIutill.ShowSnackBar(getActivity(),getString(R.string.folder_already));
+                                        return;
+                                    }
+                                }
+                            }
+
                             dialog.dismiss();
                             if (methodClass.checkInternetConnection()) {
                                 position = 6;
                                 Map<String, String> map = new HashMap<String, String>();
                                 map.put("userid", getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
                                 map.put("currentFolderId", stack.lastElement() + "");
+                                map.put("deviceId",deviceId);
                                 map.put("folderName", et_search.getText().toString().trim());
                                 methodClass.MakeGetRequestWithParams(map, URLS.CREATE_FOLDER);
                             } else {
@@ -660,8 +722,10 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                         map.put("userId", getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
                         map.put("folderIdFileId", fileid);
                         map.put("type", type);
+                        map.put("deviceId",deviceId);
                         map.put("currentFolderId", stack.lastElement() + "");
-                        methodClass.MakeGetRequestWithParams(map, URLS.PERMANENT_DELETE_FILE_FOLDER);
+                        System.out.println("map"+map);
+                        methodClass.MakeGetRequestWithParams(map, URLS.TEMP_DELETE_FILE_FOLDER);
                     } else {
                         UIutill.ShowSnackBar(getActivity(), getString(R.string.no_network));
                     }
@@ -964,52 +1028,73 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                             boolean IsSucess = jsonreturn.get("IsSucess").getAsBoolean();
                             if (IsSucess) {
                                 if (folderid == stack.lastElement()) {
-                                    JsonObject ResponseData = jsonreturn.getAsJsonObject("ResponseData");
-                                    JsonArray Table = ResponseData.getAsJsonArray("Table");
-                                    if (Table.isJsonArray() && Table.size() > 0) {
-                                        ArrayList<Integer> list = new ArrayList<Integer>();
-                                        for (MyFilesDataModel mymodeldata : myfileslist) {
-                                            list.add(mymodeldata.getFileid());
-                                        }
-                                        for (int x = 0; x < Table.size(); x++) {
-                                            JsonObject object = Table.get(x).getAsJsonObject();
-                                            if (object.get("status").getAsInt() == 0) {
-                                                if (list.contains(object.get("FileId").getAsInt())) {
-                                                    continue;
-                                                } else {
-                                                    MyFilesDataModel model = new MyFilesDataModel();
-                                                    model.setFileid(object.get("FileId").getAsInt());
-                                                    if (object.get("Type") != null) {
-                                                        model.setFiletype(object.get("Type").getAsString().trim());
-                                                    } else {
-                                                        model.setFiletype("Unknown");
-                                                    }
-                                                    model.setFilename(object.get("FileName").getAsString().trim());
-                                                    myfileslist.add(0, model);
+                                    if(jsonreturn.getAsJsonObject("ResponseData")!=null){
+                                        JsonObject ResponseData = jsonreturn.getAsJsonObject("ResponseData");
+                                        if(ResponseData.get("Table")!=null){
+                                            JsonArray Table = ResponseData.getAsJsonArray("Table");
+                                            if (Table.isJsonArray() && Table.size() > 0) {
+                                                ArrayList<Integer> list = new ArrayList<Integer>();
+                                                for (MyFilesDataModel mymodeldata : myfileslist) {
+                                                    list.add(mymodeldata.getFileid());
                                                 }
-                                            } else if (object.get("status").getAsInt() == 1) {
-                                                int fileid = object.get("FileId").getAsInt();
-                                                Iterator<MyFilesDataModel> modell = myfileslist.iterator();
-                                                while (modell.hasNext()) {
-                                                    MyFilesDataModel mymodel = modell.next();
-                                                    if (mymodel.getFileid() == fileid) {
-                                                        modell.remove();
+                                                for (int x = 0; x < Table.size(); x++) {
+                                                    JsonObject object = Table.get(x).getAsJsonObject();
+                                                    if (object.get("status").getAsInt() == 0) {
+                                                        if (list.contains(object.get("FileId").getAsInt())) {
+                                                             continue;
+                                                        } else {
+                                                            MyFilesDataModel model = new MyFilesDataModel();
+                                                            model.setFileid(object.get("FileId").getAsInt());
+                                                            if (object.get("Type") != null) {
+                                                                model.setFiletype(object.get("Type").getAsString().trim());
+                                                            } else {
+                                                                model.setFiletype("Unknown");
+                                                            }
+                                                            model.setFilename(object.get("FileName").getAsString().trim());
+                                                            myfileslist.add(0, model);
+                                                        }
+                                                    } else if (object.get("status").getAsInt() == 1) {
+                                                        int fileid = object.get("FileId").getAsInt();
+                                                        Iterator<MyFilesDataModel> modell = myfileslist.iterator();
+                                                        while (modell.hasNext()) {
+                                                            MyFilesDataModel mymodel = modell.next();
+                                                            if (mymodel.getFileid() == fileid) {
+                                                                modell.remove();
+                                                            }
+                                                        }
                                                     }
+                                                    else if(object.get("status").getAsInt() == 2){
+                                                          System.out.println("inside rename");
+                                                          int myindex=list.indexOf(object.get("FileId").getAsInt());
+                                                          System.out.println("index"+myindex);
+                                                          myfileslist.get(myindex).setFilename(object.get("FileName").getAsString().trim());
+                                                    }
+
+                                                }
+                                                ArrayList<String> foldercount=new ArrayList<>();
+                                                for(MyFilesDataModel model:myfileslist){
+                                                    if(model.getFiletype().equalsIgnoreCase("folder")){
+                                                        foldercount.add(model.getFiletype());
+                                                    }
+                                                }
+                                                Count(myfileslist,foldercount);
+                                                adapter = new MyFilesAdapter(getActivity(), myfileslist);
+                                                lv_myfiles.setAdapter(adapter);
+                                            }
+                                        }
+                                        if(ResponseData.get("Table1")!=null){
+                                            JsonArray Table1 = ResponseData.getAsJsonArray("Table1");
+                                            if (Table1.isJsonArray() && Table1.size() > 0) {
+                                                for (int i = 0; i < Table1.size(); i++) {
+                                                    JsonObject obj = Table1.get(i).getAsJsonObject();
+                                                    String Description = obj.get("Description").getAsString();
+                                                    UIutill.generateNotification(getActivity(), Description);
                                                 }
                                             }
+                                        }
 
-                                        }
-                                        adapter = new MyFilesAdapter(getActivity(), myfileslist);
-                                        lv_myfiles.setAdapter(adapter);
                                     }
-                                    JsonArray Table1 = ResponseData.getAsJsonArray("Table1");
-                                    if (Table1.isJsonArray() && Table1.size() > 0) {
-                                        for (int i = 0; i < Table1.size(); i++) {
-                                            JsonObject obj = Table1.get(i).getAsJsonObject();
-                                            String Description = obj.get("Description").getAsString();
-                                            UIutill.generateNotification(getActivity(), Description);
-                                        }
-                                    }
+
 
                                 }
 
@@ -1053,5 +1138,34 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
             executorService.shutdownNow();
         }
         super.onStop();
+    }
+    /*********************************************************************************************************/
+    /**
+     * this method is used to count the files, folders and their total
+     * @param myfileslist
+     * -the list containing files and folders
+     * @param foldercount
+     * -the list containing folders
+     */
+    public void Count(ArrayList<MyFilesDataModel> myfileslist,ArrayList<String> foldercount){
+        if(myfileslist.size()>0){
+            layout_bottom.setVisibility(View.VISIBLE);
+            tv_total.setText(myfileslist.size()+"");
+            if(foldercount.size()==1){
+                tv_total_folders.setText("Folder"+": "+foldercount.size());
+            }
+            else{
+                tv_total_folders.setText("Folders"+": "+foldercount.size());
+            }
+            if(myfileslist.size()-foldercount.size()==1){
+                tv_total_files.setText("File"+": "+(myfileslist.size()-foldercount.size()));
+            }
+            else{
+                tv_total_files.setText("Files"+": "+(myfileslist.size()-foldercount.size()));
+            }
+        }
+        else{
+            layout_bottom.setVisibility(View.GONE);
+        }
     }
 }

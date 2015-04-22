@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/White"
-    android:orientation="vertical">
-
+    >
     <RelativeLayout
         android:id="@+id/layout_foldernames"
         android:layout_width="match_parent"
@@ -31,11 +31,50 @@
             android:src="@drawable/iv_back" />
     </RelativeLayout>
 
-    <ListView
+    <customviews.SwipeMenuListView
         android:id="@+id/lv_myfiles"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@+id/layout_bottom"
+        android:layout_below="@+id/layout_foldernames"
         android:divider="@color/divider_color"
         android:dividerHeight="1dp"
-        android:scrollbars="none"></ListView>
-</LinearLayout>
+        android:scrollbars="none">
+
+    </customviews.SwipeMenuListView>
+
+    <RelativeLayout
+        android:id="@+id/layout_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/myfiles_selected"
+        android:padding="10dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_total_files"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:text="File"
+            android:textColor="@color/email_password_txtclr"
+            android:textSize="16sp" />
+        <TextView
+            android:id="@+id/tv_total_folders"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="Folder"
+            android:textColor="@color/email_password_txtclr"
+            android:textSize="16sp" />
+        <TextView
+            android:id="@+id/tv_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Total"
+            android:textColor="@color/email_password_txtclr"
+            android:textSize="16sp" />
+    </RelativeLayout>
+</RelativeLayout>

@@ -64,17 +64,16 @@
             custom:selectorSize="5dp"
             custom:textColor="@color/login_box_bg"
             custom:tickColor="@color/email_password_txtclr"
-            custom:tickEnd="60"
+            custom:tickEnd="12"
             custom:tickHeight="5dp"
-            custom:tickInterval="10"
-            custom:tickStart="10" />
+            custom:tickInterval="2"
+            custom:tickStart="2" />
 
         <TextView
             android:id="@+id/tv_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/rangebar"
-            android:text="60"
             android:textColor="@color/login_box_bg"
             android:textSize="18sp" />
     </RelativeLayout>

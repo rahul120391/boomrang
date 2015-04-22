@@ -112,6 +112,9 @@ public class Settings<T> extends Fragment implements View.OnClickListener, DataT
                 tv_value.setText(synctime + " " + "Min");
                 rangebar.setSeekPinByValue((float) synctime);
             } else {
+                int synctime=10;
+                rangebar.setSeekPinByValue((float)synctime);
+                tv_value.setText(synctime + " " + "Min");
                 tv_interval.setVisibility(View.GONE);
                 layout_rangebaar.setVisibility(View.GONE);
             }
@@ -139,7 +142,8 @@ public class Settings<T> extends Fragment implements View.OnClickListener, DataT
                     values.put("IsMobile", "1");
                     if (ch_state.isChecked()) {
                         values.put("IsAutoSync", "1");
-                        timeinterval = tv_value.getText().toString().substring(0, 2);
+                        timeinterval = tv_value.getText().toString().substring(0,tv_value.getText().toString().length()-4);
+                        System.out.println("timeinterval"+timeinterval);
                         values.put("SyncInterval", timeinterval);
                     } else {
                         values.put("IsAutoSync", "0");
@@ -167,6 +171,7 @@ public class Settings<T> extends Fragment implements View.OnClickListener, DataT
             JsonObject jsonreturn = (JsonObject) jsonParser.parse(value);
             boolean IsSucess = jsonreturn.get("IsSucess").getAsBoolean();
             if (IsSucess) {
+
                 String ResponseData = jsonreturn.get("ResponseData").getAsString();
                 UIutill.ShowSnackBar(getActivity(), ResponseData.trim());
                 SharedPreferences sharedprefs = getActivity().getSharedPreferences("Login", 0);
@@ -183,6 +188,10 @@ public class Settings<T> extends Fragment implements View.OnClickListener, DataT
                     int time = getActivity().getSharedPreferences("Login", 0).getInt("SyncInterval", 0);
                     SyncAlarmClass.StopAlarm();
                     SyncAlarmClass.FireAlarm(getActivity(), time);
+                }
+                else{
+                    System.out.println("stop alarm");
+                    SyncAlarmClass.StopAlarm();
                 }
             } else {
                 UIutill.ShowDialog(getActivity(), getString(R.string.error), jsonreturn.get("Message").getAsString());

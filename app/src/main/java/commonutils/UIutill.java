@@ -67,7 +67,7 @@ public class UIutill {
      * @param message -message to show inside snackbar
      */
     public static void ShowSnackBar(Context context, String message) {
-        SnackbarManager.show(Snackbar.with(context).text(message).
+        SnackbarManager.show(Snackbar.with(context).text(message).textTypeface(SetFont(context,"segoeuilght.ttf")).
                 color(context.getResources().getColor(R.color.login_box_bg)).
                 textColor(context.getResources().getColor(R.color.email_password_txtclr)));
     }
@@ -142,6 +142,5 @@ public class UIutill {
 
         notificationManager.notify(notificationid, mNotification);
     }
-
-
+    /***********************************************************************************************************************/
 }

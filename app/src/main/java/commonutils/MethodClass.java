@@ -197,8 +197,8 @@ public class MethodClass<T> {
             case URLS.CREATE_FOLDER:
                 myretro.createfolder(map, new CallbackClass<T>(inter, cnt));
                 break;
-            case URLS.PERMANENT_DELETE_FILE_FOLDER:
-                myretro.permamnentdelfilefolder(map, new CallbackClass<T>(inter, cnt));
+            case URLS.TEMP_DELETE_FILE_FOLDER:
+                myretro.tempdelfilefolder(map, new CallbackClass<T>(inter, cnt));
                 break;
             case URLS.REQUEST_FILE:
                 myretro.requestfile(map, new CallbackClass<T>(inter, cnt));
@@ -230,13 +230,13 @@ public class MethodClass<T> {
      * @param files    -file map containing files to upload
      * @param url      -url to uplaod file
      */
-    public void UploadFiles(String userid, String folderid, Map<String, TypedFile> files, String url) {
+    public void UploadFiles(String userid, String folderid,String deviceid, Map<String, TypedFile> files, String url) {
         switch (url) {
             case URLS.UPLOAD_FILES:
                 System.out.println("userid" + userid);
                 System.out.println("folderid" + folderid);
                 System.out.println("file" + files);
-                myretro.fileupload(userid, folderid, files, new CallbackClass<T>(inter, cnt));
+                myretro.fileupload(userid, folderid,deviceid, files, new CallbackClass<T>(inter, cnt));
                 break;
             default:
                 break;

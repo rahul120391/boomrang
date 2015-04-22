@@ -66,6 +66,8 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
     int folderid;
     Context cnt;
     int pos;
+    TextView tv_note;
+    String deviceId;
     private PopupWindow pwindo;
 
     @Override
@@ -80,6 +82,10 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
         try {
 
             v = inflater.inflate(R.layout.fragment_fileupload, null);
+            deviceId = android.provider.Settings.Secure.getString(getActivity().getContentResolver(),
+                    android.provider.Settings.Secure.ANDROID_ID);
+            tv_note=(TextView)v.findViewById(R.id.tv_note);
+            tv_note.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
             TextView tv_chooseoption = (TextView) v.findViewById(R.id.tv_chooseoption);
             tv_chooseoption.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
             layout_spinner = (RelativeLayout) v.findViewById(R.id.layout_spinner);
@@ -115,6 +121,7 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                                 }
                                 adapter.notifyDataSetChanged();
                                 if (lv_myfiles.getCount() == 0) {
+                                    tv_note.setVisibility(View.GONE);
                                     btn_upload.setVisibility(View.GONE);
                                 }
                             }
@@ -130,8 +137,10 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
     public void onResume() {
         super.onResume();
         if (lv_myfiles.getCount() == 0) {
+            tv_note.setVisibility(View.GONE);
             btn_upload.setVisibility(View.GONE);
         } else {
+            tv_note.setVisibility(View.VISIBLE);
             btn_upload.setVisibility(View.VISIBLE);
         }
     }
@@ -153,7 +162,7 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                                 int a = i + 1;
                                 values.put("file" + a, new TypedFile(list.get(i).getFilemimetype(), new File(list.get(i).getFilepath())));
                             }
-                            method.UploadFiles(getActivity().getSharedPreferences("Login", 0).getString("UserID", ""), folderid + "", values, URLS.UPLOAD_FILES);
+                            method.UploadFiles(getActivity().getSharedPreferences("Login", 0).getString("UserID", ""), folderid + "",deviceId, values, URLS.UPLOAD_FILES);
                         } else {
                             UIutill.ShowSnackBar(getActivity(), getString(R.string.no_network));
                         }
@@ -356,9 +365,6 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
             }
             //lv_myfiles.setAdapter(null);
             System.out.println("listt" + list);
-            if (list.size() > 0) {
-
-            }
             adapter = new MyUploadFilesAdapter(getActivity(), list);
             lv_myfiles.setAdapter(adapter);
 

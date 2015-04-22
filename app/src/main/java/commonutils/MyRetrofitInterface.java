@@ -25,7 +25,7 @@ public interface MyRetrofitInterface<T> {
 
     @Multipart
     @POST(URLS.UPLOAD_FILES)
-    void fileupload(@Part("userid") String userid, @Part("folderid") String folderid, @PartMap Map<String, TypedFile> files, Callback<T> object);
+    void fileupload(@Part("userid") String userid, @Part("folderid") String folderid,@Part("deviceId")String deviceid, @PartMap Map<String, TypedFile> files, Callback<T> object);
 
     @GET(URLS.GET_ROOT_FOLDER_FILES)
     void getrootfolderfiles(@Query("userid") String userid, Callback<T> object);

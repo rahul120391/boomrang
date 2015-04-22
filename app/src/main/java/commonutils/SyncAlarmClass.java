@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.SystemClock;
 
 import reciever.CheckFragmentVisibilityBroadcast;
 
@@ -22,10 +23,11 @@ public class SyncAlarmClass {
      */
     public static void FireAlarm(Context context, int time) {
         if (manager == null) {
+            System.out.println("alarm fired");
             manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             Intent intent = new Intent(context, CheckFragmentVisibilityBroadcast.class);
-            pintent = PendingIntent.getBroadcast(context, 0, intent, 0);
-            manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 1000 * 60 * time,
+            pintent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+            manager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 1000 * 60 * time,
                     1000 * 60 * time, pintent);
         }
     }
@@ -35,7 +37,9 @@ public class SyncAlarmClass {
      */
     public static void StopAlarm() {
         if (manager != null) {
+            System.out.println("alarm cancelled");
             manager.cancel(pintent);
+            manager=null;
         }
     }
 
