@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import Boomerang.R;
 import commonutils.RequestCodes;
 import commonutils.UIutill;
+import commonutils.UnCaughtException;
 import modelclasses.GalleryDataModel;
 
 public class CustomGalleryActivity extends Activity implements View.OnClickListener{
@@ -47,18 +48,20 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         statesave=savedInstanceState;
         setContentView(R.layout.activity_custom_gallery);
+        Thread.setDefaultUncaughtExceptionHandler(new UnCaughtException(CustomGalleryActivity.this));
+        //intialize views
         layout_top=(RelativeLayout)findViewById(R.id.layout_top);
-
         tv_select=(TextView)findViewById(R.id.tv_select);
-        tv_select.setTypeface(UIutill.SetFont(this, "segoeuilght.ttf"));
-
         iv_done=(ImageView)findViewById(R.id.iv_done);
-        iv_done.setOnClickListener(this);
-
         lv_files=(ListView)findViewById(R.id.lv_files);
-
         tv_nofiles=(TextView)findViewById(R.id.tv_nofiles);
+
+        //set typeface
+        tv_select.setTypeface(UIutill.SetFont(this, "segoeuilght.ttf"));
         tv_nofiles.setTypeface(UIutill.SetFont(this, "segoeuilght.ttf"));
+
+        //set listeners
+        iv_done.setOnClickListener(this);
 
         if(savedInstanceState==null){
             if(getIntent().getStringExtra("value").equalsIgnoreCase("images")){
@@ -217,9 +220,15 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                 else{
                     Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(path,
                             MediaStore.Images.Thumbnails.MICRO_KIND);
+                    if(thumbnail!=null){
+                        System.out.println("thumbnail"+thumbnail);
+                        Uri uri=getImageUri(this,thumbnail);
+                        imagepath=getRealPathFromURI(uri);
+                    }
+                    else{
+                        System.out.println("thumbnail is null");
+                    }
 
-                    Uri uri=getImageUri(this,thumbnail);
-                    imagepath=getRealPathFromURI(uri);
                 }
 
                 model.setVideo_path(path);
@@ -357,13 +366,17 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                if(convertView==null){
                  convertView=inflater.inflate(R.layout.gallerylist_row_item,null);
                }
+               //intialize views
                iv_image=(ImageView)convertView.findViewById(R.id.iv_image);
                tv_name=(TextView)convertView.findViewById(R.id.tv_name);
-               tv_name.setTypeface(UIutill.SetFont(cnt,"segoeuilght.ttf"));
                ch_check=(CheckBox)convertView.findViewById(R.id.ch_check);
+
+
+               tv_name.setTypeface(UIutill.SetFont(cnt,"segoeuilght.ttf"));
                ch_check.setTag(position);
                aq.id(iv_image) .image(mylist.get(position).getImage_path(), false, true, 100,
                             0, null, 0, 1.0f / 1.0f);
+
                String type[]=mylist.get(position).getFilemimetype().split("/");
                tv_name.setText(mylist.get(position).getFiletitle()+"."+type[1]);
                ch_check.setOnClickListener(new View.OnClickListener() {

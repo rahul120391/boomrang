@@ -47,11 +47,19 @@ public class SideBarAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = inflator.inflate(R.layout.navigationdrawer_row_item, null);
         }
+        //intialize views
         iv_itemimage = (ImageView) convertView.findViewById(R.id.iv_itemimage);
         tv_itemname = (TextView) convertView.findViewById(R.id.tv_itemname);
+
+        //setTypeface
         tv_itemname.setTypeface(UIutill.SetFont(context, "segoeuilght.ttf"));
+
+        //setImageResource
         iv_itemimage.setImageResource(images[position]);
+
+        //setText on view
         tv_itemname.setText(drawer_text[position]);
+
         return convertView;
     }
     /**************************************************************************************************************************/

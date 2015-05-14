@@ -16,6 +16,7 @@ import java.util.List;
 
 import Boomerang.R;
 import adapters.FileArrayAdapter;
+import commonutils.UnCaughtException;
 import modelclasses.Item;
 
 public class FileChooser extends Activity {
@@ -28,7 +29,7 @@ public class FileChooser extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filechooser);
-
+        Thread.setDefaultUncaughtExceptionHandler(new UnCaughtException(FileChooser.this));
         lv_files=(ListView)findViewById(R.id.lv_files);
         lv_files.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

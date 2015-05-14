@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+<item android:color="@color/remaining_indi_color" android:state_pressed="true"></item>
+<item android:color="@color/forgot_txtclr"></item>
+</selector>

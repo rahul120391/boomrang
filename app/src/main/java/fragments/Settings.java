@@ -26,6 +26,7 @@ import java.util.Map;
 import Boomerang.R;
 import commonutils.CustomErrorHandling;
 import commonutils.DataTransferInterface;
+import commonutils.Devices;
 import commonutils.MethodClass;
 import commonutils.SyncAlarmClass;
 import commonutils.UIutill;
@@ -112,7 +113,7 @@ public class Settings<T> extends Fragment implements View.OnClickListener, DataT
                 tv_value.setText(synctime + " " + "Min");
                 rangebar.setSeekPinByValue((float) synctime);
             } else {
-                int synctime=10;
+                int synctime=2;
                 rangebar.setSeekPinByValue((float)synctime);
                 tv_value.setText(synctime + " " + "Min");
                 tv_interval.setVisibility(View.GONE);
@@ -149,6 +150,7 @@ public class Settings<T> extends Fragment implements View.OnClickListener, DataT
                         values.put("IsAutoSync", "0");
                         values.put("SyncInterval", "0");
                     }
+                    values.put("deviceName", Devices.getDeviceName());
                     System.out.println("values" + values);
                     methodClass.MakeGetRequestWithParams(values, URLS.SETTINGS);
                 } else {

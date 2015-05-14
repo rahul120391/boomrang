@@ -71,11 +71,16 @@ public class MyFilesAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = inflator.inflate(R.layout.myfiles_folder_rowitem, null);
         }
-
+        //intialize views
         iv_file_folder = (ImageView) convertView.findViewById(R.id.iv_file_folder);
         tv_file_folder = (TextView) convertView.findViewById(R.id.tv_file_folder);
+
+        //set typeface
         tv_file_folder.setTypeface(UIutill.SetFont(context, "segoeuilght.ttf"));
+
+        //setText on views
         tv_file_folder.setText(myfileslist.get(position).getFilename());
+
         if (myfileslist.get(position).getFiletype().equalsIgnoreCase("folder")) {
             iv_file_folder.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_folder));
         } else if (myfileslist.get(position).getFiletype().equalsIgnoreCase("image")) {

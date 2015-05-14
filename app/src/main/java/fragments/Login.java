@@ -27,6 +27,7 @@ import java.util.Map;
 
 import Boomerang.R;
 import activities.DashboardActivity;
+import activities.MainActivity;
 import commonutils.CustomErrorHandling;
 import commonutils.DataTransferInterface;
 import commonutils.Devices;
@@ -61,9 +62,26 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
             v = inflater.inflate(R.layout.fragment_login, null);
             deviceId = Settings.Secure.getString(getActivity().getContentResolver(),
                     Settings.Secure.ANDROID_ID);
+
+            //intialize views
             ch_rememb = (CheckBox) v.findViewById(R.id.ch_rememb);
             et_email = (EditText) v.findViewById(R.id.et_email);
             et_password = (EditText) v.findViewById(R.id.et_password);
+            tv_rememberme = (TextView) v.findViewById(R.id.tv_rememberme);
+            tv_forgot = (TextView) v.findViewById(R.id.tv_forgot);
+            btn_login = (Button) v.findViewById(R.id.btn_login);
+            iv_logo = (ImageView) v.findViewById(R.id.iv_logo);
+
+            //SetTypeface
+            et_email.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+            et_password.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+            tv_rememberme.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+            tv_forgot.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+            btn_login.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+
+           //SetListeners
+            tv_forgot.setOnClickListener(this);
+            btn_login.setOnClickListener(this);
 
             if (checkremstate != null) {
                 if (checkremstate.getString("username", "") != null) {
@@ -74,11 +92,6 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
                 }
                 ch_rememb.setChecked(checkremstate.getBoolean("status", false));
             }
-            tv_rememberme = (TextView) v.findViewById(R.id.tv_rememberme);
-            tv_forgot = (TextView) v.findViewById(R.id.tv_forgot);
-            btn_login = (Button) v.findViewById(R.id.btn_login);
-            btn_login.setOnClickListener(this);
-            iv_logo = (ImageView) v.findViewById(R.id.iv_logo);
             iv_logo.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -95,12 +108,8 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
                     login_layout.setVisibility(View.VISIBLE);
                 }
             }, 2000);
-            /****************************Set Font*******************************/
-            et_email.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
-            et_password.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
-            tv_rememberme.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
-            tv_forgot.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
-            btn_login.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -140,6 +149,14 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
 
                     }
                 } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case R.id.tv_forgot:
+                try{
+                    ((MainActivity)getActivity()).FragmentTransactions(R.id.fragment_place,new Forgotpassword(),"forgotpass");
+                }
+                catch (Exception e){
                     e.printStackTrace();
                 }
                 break;

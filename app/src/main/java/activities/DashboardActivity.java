@@ -22,6 +22,7 @@ import Boomerang.R;
 import adapters.SideBarAdapter;
 import commonutils.SyncAlarmClass;
 import commonutils.UIutill;
+import commonutils.UnCaughtException;
 import fragments.ContactUs;
 import fragments.MyDashBoard;
 import fragments.MyFiles;
@@ -40,6 +41,7 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+        Thread.setDefaultUncaughtExceptionHandler(new UnCaughtException(DashboardActivity.this));
         try{
             System.out.println("inside on resume");
             boolean IsAutoSync=getSharedPreferences("Login", 0).getBoolean("IsAutoSync",false);
@@ -220,17 +222,23 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
             LayoutInflater inflater = LayoutInflater.from(DashboardActivity.this);
             final View dialoglayout = inflater.inflate(R.layout.confirmation_dialogview, null);
             final AlertDialog.Builder builder = new AlertDialog.Builder(DashboardActivity.this);
+
+            //intialize views
             TextView tv_title = (TextView) dialoglayout.findViewById(R.id.tv_title);
-            tv_title.setText(getString(R.string.logout));
             TextView tv_message = (TextView) dialoglayout.findViewById(R.id.tv_message);
-            tv_message.setText(getString(R.string.logout_msg));
             Button btn_yes = (Button) dialoglayout.findViewById(R.id.btn_yes);
             Button btn_no = (Button) dialoglayout.findViewById(R.id.btn_no);
 
+            //setttypeface
             tv_title.setTypeface(UIutill.SetFont(DashboardActivity.this, "segoeuilght.ttf"));
             tv_message.setTypeface(UIutill.SetFont(DashboardActivity.this, "segoeuilght.ttf"));
             btn_no.setTypeface(UIutill.SetFont(DashboardActivity.this, "segoeuilght.ttf"));
             btn_yes.setTypeface(UIutill.SetFont(DashboardActivity.this, "segoeuilght.ttf"));
+
+
+            //settext on views
+            tv_title.setText(getString(R.string.logout));
+            tv_message.setText(getString(R.string.logout_msg));
 
             builder.setView(dialoglayout);
             confirmdialog = builder.create();

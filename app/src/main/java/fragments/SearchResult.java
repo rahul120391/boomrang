@@ -304,6 +304,9 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
                 }
 
             }
+            else{
+                UIutill.ShowDialog(getActivity(), getString(R.string.error), jsonreturn.get("Message").getAsString());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

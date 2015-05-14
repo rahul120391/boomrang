@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.SnackbarManager;
+import com.nispok.snackbar.enums.SnackbarType;
 
 import Boomerang.R;
 
@@ -67,7 +68,7 @@ public class UIutill {
      * @param message -message to show inside snackbar
      */
     public static void ShowSnackBar(Context context, String message) {
-        SnackbarManager.show(Snackbar.with(context).text(message).textTypeface(SetFont(context,"segoeuilght.ttf")).
+        SnackbarManager.show(Snackbar.with(context).type(SnackbarType.MULTI_LINE).text(message).textTypeface(SetFont(context,"segoeuilght.ttf")).
                 color(context.getResources().getColor(R.color.login_box_bg)).
                 textColor(context.getResources().getColor(R.color.email_password_txtclr)));
     }

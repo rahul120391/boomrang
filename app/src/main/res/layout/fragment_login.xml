@@ -140,7 +140,7 @@
                     android:gravity="center"
                     android:text="@string/forgot_password"
                     android:textAppearance="@android:style/TextAppearance.Medium"
-                    android:textColor="@color/forgot_txtclr"
+                    android:textColor="@color/forgot_pass_textselector"
                     android:textSize="16sp" />
             </LinearLayout>
         </RelativeLayout>

@@ -62,4 +62,7 @@ public interface MyRetrofitInterface<T> {
 
     @GET(URLS.SYNCFILES)
     void syncfiles(@QueryMap Map<String, String> map, Callback<T> object);
+
+    @GET(URLS.FORGOTPASS)
+    void forgotpass(@Query("Email") String Email, Callback<T> object);
 }

@@ -45,8 +45,6 @@ public class MyDashBoard<T> extends Fragment implements View.OnClickListener, Da
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         try {
-            String info[]=UIutill.getDeviceInfo();
-            System.out.println("info"+info[0]+info[1]);
             methodClass = new MethodClass<T>(getActivity(), this);
             Map<String, String> values = new HashMap<String, String>();
             System.out.println("login id" + getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
@@ -127,6 +125,9 @@ public class MyDashBoard<T> extends Fragment implements View.OnClickListener, Da
                     tv_allowed.setText(Html.fromHtml("<font  color='#ffae9b'>" + getResources().getString(R.string.allowed) + "</font>" + "  " + "<font color='#FFFFFF'>" + "(" + allotedspace + ")" + "</font>"));
                     tv_consumed.setText(Html.fromHtml("<font  color='#ffae9b'>" + getResources().getString(R.string.consumed) + "</font>" + "  " + "<font color='#FFFFFF'>" + "(" + spaceConsumed + ")" + "</font>"));
                     tv_remaining.setText(Html.fromHtml("<font  color='#ffae9b'>" + getResources().getString(R.string.remaining) + "</font>" + "  " + "<font color='#FFFFFF'>" + "(" + remaining + ")" + "</font>"));
+                }
+                else{
+                    UIutill.ShowDialog(getActivity(), getString(R.string.error), jsonreturn.get("Message").getAsString());
                 }
 
 

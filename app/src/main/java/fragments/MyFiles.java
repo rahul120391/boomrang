@@ -235,7 +235,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                 layout_search.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
                 layout_upload.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
                 layout_createfolder.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
-                if (methodClass.checkInternetConnection()) {
+               if (methodClass.checkInternetConnection()) {
                     if (stack != null && stack.size() > 0) {
                         position = 7;
                         UIutill.ShowSnackBar(getActivity(), "Sync started");

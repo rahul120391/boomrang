@@ -40,9 +40,8 @@ public class UserProfile<T> extends Fragment implements View.OnClickListener, Da
     ImageView iv_editprofile;
     Dialog editprofile;
     MethodClass methodclass;
-    EditText et_fname, et_lname, et_newpassword;
+    EditText et_fname, et_lname,et_newpassword,et_confirmpassword,et_currentpassword;
     SharedPreferences prefs;
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -134,10 +133,11 @@ public class UserProfile<T> extends Fragment implements View.OnClickListener, Da
             et_fname = (EditText) dialoglayout.findViewById(R.id.et_fname);
             et_lname = (EditText) dialoglayout.findViewById(R.id.et_lname);
             TextView tv_changepassword = (TextView) dialoglayout.findViewById(R.id.tv_changepassword);
-            final EditText et_currentpassword = (EditText) dialoglayout.findViewById(R.id.et_currentpassword);
+            et_currentpassword = (EditText) dialoglayout.findViewById(R.id.et_currentpassword);
             et_newpassword = (EditText) dialoglayout.findViewById(R.id.et_newpassword);
             Button btn_edit = (Button) dialoglayout.findViewById(R.id.btn_edit);
             Button btn_cancel = (Button) dialoglayout.findViewById(R.id.btn_cancel);
+            et_confirmpassword=(EditText)dialoglayout.findViewById(R.id.et_confirmpassword);
             tv_editprofile.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
             et_fname.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
             et_lname.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
@@ -148,7 +148,8 @@ public class UserProfile<T> extends Fragment implements View.OnClickListener, Da
             btn_cancel.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
             et_fname.setText(tv_fnamevalue.getText().toString());
             et_lname.setText(tv_lnamevalue.getText().toString());
-            et_currentpassword.setText(tv_passwordvalue.getText().toString());
+            et_currentpassword.setText(getActivity().getSharedPreferences("Login", 0).getString("Password", ""));
+            et_confirmpassword.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
             btn_cancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -160,17 +161,24 @@ public class UserProfile<T> extends Fragment implements View.OnClickListener, Da
                 public void onClick(View v) {
 
                     System.out.println("current password" + et_currentpassword.getText().toString());
-                    System.out.println("new password" + et_newpassword.getText().toString());
+                    System.out.println("password" +getActivity().getSharedPreferences("Login", 0).getString("Password", ""));
                     if (et_fname.getText().toString().trim().length() == 0) {
                         UIutill.ShowSnackBar(getActivity(), getString(R.string.empty_fname));
                     } else if (et_lname.getText().toString().trim().length() == 0) {
                         UIutill.ShowSnackBar(getActivity(), getString(R.string.empty_lname));
                     } else if (!et_currentpassword.getText().toString().trim().equalsIgnoreCase
-                            (allStar(getActivity().getSharedPreferences("Login", 0).getString("Password", "")))) {
+                            (getActivity().getSharedPreferences("Login", 0).getString("Password", ""))) {
                         UIutill.ShowSnackBar(getActivity(), getString(R.string.wrong_currentpass));
                     } else if (et_newpassword.getText().toString().length() == 0) {
                         UIutill.ShowSnackBar(getActivity(), getString(R.string.empty_newpass));
-                    } else {
+                    }
+                    else if(et_currentpassword.getText().toString().trim().equalsIgnoreCase(et_newpassword.getText().toString().trim())){
+                        UIutill.ShowSnackBar(getActivity(),getString((R.string.new_pass_error)));
+                    }
+                    else if(!et_newpassword.getText().toString().trim().equalsIgnoreCase(et_confirmpassword.getText().toString().trim())){
+                        UIutill.ShowSnackBar(getActivity(),getString(R.string.confirm_pass_error));
+                    }
+                    else {
                         if (methodclass.checkInternetConnection()) {
                             Map<String, String> map = new HashMap<String, String>();
                             map.put("firstName", et_fname.getText().toString().trim());

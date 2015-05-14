@@ -34,4 +34,6 @@ public class URLS {
     public static final String UPDATEPROFILE = "/UpdateUserProfile";
 
     public static final String SYNCFILES = "/SyncFiles";
+
+    public static final String FORGOTPASS="/ForgotPassword";
 }

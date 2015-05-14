@@ -44,7 +44,7 @@ public class Splash extends android.app.Fragment {
                     super.run();
                     try{
                          sleep(3000);
-                        ((MainActivity)getActivity()).FragmentTransactions(R.id.fragment_place,new Login());
+                        ((MainActivity)getActivity()).FragmentTransactions(R.id.fragment_place,new Login(),"login");
                     }
                     catch (Exception e){
                         e.printStackTrace();

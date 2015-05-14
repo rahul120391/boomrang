@@ -146,12 +146,14 @@ public class MethodClass<T> {
      *
      * @param url -url for getting the data
      */
-    public void MakeGetRequest(String url, String userid) {
+    public void MakeGetRequest(String url, String user_id_email) {
         switch (url) {
             case URLS.GET_ROOT_FOLDER_FILES:
-                myretro.getrootfolderfiles(userid, new CallbackClass<T>(inter, cnt));
+                myretro.getrootfolderfiles(user_id_email, new CallbackClass<T>(inter, cnt));
                 break;
-
+            case URLS.FORGOTPASS:
+                myretro.forgotpass(user_id_email,new CallbackClass<T>(inter,cnt));
+                break;
             default:
                 break;
         }
