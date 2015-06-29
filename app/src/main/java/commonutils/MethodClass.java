@@ -154,6 +154,8 @@ public class MethodClass<T> {
             case URLS.FORGOTPASS:
                 myretro.forgotpass(user_id_email,new CallbackClass<T>(inter,cnt));
                 break;
+            case URLS.SPACE_AVAILABLE:
+                myretro.spaceavailable(user_id_email,new CallbackClass<T>(inter,cnt));
             default:
                 break;
         }
@@ -169,12 +171,14 @@ public class MethodClass<T> {
     public void MakePostRequest(Map<String, String> map, String url) {
         switch (url) {
             case URLS.LOGIN:
-                System.out.println("map" + map);
                 myretro.login(map, new CallbackClass<T>(inter, cnt));
                 break;
             case URLS.GETSPACESTATS:
-                System.out.println("map" + map);
                 myretro.getspacestats(map, new CallbackClass<T>(inter, cnt));
+                break;
+            case URLS.CHANGEPASS:
+                System.out.println("map" + map);
+                myretro.changepass(map,new CallbackClass<T>(inter,cnt));
                 break;
             default:
                 break;

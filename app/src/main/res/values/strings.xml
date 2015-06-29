@@ -40,7 +40,9 @@
     <string name="allowed">Allowed</string>
     <string name="consumed">Consumed</string>
     <string name="remaining">Remaining</string>
-
+    <!--Custom Gallery Strings-->
+    <string name="sel">Select</string>
+    <string name="load_more">Load More</string>
     <!-- MyFiles Strings -->
     <string name="myfile">My files</string>
     <string name="search">Search</string>
@@ -50,7 +52,7 @@
     <string name="no_file">No files inside folder</string>
     <string name="no_search_result">No search result found</string>
     <string name="empty_search">Please enter text to search</string>
-    <string name="createfolder">Create folder</string>
+    <string name="createfolder">Create Folder</string>
     <string name="enter_folder_name">Enter folder name</string>
     <string name="create">Create</string>
     <string name="empty_foldername">Please enter folder name</string>
@@ -61,8 +63,11 @@
     <string name="user_info">User Information</string>
     <string name="email">E-mail</string>
     <string name="company">Company</string>
-    <string name="other_info">Other Information</string>
+    <string name="package_info">Package Information</string>
     <string name="reg_date">Registartion Date</string>
+    <string name="sub_pack">Subscription Package</string>
+    <string name="sub_pack_value">Buisness</string>
+    <string name="sub_expdate">Subscription Expiry Date</string>
     <string name="zip_code">Zip Code</string>
     <string name="dummy_email">abc@gmail.com</string>
     <string name="dummy_password">abc12</string>
@@ -90,7 +95,7 @@
     <string name="cancel">Cancel</string>
 
     <!-- SearchView String -->
-    <string name="search_file">Search for file</string>
+    <string name="search_file">Search For File</string>
     <string name="search_file_folder">Search for files/folders</string>
 
     <!--RequesFileView Strings-->
@@ -100,15 +105,14 @@
     <string name="enter_message">Enter message</string>
     <string name="messagee">Message</string>
     <string name="expiry">Expiry</string>
-    <string name="emaill"><font fgcolor="#ff3d2924">Email</font><font fgcolor="#ffff0000">\u002A</font></string>
+    <string name="emaill"><font fgcolor="#ff3d2924">Email address</font><font fgcolor="#ffff0000">\u002A</font></string>
     <string name="no_expiry">No expiry</string>
     <string name="exp_one_day">After 1 day</string>
     <string name="exp_seven_day">After 7 days</string>
     <string name="email_empty">Please enter email</string>
 
     <!--ShareFileFolderView Strings-->
-    <string name="share_file_folder">Share file\u002Ffolder</string>
-    <string name="emails"><font fgcolor="#ff3d2924">Emails</font><font fgcolor="#ffff0000">\u002A</font></string>
+    <string name="share_file_folder">Share File\u002FFolder</string>
     <string name="enter_emails">Enter email\u002C\u0020\u0020use comma for multiple email</string>
     <string name="share">Share</string>
     <string-array name="expiry_value_array">
@@ -122,8 +126,8 @@
     <string name="upload_error_message">Please select atmost 5 items.</string>
     <string name="video_record">Record Video</string>
     <string name="task_error">cannot perform this task</string>
-    <string name="delete_note">Note: Swipe to delete from right or left</string>
-
+    <string name="delete_note">Note: Swipe from right or left to delete</string>
+    <string name="space_error">Not have enough space to upload files</string>
     <!-- Upload Files PopUp Strings -->
     <string name="gallery">Gallery</string>
     <string name="camera">Camera</string>
@@ -142,7 +146,7 @@
     <!--SearchResult Screen Strings-->
     <string name="no_result">No files found</string>
     <string name="search_result">Search Result</string>
-    <string name="nofilefolder">No file folder found</string>
+    <string name="nofilefolder">No file/folder found</string>
     <string name="delete_failed">Deeletion failed</string>
     <!--ConfirmDialog Strings-->
     <string name="yes">Yes</string>
@@ -166,6 +170,11 @@
     <string name="submit">Submit</string>
     <!--Settings String-->
     <string name="settings">Settings</string>
+    <string name="phone_storage">Phone storage</string>
+    <string name="sd_card">Sd card</string>
+    <string name="internal_storage_insuff">Internal storage is insufficient</string>
+    <string name="sdcard_storage_insuff">Sd card storage is insufficient</string>
+    <string name="mem_set">Memory settings</string>
     <string name="auto_sync">Auto sync</string>
     <string name="time_interval">Time interval</string>
     <string name="save">Save</string>
@@ -185,7 +194,7 @@
     <item>@string/onehour</item>
     </string-array>
     <!--General Strings-->
-    <string name="download_cmp">Download completed successfully</string>
+    <string name="download_cmp">Download completed successfully in MyBoomerangBackup</string>
     <string name="downloading">Downloading\u002e\u002e\u002e</string>
     <string name="download_start">Downloading started</string>
     <string name="download_failed">Download failed</string>

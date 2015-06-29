@@ -14,9 +14,6 @@ import Boomerang.R;
  */
 public class ContactUs extends Fragment {
     View v = null;
-
-
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

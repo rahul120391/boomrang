@@ -36,4 +36,8 @@ public class URLS {
     public static final String SYNCFILES = "/SyncFiles";
 
     public static final String FORGOTPASS="/ForgotPassword";
+
+    public static final String CHANGEPASS="/ChangePassword";
+
+    public static final String SPACE_AVAILABLE="/SpaceAvailable";
 }

@@ -58,14 +58,14 @@
             <category android:name="android.intent.category.DEFAULT" />
         </activity>
 
-        <receiver android:name="reciever.DownloadCompleteReciever"
+        <receiver android:name="recievers.DownloadCompleteReciever"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE"></action>
             </intent-filter>
         </receiver>
 
-        <receiver android:name="reciever.CheckFragmentVisibilityBroadcast"
+        <receiver android:name="recievers.CheckFragmentVisibilityBroadcast"
             android:enabled="true"
             ></receiver>
 

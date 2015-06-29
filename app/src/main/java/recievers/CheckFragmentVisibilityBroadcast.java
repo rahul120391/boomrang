@@ -1,4 +1,4 @@
-package reciever;
+package recievers;
 
 import android.app.Fragment;
 import android.content.BroadcastReceiver;
@@ -13,6 +13,7 @@ import fragments.MyFiles;
  * Created by rahul on 4/2/2015.
  */
 public class CheckFragmentVisibilityBroadcast extends BroadcastReceiver {
+
     @Override
     public void onReceive(Context context, Intent intent) {
         try {
@@ -29,6 +30,5 @@ public class CheckFragmentVisibilityBroadcast extends BroadcastReceiver {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 }

@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -75,18 +76,19 @@ import retrofit.converter.GsonConverter;
  * Created by rahul on 3/11/2015.
  */
 public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTransferInterface<T>, AdapterView.OnItemClickListener, SwipeMenuListView.OnMenuItemClickListener {
+    public static customviews.SwipeMenuListView lv_myfiles;
+    public static int listviewpositionclick = -1;
     View v = null;
     RelativeLayout layout_myfiles, layout_sync, layout_search, layout_upload, layout_createfolder;
     TextView tv_foldername;
     ImageView iv_back;
-    customviews.SwipeMenuListView lv_myfiles;
     ArrayList<MyFilesDataModel> myfileslist = new ArrayList<>();
     SwipeMenuCreator creator;
     AlertDialog dialog;
     MethodClass<T> methodClass;
     RelativeLayout layout_foldernames;
-    Stack<Integer> stack = new Stack<Integer>();
-    Stack<String> foldernames = new Stack<>();
+    Stack<Integer> stack = new Stack<Integer>();  //stack containing folderids
+    Stack<String> foldernames = new Stack<>(); //stack containing  foldernames
     int folderid;
     int position;          //0-temp delete file/folder, 1-get root file folders, 2-onbackpress in layoyt_foldername, 3-request file, 4-share file, 5-Download File, 6-create folder, 7-sync files
     String foldername;
@@ -94,8 +96,6 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
     Dialog confirmdialog, requestfolder, sharedialog;
     String searchstring;
     RelativeLayout mainlayout,layout_bottom;
-    int listviewpositionclick = 0;
-    String deviceId;
     ExecutorService executorService;
     TextView tv_total_files,tv_total,tv_total_folders;
     @Nullable
@@ -103,29 +103,55 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         try {
             EventBus.getDefault().register(this);
-            deviceId = android.provider.Settings.Secure.getString(getActivity().getContentResolver(),
-                    android.provider.Settings.Secure.ANDROID_ID);
             methodClass = new MethodClass<>(getActivity(), this);
-            v = inflater.inflate(R.layout.fragment_myfiles, null);
             foldername = getString(R.string.myfiles);
             folderid = getActivity().getSharedPreferences("Login", 0).getInt("DirectoryId", 0);
-            layout_foldernames = (RelativeLayout) v.findViewById(R.id.layout_foldernames);
             foldernames.clear();
             stack.clear();
-            layout_foldernames.setVisibility(View.GONE);
+
+            v = inflater.inflate(R.layout.fragment_myfiles, null);
+
+            //intialize views
+            layout_foldernames = (RelativeLayout) v.findViewById(R.id.layout_foldernames);
             layout_bottom=(RelativeLayout)v.findViewById(R.id.layout_bottom);
-            layout_bottom.setVisibility(View.GONE);
             tv_total_folders=(TextView)v.findViewById(R.id.tv_total_folders);
             tv_total_files=(TextView)v.findViewById(R.id.tv_total_files);
             tv_total=(TextView)v.findViewById(R.id.tv_total);
+            mainlayout = (RelativeLayout) v.findViewById(R.id.layout_main);
+            layout_myfiles = (RelativeLayout) v.findViewById(R.id.layout_myfiles);
+            layout_sync = (RelativeLayout) v.findViewById(R.id.layout_sync);
+            layout_upload = (RelativeLayout) v.findViewById(R.id.layout_upload);
+            layout_createfolder = (RelativeLayout) v.findViewById(R.id.layout_createfolder);
+            layout_search = (RelativeLayout) v.findViewById(R.id.layout_search);
+            lv_myfiles = (customviews.SwipeMenuListView) v.findViewById(R.id.lv_myfiles);
+            iv_back = (ImageView) v.findViewById(R.id.iv_back);
+            tv_foldername = (TextView) v.findViewById(R.id.tv_foldername);
 
+            //Set Visibility
+            layout_foldernames.setVisibility(View.GONE);
+            layout_bottom.setVisibility(View.GONE);
+
+            //Set Typeface
             tv_total_folders.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
             tv_total_files.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
             tv_total.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
-            mainlayout = (RelativeLayout) v.findViewById(R.id.layout_main);
+            tv_foldername.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+
+            //Set Listeners
+            layout_search.setOnClickListener(this);
+            iv_back.setOnClickListener(this);
+            layout_myfiles.setOnClickListener(this);
+            layout_sync.setOnClickListener(this);
+            layout_upload.setOnClickListener(this);
+            layout_createfolder.setOnClickListener(this);
+            lv_myfiles.setOnItemClickListener(this);
+            lv_myfiles.setOnMenuItemClickListener(this);
             mainlayout.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
+                    if(DashboardActivity.slidingpane.isOpen()){
+                        DashboardActivity.slidingpane.closePane();
+                    }
                     if (lv_myfiles.getCount() > 0) {
                         if (listviewpositionclick >= lv_myfiles.getFirstVisiblePosition()
                                 && listviewpositionclick <= lv_myfiles.getLastVisiblePosition()) {
@@ -138,24 +164,41 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                     return false;
                 }
             });
-            layout_myfiles = (RelativeLayout) v.findViewById(R.id.layout_myfiles);
-            layout_sync = (RelativeLayout) v.findViewById(R.id.layout_sync);
-            layout_upload = (RelativeLayout) v.findViewById(R.id.layout_upload);
-            layout_createfolder = (RelativeLayout) v.findViewById(R.id.layout_createfolder);
-            layout_search = (RelativeLayout) v.findViewById(R.id.layout_search);
-            layout_search.setOnClickListener(this);
-            layout_myfiles.setOnClickListener(this);
-            layout_sync.setOnClickListener(this);
-            layout_upload.setOnClickListener(this);
-            layout_createfolder.setOnClickListener(this);
-            lv_myfiles = (customviews.SwipeMenuListView) v.findViewById(R.id.lv_myfiles);
-            lv_myfiles.setOnItemClickListener(this);
 
-            lv_myfiles.setOnMenuItemClickListener(this);
-            iv_back = (ImageView) v.findViewById(R.id.iv_back);
-            tv_foldername = (TextView) v.findViewById(R.id.tv_foldername);
-            iv_back.setOnClickListener(this);
-            tv_foldername.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+            lv_myfiles.setOnSwipeListener(new SwipeMenuListView.OnSwipeListener() {
+                @Override
+                public void onSwipeStart(int position) {
+                    if (lv_myfiles.getCount() > 0) {
+                        if (listviewpositionclick >= lv_myfiles.getFirstVisiblePosition()
+                                && listviewpositionclick <= lv_myfiles.getLastVisiblePosition()) {
+                            View view = lv_myfiles.getChildAt(listviewpositionclick - lv_myfiles.getFirstVisiblePosition());
+                            if (view instanceof SwipeMenuLayout) {
+                                ((SwipeMenuLayout) view).smoothCloseMenu();
+                            }
+                        }
+                    }
+                    listviewpositionclick = position;
+                    if(DashboardActivity.slidingpane.isOpen()){
+                        DashboardActivity.slidingpane.closePane();
+                    }
+                }
+
+                @Override
+                public void onSwipeEnd(int position) {
+                    System.out.println("swipe ended");
+                }
+            });
+
+            lv_myfiles.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent event) {
+                    view.getParent().requestDisallowInterceptTouchEvent(true);
+                    return false;
+                }
+            });
+
+
+
 
 
             creator = new SwipeMenuCreator() {
@@ -241,7 +284,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                         UIutill.ShowSnackBar(getActivity(), "Sync started");
                         Map<String, String> map = new HashMap<>();
                         map.put("userId", getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
-                        map.put("deviceId", deviceId);
+                        map.put("deviceId", UIutill.getDeviceId(getActivity()));
                         map.put("folderId", stack.lastElement() + "");
                         methodClass.MakeGetRequestWithParams(map, URLS.SYNCFILES);
                     }
@@ -522,6 +565,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                 if (type.equalsIgnoreCase("0")) {
                     String filenamee = myfileslist.get(positionn).getFilename();
                     ShareDialogView(filenamee, fileid, filetype);
+                   // ShowDialog();
                 } else {
                     if (type.equalsIgnoreCase("1")) {
                         int state = getActivity().getPackageManager().getApplicationEnabledSetting("com.android.providers.downloads");
@@ -586,19 +630,24 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
             LayoutInflater inflater = getActivity().getLayoutInflater();
             final View dialoglayout = inflater.inflate(R.layout.search_dialog, null);
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+            //Intialize Views
             TextView tv_search_for_file = (TextView) dialoglayout.findViewById(R.id.tv_search_for_file);
             final EditText et_search = (EditText) dialoglayout.findViewById(R.id.et_search);
             Button btn_search = (Button) dialoglayout.findViewById(R.id.btn_search);
             Button btn_cancel = (Button) dialoglayout.findViewById(R.id.btn_cancel);
+
+            //Set Typeface
+            tv_search_for_file.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+            et_search.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+            btn_search.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+            btn_cancel.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+
             if (show.equalsIgnoreCase("createfolder")) {
                 tv_search_for_file.setText(getString(R.string.createfolder));
                 et_search.setHint(getString(R.string.enter_folder_name));
                 btn_search.setText(getString(R.string.create));
             }
-            tv_search_for_file.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
-            et_search.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
-            btn_search.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
-            btn_cancel.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
             builder.setView(dialoglayout);
             dialog = builder.create();
             dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnim_SearchWindow;
@@ -657,7 +706,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                                 Map<String, String> map = new HashMap<String, String>();
                                 map.put("userid", getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
                                 map.put("currentFolderId", stack.lastElement() + "");
-                                map.put("deviceId",deviceId);
+                                map.put("deviceId", UIutill.getDeviceId(getActivity()));
                                 map.put("folderName", et_search.getText().toString().trim());
                                 methodClass.MakeGetRequestWithParams(map, URLS.CREATE_FOLDER);
                             } else {
@@ -685,22 +734,27 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
             LayoutInflater inflater = LayoutInflater.from(getActivity());
             final View dialoglayout = inflater.inflate(R.layout.confirmation_dialogview, null);
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+            //Intialize Views
             TextView tv_title = (TextView) dialoglayout.findViewById(R.id.tv_title);
-            tv_title.setText(getString(R.string.confirmation));
-            TextView tv_message = (TextView) dialoglayout.findViewById(R.id.tv_message);
-            if (type.equalsIgnoreCase("0")) {
-                tv_message.setText(getString(R.string.delete_folder_message));
-            } else if (type.equalsIgnoreCase("1")) {
-                tv_message.setText(getString(R.string.delete_file_message));
-            }
             Button btn_yes = (Button) dialoglayout.findViewById(R.id.btn_yes);
             Button btn_no = (Button) dialoglayout.findViewById(R.id.btn_no);
+            TextView tv_message = (TextView) dialoglayout.findViewById(R.id.tv_message);
 
+            //Set Typeface
             tv_title.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
             tv_message.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
             btn_no.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
             btn_yes.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
 
+
+            tv_title.setText(getString(R.string.confirmation));
+
+            if (type.equalsIgnoreCase("0")) {
+                tv_message.setText(getString(R.string.delete_folder_message));
+            } else if (type.equalsIgnoreCase("1")) {
+                tv_message.setText(getString(R.string.delete_file_message));
+            }
             builder.setView(dialoglayout);
             confirmdialog = builder.create();
             confirmdialog.getWindow().getAttributes().windowAnimations = R.style.Animations_SmileWindow;
@@ -722,7 +776,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                         map.put("userId", getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
                         map.put("folderIdFileId", fileid);
                         map.put("type", type);
-                        map.put("deviceId",deviceId);
+                        map.put("deviceId", UIutill.getDeviceId(getActivity()));
                         map.put("currentFolderId", stack.lastElement() + "");
                         System.out.println("map"+map);
                         methodClass.MakeGetRequestWithParams(map, URLS.TEMP_DELETE_FILE_FOLDER);
@@ -745,30 +799,29 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
         if (requestfolder == null || !requestfolder.isShowing()) {
             LayoutInflater inflater = LayoutInflater.from(getActivity());
             final View dialoglayout = inflater.inflate(R.layout.requestfile_dialogview, null);
-            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+            //Intialize Views
             Button btn_cancel = (Button) dialoglayout.findViewById(R.id.btn_cancel);
-            btn_cancel.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
             Button btn_request = (Button) dialoglayout.findViewById(R.id.btn_request);
-            btn_request.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
             TextView tv_requestfolder = (TextView) dialoglayout.findViewById(R.id.tv_requestfolder);
-            tv_requestfolder.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
-
             TextView tv_email = (TextView) dialoglayout.findViewById(R.id.tv_email);
-            tv_email.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
-
             final EditText et_email = (EditText) dialoglayout.findViewById(R.id.et_email);
-            et_email.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
-
             TextView tv_message = (TextView) dialoglayout.findViewById(R.id.tv_message);
-            tv_message.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
-
             TextView tv_expiry = (TextView) dialoglayout.findViewById(R.id.tv_expiry);
-            tv_expiry.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
-
             final EditText et_message = (EditText) dialoglayout.findViewById(R.id.et_message);
+            final Spinner sp_select_expiry = (Spinner) dialoglayout.findViewById(R.id.sp_select_expiry);
+
+            //Set Typeface
+            btn_cancel.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+            btn_request.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+            tv_requestfolder.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+            tv_email.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+            et_email.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+            tv_message.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+            tv_expiry.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
             et_message.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
 
-            final Spinner sp_select_expiry = (Spinner) dialoglayout.findViewById(R.id.sp_select_expiry);
+
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.expiry_value_array)) {
                 public View getView(int position, View convertView, android.view.ViewGroup parent) {
                     TextView v = (TextView) super.getView(position, convertView, parent);
@@ -787,9 +840,12 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                 }
             };
             sp_select_expiry.setAdapter(adapter);
-            builder.setView(dialoglayout);
-            requestfolder = builder.create();
+            requestfolder=new Dialog(getActivity(),R.style.DialogFragmentStyle);
+            requestfolder.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            requestfolder.setContentView(dialoglayout);
+            requestfolder.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
             requestfolder.getWindow().getAttributes().windowAnimations = R.style.MyAnim_SearchWindow;
+            requestfolder.setCancelable(true);
             requestfolder.show();
             btn_cancel.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -827,7 +883,13 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                                     break;
                             }
                             map.put("emailId", et_email.getText().toString().trim());
-                            map.put("Message", et_message.getText().toString().trim());
+                            if(et_message.getText().toString().trim().length()==0){
+                                map.put("Message"," ");
+                            }
+                            else{
+                                map.put("Message", et_message.getText().toString().trim());
+                            }
+
                             methodClass.MakeGetRequestWithParams(map, URLS.REQUEST_FILE);
                         } else {
                             UIutill.ShowSnackBar(getActivity(), getString(R.string.no_network));
@@ -851,36 +913,32 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
         if (sharedialog == null || !sharedialog.isShowing()) {
             LayoutInflater inflater = LayoutInflater.from(getActivity());
             final View dialoglayout = inflater.inflate(R.layout.sharefolder_dialogview, null);
-            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+            //intialize views
             TextView tv_share_file_folder = (TextView) dialoglayout.findViewById(R.id.tv_share_file_folder);
-            tv_share_file_folder.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
-
             TextView tv_email = (TextView) dialoglayout.findViewById(R.id.tv_email);
-            tv_email.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
-
             final TextView et_email = (TextView) dialoglayout.findViewById(R.id.et_email);
-            et_email.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
-
             TextView tv_message = (TextView) dialoglayout.findViewById(R.id.tv_message);
-            tv_message.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
-
             final EditText et_message = (EditText) dialoglayout.findViewById(R.id.et_message);
-            et_message.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
-
             Button btn_share = (Button) dialoglayout.findViewById(R.id.btn_share);
-            btn_share.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
-
             Button btn_cancel = (Button) dialoglayout.findViewById(R.id.btn_cancel);
+
+            //Set Typeface
+            tv_share_file_folder.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+            tv_email.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+            et_email.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+            tv_message.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+            et_message.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+            btn_share.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
             btn_cancel.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
 
-
-            builder.setView(dialoglayout);
-            sharedialog = builder.create();
-
+            sharedialog=new Dialog(getActivity(),R.style.DialogFragmentStyle);
+            sharedialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            sharedialog.setContentView(dialoglayout);
+            sharedialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
             sharedialog.getWindow().getAttributes().windowAnimations = R.style.MyAnim_SearchWindow;
+            sharedialog.setCancelable(true);
             sharedialog.show();
-
-
             btn_cancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -919,7 +977,12 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                                 Map<String, String> map = new HashMap<String, String>();
                                 map.put("emailIds", builder.toString());
                                 map.put("userId", getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
-                                map.put("message", et_message.getText().toString().trim());
+                                if(et_message.getText().toString().trim().length()==0){
+                                    map.put("Message"," ");
+                                }
+                                else{
+                                    map.put("Message", et_message.getText().toString().trim());
+                                }
                                 map.put("type", type);
                                 map.put("fileName", filename);
                                 map.put("fileId", fileid);
@@ -963,26 +1026,87 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                 startActivity(intent);
             }
         } else {
-            UIutill.ShowSnackBar(getActivity(), getString(R.string.download_start));
-            String path = Environment.getExternalStorageDirectory().getAbsolutePath();
-            File directory = new File(path + "/" + "MyData");
-            System.out.println("url" + url);
-            if (!directory.exists()) {
-                directory.mkdir();
+
+            if(getActivity().getSharedPreferences("Login",0).getInt("StoragePreference",0)==0){
+                if(UIutill.getInternalStorage()<=0.0){
+                    UIutill.ShowSnackBar(getActivity(),getActivity().getString(R.string.internal_storage_insuff));
+                }
+                else{
+                    UIutill.ShowSnackBar(getActivity(), getString(R.string.download_start));
+                    String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+                    File directory = new File(path + "/" + "MyBoomerangBackup");
+                    System.out.println("url" + url);
+                    if (!directory.exists()) {
+                        directory.mkdir();
+                    }
+                    String mypath = path + "/" + "MyBoomerangBackup" + "/" + filename;
+                    System.out.println("path" + mypath);
+                    File file = new File(mypath);
+                    if (file.exists()) {
+                        file.delete();
+                    }
+                    DownloadManager manager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
+                    DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+                    request.setTitle(filename);
+                    request.setDescription(getString(R.string.downloading));
+                    request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
+                    request.setDestinationInExternalPublicDir("/MyBoomerangBackup", filename);
+                    manager.enqueue(request);
+                }
             }
-            String mypath = path + "/" + "MyData" + "/" + filename;
-            System.out.println("path" + mypath);
-            File file = new File(mypath);
-            if (file.exists()) {
-                file.delete();
-            }
-            DownloadManager manager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
-            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
-            request.setTitle(filename);
-            request.setDescription(getString(R.string.downloading));
-            request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
-            request.setDestinationInExternalPublicDir("/MyData", filename);
-            manager.enqueue(request);
+         /*   else if(getActivity().getSharedPreferences("Login",0).getInt("StoragePreference",0)==1){
+                if(UIutill.getSecondaryStorageSize()<=0.0){
+                    UIutill.ShowSnackBar(getActivity(),getActivity().getString(R.string.sdcard_storage_insuff));
+                }
+                else{
+                    UIutill.ShowSnackBar(getActivity(), getString(R.string.download_start));
+                    String path = System.getenv("SECONDARY_STORAGE");
+                    File filee=new File("/mnt/sdcard1");
+                    if(filee.exists()){
+                        System.out.println("file exists");
+                    }
+                    else{
+                        System.out.println("file not exists");
+                    }
+                    if (Environment.MEDIA_MOUNTED.equals(path)) {
+                        System.out.println("we can read and write");
+                    } else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(path)) {
+                        System.out.println("we can read data only");
+
+                    }
+                    else{
+                        System.out.println("neither read nor write");
+                    }
+                    File directory = new File(path+"/"+"MyBoomerangBackup");
+                    System.out.println("get absolute path"+directory.getAbsolutePath());
+                    System.out.println("url" + url);
+                    if (!directory.exists()) {
+                        directory.mkdir();
+                    }
+                    File ff=new File(path);
+                    if(ff.canWrite()){
+                        System.out.println("yes we can write");
+                    }
+                    else{
+                        System.out.println("cannot write");
+                    }
+                    System.out.println("directory"+path+"/MyBoomerangBackup");
+                    String mypath = path + "/" + "MyBoomerangBackup" + "/" + filename;
+                    System.out.println("path" + mypath);
+                    File file = new File(mypath);
+                    if (file.exists()) {
+                        file.delete();
+                    }
+                    DownloadManager manager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
+                    DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+                    request.setTitle(filename);
+                    request.setDescription(getString(R.string.downloading));
+                    request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
+                    request.setDestinationInExternalPublicDir("/MyBoomerangBackup", filename);
+                    manager.enqueue(request);
+                }
+            }*/
+
         }
 
     }
@@ -1008,7 +1132,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
 
                 Map<String, String> map = new HashMap<>();
                 map.put("userId", getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
-                map.put("deviceId", deviceId);
+                map.put("deviceId",  UIutill.getDeviceId(getActivity()));
                 map.put("folderId", folderid + "");
                 executorService = Executors.newCachedThreadPool();
                 final RestAdapter restadapter = new RestAdapter.Builder().

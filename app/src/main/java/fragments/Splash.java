@@ -6,11 +6,10 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
 
 import Boomerang.R;
 import activities.MainActivity;
+import pl.droidsonroids.gif.GifImageView;
 
 /**
  * Created by rahul on 3/4/2015.
@@ -18,7 +17,8 @@ import activities.MainActivity;
 public class Splash extends android.app.Fragment {
 
     View v=null;
-    ImageView iv_logo;
+   // ImageView iv_logo;
+    GifImageView iv_logo;
 
     @Override
     public void onAttach(Activity activity) {
@@ -29,15 +29,7 @@ public class Splash extends android.app.Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         try{
          v=inflater.inflate(R.layout.fragment_splash,null);
-            iv_logo=(ImageView)v.findViewById(R.id.iv_logo);
-            iv_logo.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    iv_logo.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.fade_in));
-                    iv_logo.setVisibility(View.VISIBLE);
-                }
-            },1000);
-
+            iv_logo=(GifImageView)v.findViewById(R.id.iv_logo);
             Thread thread=new Thread(){
                 @Override
                 public void run() {

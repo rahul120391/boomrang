@@ -46,7 +46,7 @@ public class MainActivity extends FragmentActivity {
                  R.animator.card_flip_left_in, R.animator.card_flip_left_out);
          fragmentTransaction.add(R.id.fragment_place,_newfrag);
          fragmentTransaction.addToBackStack(null);
-         fragmentTransaction.commit();
+         fragmentTransaction.commitAllowingStateLoss();
      }
     /**************************************************************************************************************************/
 

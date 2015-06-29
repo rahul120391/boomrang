@@ -4,7 +4,9 @@
     android:layout_height="wrap_content"
     android:background="@color/White"
     android:orientation="vertical"
-    android:scrollbars="none">
+    android:scrollbarAlwaysDrawVerticalTrack="true"
+    android:scrollbars="none"
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -60,6 +62,7 @@
             android:background="@drawable/search_edittext_bg"
             android:hint="@string/enter_message"
             android:padding="10dp"
+            android:singleLine="true"
             android:textColor="@color/search_box_txtclr"
             android:textColorHint="@color/search_box_txtclr"
             android:textCursorDrawable="@drawable/edittext_cursor_drawable" />

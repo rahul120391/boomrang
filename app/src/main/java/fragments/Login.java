@@ -3,7 +3,6 @@ package fragments;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -49,19 +48,18 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
     LinearLayout login_layout;
     SharedPreferences sharedprefs, checkremstate;
     CheckBox ch_rememb;
-    String deviceId;
     String s = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         try {
-            System.out.println("dv"+ Devices.getDeviceName());
+
+
             sharedprefs = getActivity().getSharedPreferences("Login", 0);
             checkremstate = getActivity().getSharedPreferences("RemState", 0);
             methodClass = new MethodClass<T>(getActivity(), this);
             v = inflater.inflate(R.layout.fragment_login, null);
-            deviceId = Settings.Secure.getString(getActivity().getContentResolver(),
-                    Settings.Secure.ANDROID_ID);
+
 
             //intialize views
             ch_rememb = (CheckBox) v.findViewById(R.id.ch_rememb);
@@ -134,11 +132,12 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
                     } else if (et_password.getText().toString().trim().length() == 0) {
                         UIutill.ShowSnackBar(getActivity(), getString(R.string.empty_password));
                     } else {
+
                         if (methodClass.checkInternetConnection()) {
                             Map<String, String> values = new HashMap<String, String>();
                             values.put("EmailID", et_email.getText().toString().trim());
                             values.put("Password", et_password.getText().toString().trim());
-                            values.put("deviceId", deviceId);
+                            values.put("deviceId",UIutill.getDeviceId(getActivity()));
                             values.put("deviceName",Devices.getDeviceName());
                             System.out.println("urls" + URLS.LOGIN);
                             System.out.println("values" + values);
@@ -190,17 +189,23 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
                     e.putInt("DirectoryId", mainobject.get("DirectoryId").getAsInt());
                     e.putBoolean("IsAutoSync", mainobject.get("IsAutoSync").getAsBoolean());
                     e.putInt("SyncInterval", mainobject.get("SyncInterval").getAsInt());
+                    e.putInt("StoragePreference",mainobject.get("StoragePreference").getAsInt());
+                    System.out.println("package description"+mainobject.get("PackageDescription").getAsString());
+                    e.putString("PackageDescription",mainobject.get("PackageDescription").getAsString());
+                    if(mainobject.get("SubscriptionExpiryDate")!=null){
+                        System.out.println("subscription date"+mainobject.get("SubscriptionExpiryDate").getAsString());
+                        e.putString("SubscriptionExpiryDate",mainobject.get("SubscriptionExpiryDate").getAsString());
+                    }
+                    else{
+                        e.putString("SubscriptionExpiryDate","Not specified");
+                    }
+
                     if (mainobject.get("Company") != null) {
                         e.putString("Company", mainobject.get("Company").getAsString().trim());
                     } else {
                         e.putString("Company", "Not specified");
                     }
                     e.putString("Password", mainobject.get("Password").getAsString().trim());
-                    if (mainobject.get("ZipCode") != null) {
-                        e.putString("ZipCode", mainobject.get("ZipCode").getAsString().trim());
-                    } else {
-                        e.putString("ZipCode", "Not specified");
-                    }
                     e.commit();
 
                     if (ch_rememb.isChecked()) {

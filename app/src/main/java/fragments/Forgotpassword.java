@@ -94,8 +94,14 @@ public class Forgotpassword extends Fragment implements View.OnClickListener, Da
              boolean IsSucess = jsonreturn.get("IsSucess").getAsBoolean();
              if(IsSucess){
                   String ResponseData=jsonreturn.get("ResponseData").getAsString();
-                  UIutill.ShowSnackBar(getActivity(),ResponseData);
-                  getActivity().onBackPressed();
+                  if(!ResponseData.equalsIgnoreCase("")){
+                      UIutill.ShowSnackBar(getActivity(),ResponseData);
+                      getActivity().onBackPressed();
+                  }
+                 else{
+                     String Message=jsonreturn.get("Message").getAsString();UIutill.ShowSnackBar(getActivity(),Message);
+                  }
+
              }
              else{
                  UIutill.ShowDialog(getActivity(), getString(R.string.error), jsonreturn.get("Message").getAsString());

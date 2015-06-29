@@ -9,14 +9,32 @@ import java.io.Serializable;
  */
 public class GalleryDataModel implements Serializable {
     private String image_path;
+    private String Fileid;
     private String filemimetype;
     private String filetitle;
     private String filethumnbail;
+    private String filesize;
     private String video_path;
     private String filepath;
     private Bitmap bitmap;
     private boolean status;
     private String from;
+
+    public String getFileid() {
+        return Fileid;
+    }
+
+    public void setFileid(String fileid) {
+        Fileid = fileid;
+    }
+
+    public String getFilesize() {
+        return filesize;
+    }
+
+    public void setFilesize(String filesize) {
+        this.filesize = filesize;
+    }
 
     public String getFrom() {
         return from;

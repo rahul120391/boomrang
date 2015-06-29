@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -14,7 +15,49 @@
         android:text="@string/settings"
         android:textColor="@color/search_for_file"
         android:textSize="22sp" />
+  <!--  <TextView
+        android:id="@+id/tv_memstett"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/mem_set"
+        android:textColor="@color/search_for_file"
+        android:layout_marginTop="20dp"
+        android:textSize="18sp" />
+    <RadioGroup
+        android:id="@+id/rd_memorystatus"
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_height="wrap_content" >
 
+        <RadioButton
+            android:id="@+id/rd_phonesettings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/phone_storage"
+            android:background="@null"
+            android:paddingLeft="20dp"
+            android:textColor="@color/login_box_bg"
+            android:button="@drawable/memory_selector"
+            android:checked="true" />
+
+        <RadioButton
+            android:id="@+id/rd_sdcard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sd_card"
+            android:paddingLeft="20dp"
+            android:background="@null"
+            android:textColor="@color/login_box_bg"
+            android:button="@drawable/memory_selector"
+            />
+
+    </RadioGroup>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/login_box_bg"
+        android:layout_marginTop="10dp"
+        ></View>-->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

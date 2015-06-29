@@ -217,7 +217,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="20dp"
-                android:text="@string/other_info"
+                android:text="@string/package_info"
                 android:textColor="@color/headings_color"
                 android:textSize="20sp" />
         </LinearLayout>
@@ -276,21 +276,21 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tv_zipcode"
+                    android:id="@+id/tv_subpack"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingLeft="20dp"
-                    android:text="@string/zip_code"
+                    android:text="@string/sub_pack"
                     android:textColor="@color/subheadings_color"
                     android:textSize="14sp" />
 
                 <TextView
-                    android:id="@+id/tv_zipcodevalue"
+                    android:id="@+id/tv_subpackvalue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingLeft="20dp"
                     android:paddingTop="2dp"
-                    android:text="@string/dummy_zip"
+                    android:text="@string/sub_pack_value"
                     android:textColor="@color/headings_color"
                     android:textSize="16sp" />
             </LinearLayout>
@@ -300,5 +300,36 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/subheadings_divider_color"></View>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_subexpdate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="20dp"
+                    android:text="@string/sub_expdate"
+                    android:textColor="@color/subheadings_color"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tv_subexpdatevalue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="20dp"
+                    android:paddingTop="2dp"
+                    android:text="@string/dummy_date"
+                    android:textColor="@color/headings_color"
+                    android:textSize="16sp" />
+            </LinearLayout>
+        </RelativeLayout>
     </LinearLayout>
 </ScrollView>

@@ -151,10 +151,10 @@ public class FileChooser extends Activity {
                     else if(ff.getAbsolutePath().endsWith("tar")){
                         fls.add(new Item(ff.getName(), ff.length() + " Byte", date_modify, ff.getAbsolutePath(), "ic_tar"));
                     }
-                    else if(ff.getAbsolutePath().endsWith("mp4") || ff.getAbsolutePath().endsWith("3gpp") || ff.getAbsolutePath().endsWith("avi")){
+                    else if(ff.getAbsolutePath().endsWith("mp4") || ff.getAbsolutePath().endsWith("3gpp") || ff.getAbsolutePath().endsWith("avi") ||  ff.getAbsolutePath().endsWith("mkv")){
                         fls.add(new Item(ff.getName(), ff.length() + " Byte", date_modify, ff.getAbsolutePath(), "ic_avi"));
                     }
-                    else if(ff.getAbsolutePath().endsWith("mp3") || ff.getAbsolutePath().endsWith("mpeg") || ff.getAbsolutePath().endsWith("wmv") || ff.getAbsolutePath().endsWith("swf") || ff.getAbsolutePath().endsWith("mkv") || ff.getAbsolutePath().endsWith("ogg") || ff.getAbsolutePath().endsWith("wav") || ff.getAbsolutePath().endsWith("wma"))
+                    else if(ff.getAbsolutePath().endsWith("mp3") || ff.getAbsolutePath().endsWith("mpeg") || ff.getAbsolutePath().endsWith("wmv") || ff.getAbsolutePath().endsWith("swf")  || ff.getAbsolutePath().endsWith("ogg") || ff.getAbsolutePath().endsWith("wav") || ff.getAbsolutePath().endsWith("wma"))
                     {
                         fls.add(new Item(ff.getName(), ff.length() + " Byte", date_modify, ff.getAbsolutePath(), "ic_mp3"));
                     }
@@ -222,10 +222,8 @@ public class FileChooser extends Activity {
 		 Collections.sort(dir);
 		 Collections.sort(fls);
 		 dir.addAll(fls);
-
          if(!f.getName().equalsIgnoreCase("sdcard"))
 	     dir.add(0,new Item("..","Parent Directory","",f.getParent(),"directory_up"));
-
          adapter = new FileArrayAdapter(FileChooser.this, R.layout.file_view,dir);
          lv_files.setAdapter(adapter);
     }
@@ -234,6 +232,9 @@ public class FileChooser extends Activity {
     private void onFileClick(Item o)
     {
     	//Toast.makeText(this, "Folder Clicked: "+ currentDir, Toast.LENGTH_SHORT).show();
+
+        o.getPath();
+
     	Intent intent = new Intent();
         intent.putExtra("GetPath",o.getPath());
         intent.putExtra("GetFileName",o.getName());

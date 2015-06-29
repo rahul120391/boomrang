@@ -23,6 +23,7 @@ import adapters.SideBarAdapter;
 import commonutils.SyncAlarmClass;
 import commonutils.UIutill;
 import commonutils.UnCaughtException;
+import customviews.SwipeMenuLayout;
 import fragments.ContactUs;
 import fragments.MyDashBoard;
 import fragments.MyFiles;
@@ -32,11 +33,10 @@ import fragments.UserProfile;
 
 public class DashboardActivity extends FragmentActivity implements AdapterView.OnItemClickListener,View.OnClickListener{
     public static SlidingPaneLayout slidingpane;
-    public static FragmentManager fragmentManager;
+    public static  FragmentManager fragmentManager;
     ListView lv_drawer;
     Dialog confirmdialog;
     private ActionBar actionBar;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +55,33 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
             lv_drawer.setOnItemClickListener(this);
 
             slidingpane=(SlidingPaneLayout)findViewById(R.id.slidingpane);
+            slidingpane.setPanelSlideListener(new SlidingPaneLayout.PanelSlideListener() {
+                @Override
+                public void onPanelSlide(View panel, float slideOffset) {
 
+                }
+
+                @Override
+                public void onPanelOpened(View panel) {
+                    if(MyFiles.lv_myfiles!=null){
+                        if (MyFiles.lv_myfiles.getCount() > 0) {
+                            if (MyFiles.listviewpositionclick >= MyFiles.lv_myfiles.getFirstVisiblePosition()
+                                    && MyFiles.listviewpositionclick <= MyFiles.lv_myfiles.getLastVisiblePosition()) {
+                                View view = MyFiles.lv_myfiles.getChildAt(MyFiles.listviewpositionclick - MyFiles.lv_myfiles.getFirstVisiblePosition());
+                                if (view instanceof SwipeMenuLayout) {
+                                    ((SwipeMenuLayout) view).smoothCloseMenu();
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+                @Override
+                public void onPanelClosed(View panel) {
+
+                }
+            });
             SideBarAdapter adapter=new SideBarAdapter(this);
             lv_drawer.setAdapter(adapter);
 
@@ -67,6 +93,9 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
             ((ImageView)findViewById(R.id.iv_logout)).setOnClickListener(this);
             ((TextView)findViewById(R.id.tv_email)).setText(getSharedPreferences("Login", 0).getString("emailID", ""));
             ((ImageView)findViewById(R.id.iv_toggle)).setOnClickListener(this);
+
+            fragmentManager = getFragmentManager();
+
             onItemClick(null,null,3,0);
 
         }
@@ -93,8 +122,10 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
      */
     public void FragmentTransactions(int id, android.app.Fragment fragment,String tag)
     {
+        if (slidingpane.isOpen()) {
+            slidingpane.closePane();
+        }
         Fragment _fragment = getFragmentManager().findFragmentByTag(tag);
-        fragmentManager = getFragmentManager();
         if (null == _fragment) {
             FragmentTransaction fragmentTransaction = fragmentManager
                     .beginTransaction();
@@ -111,9 +142,6 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
     }
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (slidingpane.isOpen()) {
-            slidingpane.closePane();
-        }
                switch (position){
                    case 0:
                        finish();

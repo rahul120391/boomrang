@@ -12,6 +12,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -47,15 +49,23 @@ public class Settings<T> extends Fragment implements View.OnClickListener, DataT
     TextView tv_interval, tv_settings, tv_autosync;
     RelativeLayout layout_rangebaar;
     MethodClass<T> methodClass;
-    String deviceId;
     String timeinterval;
-
+    RadioButton  rd_phonesettings,rd_sdcard;
+    RadioGroup rd_memorystatus;
+    TextView tv_memstett;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         try {
+
             methodClass = new MethodClass<>(getActivity(), this);
             v = inflater.inflate(R.layout.fragment_settings, null);
+
+            //Intialize views
+           // tv_memstett=(TextView)v.findViewById(R.id.tv_memstett);
+           // rd_phonesettings=(RadioButton)v.findViewById(R.id.rd_phonesettings);
+           // rd_sdcard=(RadioButton)v.findViewById(R.id.rd_sdcard);
+           // rd_memorystatus=(RadioGroup)v.findViewById(R.id.rd_memorystatus);
             layout_rangebaar = (RelativeLayout) v.findViewById(R.id.layout_rangebaar);
             rangebar = (RangeBar) v.findViewById(R.id.rangebar);
             tv_value = (TextView) v.findViewById(R.id.tv_value);
@@ -64,11 +74,22 @@ public class Settings<T> extends Fragment implements View.OnClickListener, DataT
             tv_interval = (TextView) v.findViewById(R.id.tv_interval);
             tv_settings = (TextView) v.findViewById(R.id.tv_settings);
             tv_autosync = (TextView) v.findViewById(R.id.tv_autosync);
-            deviceId = android.provider.Settings.Secure.getString(getActivity().getContentResolver(),
-                    android.provider.Settings.Secure.ANDROID_ID);
             tv_interval.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
             tv_autosync.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
             tv_settings.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+           // tv_memstett.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+          //  rd_phonesettings.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+          //  rd_sdcard.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+
+          /*  if(getActivity().getSharedPreferences("Login",0).getInt("StoragePreference",0)==0){
+                rd_phonesettings.setChecked(true);
+                System.out.println("inside phone settings");
+            }
+            else if(getActivity().getSharedPreferences("Login",0).getInt("StoragePreference",0)==1){
+                rd_sdcard.setChecked(true);
+                System.out.println("inside sdcard");
+            }*/
+
             ch_state = (CheckBox) v.findViewById(R.id.ch_state);
             ch_state.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
@@ -139,8 +160,10 @@ public class Settings<T> extends Fragment implements View.OnClickListener, DataT
                 if (methodClass.checkInternetConnection()) {
                     Map<String, String> values = new HashMap<>();
                     values.put("userId", getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
-                    values.put("deviceId", deviceId);
+                    values.put("deviceId", UIutill.getDeviceId(getActivity()));
                     values.put("IsMobile", "1");
+
+
                     if (ch_state.isChecked()) {
                         values.put("IsAutoSync", "1");
                         timeinterval = tv_value.getText().toString().substring(0,tv_value.getText().toString().length()-4);
@@ -150,6 +173,26 @@ public class Settings<T> extends Fragment implements View.OnClickListener, DataT
                         values.put("IsAutoSync", "0");
                         values.put("SyncInterval", "0");
                     }
+                  /*  if(rd_phonesettings.isChecked()){
+                        if(UIutill.getInternalStorage()<=0.0){
+                            UIutill.ShowSnackBar(getActivity(),getActivity().getString(R.string.internal_storage_insuff));
+                            return;
+                        }
+                        else{
+                            values.put("storagePreference","0");
+                        }
+                    }
+                    else if(rd_sdcard.isChecked()){
+                        if(UIutill.getSecondaryStorageSize()<=0.0) {
+                            UIutill.ShowSnackBar(getActivity(), getActivity().getString(R.string.sdcard_storage_insuff));
+                            return;
+                        }
+                        else{
+                            values.put("storagePreference","1");
+                        }
+
+                    }*/
+                    values.put("storagePreference","0");
                     values.put("deviceName", Devices.getDeviceName());
                     System.out.println("values" + values);
                     methodClass.MakeGetRequestWithParams(values, URLS.SETTINGS);
@@ -185,6 +228,12 @@ public class Settings<T> extends Fragment implements View.OnClickListener, DataT
                     edit.putBoolean("IsAutoSync", false);
                     edit.putInt("SyncInterval", Integer.parseInt("0"));
                 }
+             /*   if(rd_phonesettings.isChecked()){
+                    edit.putInt("StoragePreference",0);
+                }
+                else if(rd_sdcard.isChecked()){
+                    edit.putInt("StoragePreference",1);
+                }*/
                 edit.commit();
                 if (getActivity().getSharedPreferences("Login", 0).getBoolean("IsAutoSync", false)) {
                     int time = getActivity().getSharedPreferences("Login", 0).getInt("SyncInterval", 0);

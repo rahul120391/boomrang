@@ -21,6 +21,8 @@ import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.SnackbarManager;
 import com.nispok.snackbar.enums.SnackbarType;
 
+import java.io.File;
+
 import Boomerang.R;
 
 /**
@@ -62,7 +64,7 @@ public class UIutill {
     /***********************************************************************************************************************/
 
     /**
-     * this method is used snackbar given by materialDesign
+     * this method is used to show snackbar given by materialDesign
      *
      * @param context -pass activity context as argument to show snackbar on that activity
      * @param message -message to show inside snackbar
@@ -144,4 +146,47 @@ public class UIutill {
         notificationManager.notify(notificationid, mNotification);
     }
     /***********************************************************************************************************************/
+
+    /**
+     * This method is used to get android phone dvice id
+     * @param cnt -pass the context of fragment/activity
+     * @return
+     */
+    public static String getDeviceId(Context cnt){
+        String deviceId = android.provider.Settings.Secure.getString(cnt.getContentResolver(),
+                android.provider.Settings.Secure.ANDROID_ID);
+        return deviceId;
+    }
+    /**
+     * This method is used to return the sdcard size if available
+     */
+    public static double getSecondaryStorageSize(){
+        String secStore = System.getenv("SECONDARY_STORAGE");
+        File f_secs = new File(secStore);
+        double  totalspace=0.0;
+        if(f_secs.exists()){
+            System.out.println("external"+f_secs.getAbsolutePath().toString());
+            System.out.println("total freespace in bytes"+f_secs.getFreeSpace());
+            totalspace=(f_secs.getFreeSpace())/(1024*1024*1024);
+            System.out.println("total free space external"+totalspace);
+        }
+        return totalspace;
+    }
+    /***********************************************************************************************************************/
+    /**
+     * This method is used to return the internal storage if available
+     */
+    public static double getInternalStorage(){
+
+        String extStore = System.getenv("EXTERNAL_STORAGE");
+        File f_exts = new File(extStore);
+        double totalspace=0.0;
+        if(f_exts.exists()){
+            System.out.println("internal"+f_exts.getAbsolutePath().toString());
+            System.out.println("totalspace in bytes"+f_exts.getFreeSpace());
+            totalspace=(f_exts.getFreeSpace())/(1024.0*1024.0*1024.0);
+            System.out.println("total  freespace internal"+totalspace);
+        }
+      return totalspace;
+    }
 }

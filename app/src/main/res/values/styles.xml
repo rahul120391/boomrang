@@ -21,7 +21,13 @@
         <item name="android:topDark">@color/transparent</item>
     </style>
 
-   <!--Progress dialog theme-->
+    <style name="DialogFragmentStyle" parent="@android:style/Theme.Holo.Light.Dialog">
+        <item name="android:windowSoftInputMode">stateHidden|adjustResize</item>
+        <item name="android:background">@color/transparent</item>
+        <item name="android:windowMinWidthMajor">100%</item>
+        <item name="android:windowMinWidthMinor">100%</item>
+    </style>
+    <!--Progress dialog theme-->
     <style name="ProgressDialogTheme" parent="@android:style/Theme.Dialog">
         <item name="android:alertDialogStyle">@style/CustomProgressDialogStyle</item>
         <item name="android:foregroundGravity">center</item>
@@ -38,10 +44,12 @@
         <item name="@android:windowEnterAnimation">@anim/grow_from_top</item>
         <item name="@android:windowExitAnimation">@anim/grow_from_bottom</item>
     </style>
+
     <style name="MyAnim"></style>
     <style name="MyAnim.SearchWindow">
         <item name="@android:windowEnterAnimation">@android:anim/fade_in</item>
         <item name="@android:windowExitAnimation">@android:anim/fade_out</item>
+        <item name="android:windowSoftInputMode">stateHidden|adjustResize</item>
     </style>
     <style name="Theme_Dialog" parent="android:Theme.Holo.Dialog">
         <item name="android:backgroundDimEnabled">false</item>

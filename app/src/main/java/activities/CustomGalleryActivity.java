@@ -7,13 +7,16 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.BaseColumns;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -27,6 +30,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 import Boomerang.R;
+import commonutils.ProgressDialogClass;
 import commonutils.RequestCodes;
 import commonutils.UIutill;
 import commonutils.UnCaughtException;
@@ -41,13 +45,24 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
     MyAdapter adapter;
     RelativeLayout layout_top;
     TextView tv_select;
+    int totalnumberofrows;
     ImageView iv_done;
     ArrayList<GalleryDataModel> datalist=null;
+    //Button btn_loadmore;
+    int fromm=0;
+    String check;
+    String imageprojection[]={MediaStore.Images.Media.DATA,
+            MediaStore.Images.Media.TITLE,MediaStore.Images.Media.MIME_TYPE,MediaStore.Images.Media._ID};
+    String videoprojection[] = { MediaStore.Video.Media.DATA,
+            MediaStore.Video.Media.TITLE,MediaStore.Video.Media.MIME_TYPE,MediaStore.Video.Media._ID};
+    ArrayList<GalleryDataModel> data = new ArrayList<GalleryDataModel>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         statesave=savedInstanceState;
         setContentView(R.layout.activity_custom_gallery);
+        fromm=0;
+        totalnumberofrows=0;
         Thread.setDefaultUncaughtExceptionHandler(new UnCaughtException(CustomGalleryActivity.this));
         //intialize views
         layout_top=(RelativeLayout)findViewById(R.id.layout_top);
@@ -55,73 +70,77 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
         iv_done=(ImageView)findViewById(R.id.iv_done);
         lv_files=(ListView)findViewById(R.id.lv_files);
         tv_nofiles=(TextView)findViewById(R.id.tv_nofiles);
-
+        //btn_loadmore=(Button)findViewById(R.id.btn_loadmore);
+       // btn_loadmore.setOnClickListener(CustomGalleryActivity.this);
         //set typeface
         tv_select.setTypeface(UIutill.SetFont(this, "segoeuilght.ttf"));
         tv_nofiles.setTypeface(UIutill.SetFont(this, "segoeuilght.ttf"));
 
         //set listeners
         iv_done.setOnClickListener(this);
-
         if(savedInstanceState==null){
             if(getIntent().getStringExtra("value").equalsIgnoreCase("images")){
-                  datalist=GetImageData();
-                if(datalist.size()==0){
-                     layout_top.setVisibility(View.GONE);
-                     tv_nofiles.setText(getString(R.string.no_image_avail));
-                     tv_nofiles.setVisibility(View.VISIBLE);
-
-                     lv_files.setVisibility(View.GONE);
-                }
-                else{
-                    adapter=new MyAdapter(this,datalist,1);
-                    lv_files.setAdapter(adapter);
-                }
+                  check="images";
+                Cursor mycursor= managedQuery(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        imageprojection, null, null, null);
+                totalnumberofrows=mycursor.getCount();
+                System.out.println("total rows"+totalnumberofrows);
+                  new GetMediaData().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"images");
             }
             else if(getIntent().getStringExtra("value").equalsIgnoreCase(
                     "videos")){
-                datalist=GetVideoData();
-                if(datalist.size()==0){
-                    layout_top.setVisibility(View.GONE);
-                    tv_nofiles.setText(getString(R.string.no_video_avail));
-                    tv_nofiles.setVisibility(View.VISIBLE);
-                    lv_files.setVisibility(View.GONE);
-                }
-                else{
-                     adapter=new MyAdapter(this,datalist,2);
-                     lv_files.setAdapter(adapter);
-                }
+                check="videos";
+                Cursor mycursor=managedQuery(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                        videoprojection, null, null, null);
+                totalnumberofrows=mycursor.getCount();
+                System.out.println("total rows"+totalnumberofrows);
+                new GetMediaData().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"videos");
             }
         }
         else{
            if(savedInstanceState.getString("value").equals("images")){
-               datalist=GetImageData();
-               if(datalist.size()==0){
-                   layout_top.setVisibility(View.GONE);
-                   tv_nofiles.setText(getString(R.string.no_image_avail));
-                   tv_nofiles.setVisibility(View.VISIBLE);
-                   lv_files.setVisibility(View.GONE);
-               }
-               else{
-                   adapter=new MyAdapter(this,datalist,1);
-                   lv_files.setAdapter(adapter);
-               }
+               check="images";
+               Cursor mycursor= managedQuery(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                       imageprojection, null, null, null);
+               totalnumberofrows=mycursor.getCount();
+               System.out.println("total rows"+totalnumberofrows);
+               new GetMediaData().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"images");
            }
             else if(getIntent().getStringExtra("value").equalsIgnoreCase(
                    "videos")){
-               datalist=GetVideoData();
-               if(datalist.size()==0){
-                   layout_top.setVisibility(View.GONE);
-                   tv_nofiles.setText(getString(R.string.no_video_avail));
-                   tv_nofiles.setVisibility(View.VISIBLE);
-                   lv_files.setVisibility(View.GONE);
-               }
-               else{
-                   adapter=new MyAdapter(this,datalist,2);
-                   lv_files.setAdapter(adapter);
-               }
+               check="videos";
+               Cursor mycursor=managedQuery(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                       videoprojection, null, null, null);
+               totalnumberofrows=mycursor.getCount();
+               System.out.println("total rows"+totalnumberofrows);
+               new GetMediaData().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"videos");
            }
         }
+
+        lv_files.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                if(scrollState==SCROLL_STATE_IDLE) {
+                    if (lv_files.getLastVisiblePosition() == lv_files.getAdapter().getCount() - 1
+                            && lv_files.getChildAt(lv_files.getChildCount() - 1).getBottom() <= lv_files.getHeight()) {
+                        System.out.println("listview count"+lv_files.getCount());
+                        if(lv_files.getCount()<totalnumberofrows){
+                            if(check.equalsIgnoreCase("images")){
+                                new GetMediaData().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"images");
+                            }
+                            else if(check.equalsIgnoreCase("videos")){
+                                new GetMediaData().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"videos");
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+            }
+        });
 
     }
 
@@ -165,23 +184,24 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
      * -returns array of imagedata
      */
     public ArrayList<GalleryDataModel> GetImageData(){
-        ArrayList<GalleryDataModel> data = new ArrayList<GalleryDataModel>();
-
-        String projection[] = { MediaStore.Images.Media.DATA,
-                MediaStore.Images.Media.TITLE,MediaStore.Images.Media.MIME_TYPE};
+        System.out.println("from valuee"+fromm);
+        String sortOrder = String.format("%s limit 10 offset "+fromm, BaseColumns._ID);
+        System.out.println("sort order"+sortOrder);
         Cursor cr = managedQuery(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                projection, null, null, null);
+                imageprojection, null, null, sortOrder);
 
         if(cr!=null){
            while(cr.moveToNext()){
                String path=cr.getString(0);
                String title=cr.getString(1);
                String mimetype=cr.getString(2);
-               System.out.println("uris"+MediaStore.Images.Thumbnails.getContentUri(path));
+               String id=cr.getString(3);
+               System.out.println("id"+id);
                GalleryDataModel model=new GalleryDataModel();
                model.setFilemimetype(mimetype);
                model.setFiletitle(title);
                model.setStatus(false);
+               model.setFileid("image"+id);
                model.setImage_path(path);
                data.add(model);
            }
@@ -197,14 +217,10 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
      * -returns the arraylist of videodata
      */
     public ArrayList<GalleryDataModel> GetVideoData(){
-        ArrayList<GalleryDataModel> data = new ArrayList<GalleryDataModel>();
-
-        String projection[] = { MediaStore.Video.Media.DATA,
-                MediaStore.Video.Media.TITLE,MediaStore.Video.Media.MIME_TYPE,MediaStore.Video.Media._ID};
         String Thumbnail_projection[]={MediaStore.Video.Thumbnails.DATA};
-
+        String sortOrder = String.format("%s limit 10 offset "+fromm, BaseColumns._ID);
         Cursor cr = managedQuery(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-                projection, null, null, null);
+                videoprojection, null, null, sortOrder);
         if (cr != null) {
             while (cr.moveToNext()) {
                 GalleryDataModel model=new GalleryDataModel();
@@ -212,6 +228,7 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                 String title=cr.getString(1);
                 String mimetype=cr.getString(2);
                 String id=cr.getString(3);
+                System.out.println("id"+id);
                 String imagepath=null;
                 Cursor cursor=managedQuery(MediaStore.Video.Thumbnails.EXTERNAL_CONTENT_URI,Thumbnail_projection,MediaStore.Video.Thumbnails.VIDEO_ID+"="+id,null,null);
                 if(cursor.moveToFirst()){
@@ -230,10 +247,10 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                     }
 
                 }
-
                 model.setVideo_path(path);
                 model.setStatus(false);
                 model.setImage_path(imagepath);
+                model.setFileid("video"+id);
                 model.setFiletitle(title);
                 model.setFilemimetype(mimetype);
                 data.add(model);
@@ -285,7 +302,7 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
             case R.id.iv_done:
                 try{
                     if(files_list.size()==0){
-                         UIutill.ShowSnackBar(CustomGalleryActivity.this,getString(R.string.select_file));
+                         UIutill.ShowSnackBar(CustomGalleryActivity.this, getString(R.string.select_file));
                     }
                     else if(files_list.size()>5){
                          UIutill.ShowSnackBar(CustomGalleryActivity.this,getString(R.string.file_max_limit));
@@ -320,6 +337,19 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                     e.printStackTrace();
                 }
                 break;
+           /* case R.id.btn_loadmore:
+                try{
+                    if(check.equalsIgnoreCase("images")){
+                        new GetMediaData().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"images");
+                    }
+                    else if(check.equalsIgnoreCase("videos")){
+                        new GetMediaData().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,"videos");
+                    }
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+                break;*/
             default:
                 break;
         }
@@ -390,9 +420,10 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                                model.setVideo_path(mylist.get(pos).getVideo_path());
                            }
                            model.setImage_path(mylist.get(pos).getImage_path());
+                           model.setFileid(mylist.get(pos).getFileid());
                            model.setFilemimetype(mylist.get(pos).getFilemimetype());
                            model.setFiletitle(mylist.get(pos).getFiletitle());
-                         files_list.add(model);
+                           files_list.add(model);
                        } else {
                            mylist.get(pos).setStatus(false);
                            files_list.remove(files_list.size()-1);
@@ -409,4 +440,65 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
        }
    }
     /**************************************************************************************************************************/
+
+    /**
+     * This async task is used to fetch data from the gallery
+     */
+    private class GetMediaData extends AsyncTask<String,String,String>{
+
+        String from=null;
+        @Override
+        protected String doInBackground(String... params) {
+            from=params[0];
+            if(from.equalsIgnoreCase("images")){
+                datalist=GetImageData();
+            }
+            else if(from.equalsIgnoreCase("videos")){
+                datalist=GetVideoData();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if(datalist.size()==0){
+                layout_top.setVisibility(View.GONE);
+                if(from.equalsIgnoreCase("images")){
+                    tv_nofiles.setText(getString(R.string.no_image_avail));
+                }
+                else if(from.equalsIgnoreCase("videos")){
+                    tv_nofiles.setText(getString(R.string.no_video_avail));
+                }
+                tv_nofiles.setVisibility(View.VISIBLE);
+                lv_files.setVisibility(View.GONE);
+            }else{
+
+                if(from.equalsIgnoreCase("images")){
+                    adapter=new MyAdapter(CustomGalleryActivity.this,datalist,1);
+                    lv_files.setAdapter(adapter);
+                }
+                else if(from.equalsIgnoreCase("videos")){
+                    adapter=new MyAdapter(CustomGalleryActivity.this,datalist,2);
+                    lv_files.setAdapter(adapter);
+                }
+                lv_files.setSelection(fromm);
+                fromm=fromm+10;
+                System.out.println("listview count"+lv_files.getCount());
+               /* if(lv_files.getCount()==totalnumberofrows || totalnumberofrows<=10){
+                    btn_loadmore.setVisibility(View.GONE);
+                }*/
+            }
+            ProgressDialogClass.logout();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+           ProgressDialogClass.getDialog(CustomGalleryActivity.this);
+        }
+    }
+
+
+
 }

@@ -40,6 +40,7 @@
             android:layout_marginTop="20dp"
             android:layout_toLeftOf="@+id/ch_check"
             android:layout_toRightOf="@+id/layout"
+            android:maxLines="2"
             android:text="Name"
             android:textColor="@color/email_password_txtclr"
             android:textSize="18sp" />

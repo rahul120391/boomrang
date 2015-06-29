@@ -68,5 +68,8 @@
 -keep class com.appyvet.** { *; }
 -keep interface com.appyvet.** { *; }
 
+-keep public class pl.droidsonroids.gif.GifIOException{<init>(int);}
+-keep class pl.droidsonroids.gif.GifInfoHandle{<init>(long,int,int,int);}
+
 
 

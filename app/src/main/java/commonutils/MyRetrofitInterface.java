@@ -65,4 +65,10 @@ public interface MyRetrofitInterface<T> {
 
     @GET(URLS.FORGOTPASS)
     void forgotpass(@Query("Email") String Email, Callback<T> object);
+
+    @POST(URLS.CHANGEPASS)
+    void changepass(@QueryMap Map<String,String> map,Callback<T> object);
+
+    @GET(URLS.SPACE_AVAILABLE)
+    void spaceavailable(@Query("userid") String userid, Callback<T> object);
 }

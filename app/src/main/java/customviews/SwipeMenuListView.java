@@ -224,7 +224,6 @@ public class SwipeMenuListView extends ListView {
 
     public static interface OnSwipeListener {
         void onSwipeStart(int position);
-
         void onSwipeEnd(int position);
     }
 }

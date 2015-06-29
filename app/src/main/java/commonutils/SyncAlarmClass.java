@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
 
-import reciever.CheckFragmentVisibilityBroadcast;
+import recievers.CheckFragmentVisibilityBroadcast;
 
 /**
  * Created by rahul on 4/2/2015.

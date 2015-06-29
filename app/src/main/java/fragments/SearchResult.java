@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -41,6 +42,7 @@ import java.util.Map;
 import java.util.Stack;
 
 import Boomerang.R;
+import activities.DashboardActivity;
 import adapters.MyFilesAdapter;
 import commonutils.CustomErrorHandling;
 import commonutils.DataTransferInterface;
@@ -98,6 +100,9 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
             mainlayout.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
+                    if(DashboardActivity.slidingpane.isOpen()){
+                        DashboardActivity.slidingpane.closePane();
+                    }
                     if (lv_myfiles.getCount() > 0) {
                         if (listviewpositionclick >= lv_myfiles.getFirstVisiblePosition()
                                 && listviewpositionclick <= lv_myfiles.getLastVisiblePosition()) {
@@ -120,6 +125,32 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
             lv_myfiles = (SwipeMenuListView)v.findViewById(R.id.lv_myfiles);
             lv_myfiles.setOnItemClickListener(this);
             lv_myfiles.setOnMenuItemClickListener(this);
+            lv_myfiles.setOnSwipeListener(new SwipeMenuListView.OnSwipeListener() {
+                @Override
+                public void onSwipeStart(int position) {
+                    if (lv_myfiles.getCount() > 0) {
+                        if (listviewpositionclick >= lv_myfiles.getFirstVisiblePosition()
+                                && listviewpositionclick <= lv_myfiles.getLastVisiblePosition()) {
+                            View view = lv_myfiles.getChildAt(listviewpositionclick - lv_myfiles.getFirstVisiblePosition());
+                            if (view instanceof SwipeMenuLayout) {
+                                ((SwipeMenuLayout) view).smoothCloseMenu();
+                            }
+                        }
+                    }
+                    listviewpositionclick=position;
+                }
+                @Override
+                public void onSwipeEnd(int position) {
+                    System.out.println("swipe ended");
+                }
+            });
+            lv_myfiles.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent event) {
+                    view.getParent().requestDisallowInterceptTouchEvent(true);
+                    return false;
+                }
+            });
             if (savedInstanceState == null) {
                 Bundle b = getArguments();
                 parentid=b.getInt("parentid");
@@ -491,6 +522,7 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
                         Map<String, String> map = new HashMap<>();
                         map.put("userId", getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
                         map.put("folderIdFileId", fileid);
+                        map.put("deviceId",UIutill.getDeviceId(getActivity()));
                         map.put("type", type);
                         if(stack.size()==1){
                             map.put("currentFolderId",parentid+"");
@@ -519,7 +551,7 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
         if (sharedialog == null || !sharedialog.isShowing()) {
             LayoutInflater inflater = LayoutInflater.from(getActivity());
             final View dialoglayout = inflater.inflate(R.layout.sharefolder_dialogview, null);
-            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+           // final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             TextView tv_share_file_folder = (TextView) dialoglayout.findViewById(R.id.tv_share_file_folder);
             tv_share_file_folder.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
 
@@ -542,10 +574,16 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
             btn_cancel.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
 
 
-            builder.setView(dialoglayout);
-            sharedialog = builder.create();
+            //builder.setView(dialoglayout);
+            //sharedialog = builder.create();
 
+            //sharedialog.getWindow().getAttributes().windowAnimations = R.style.MyAnim_SearchWindow;
+            sharedialog=new Dialog(getActivity(),R.style.DialogFragmentStyle);
+            sharedialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            sharedialog.setContentView(dialoglayout);
+            sharedialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
             sharedialog.getWindow().getAttributes().windowAnimations = R.style.MyAnim_SearchWindow;
+            sharedialog.setCancelable(true);
             sharedialog.show();
 
 
@@ -566,13 +604,16 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
                         String emails[] = et_email.getText().toString().trim()
                                 .split(",");
                         StringBuilder builder = new StringBuilder();
-                        for (int i = 0; i < emails.length; i++) {
+                        for (int i = 0; i < emails.length; i++)
+                        {
                             if (!emails[i].trim().matches(
                                     Patterns.EMAIL_ADDRESS.pattern())
                                     ) {
                                 UIutill.ShowSnackBar(getActivity(), getString(R.string.valied_Email));
                                 return;
-                            } else {
+                            }
+                        else {
+
                                 builder.append(emails[i].trim());
                                 if (i != emails.length - 1) {
                                     builder.append(",");
@@ -587,7 +628,12 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
                                 Map<String, String> map = new HashMap<String, String>();
                                 map.put("emailIds", builder.toString());
                                 map.put("userId", getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
-                                map.put("message", et_message.getText().toString().trim());
+                                if(et_message.getText().toString().trim().length()==0){
+                                    map.put("Message"," ");
+                                }
+                                else{
+                                    map.put("Message", et_message.getText().toString().trim());
+                                }
                                 map.put("type", type);
                                 map.put("fileName", filename);
                                 map.put("fileId", fileid);
@@ -618,7 +664,7 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
         if (requestfolder == null || !requestfolder.isShowing()) {
             LayoutInflater inflater = LayoutInflater.from(getActivity());
             final View dialoglayout = inflater.inflate(R.layout.requestfile_dialogview, null);
-            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            //final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             Button btn_cancel = (Button) dialoglayout.findViewById(R.id.btn_cancel);
             btn_cancel.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
             Button btn_request = (Button) dialoglayout.findViewById(R.id.btn_request);
@@ -660,10 +706,18 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
                 }
             };
             sp_select_expiry.setAdapter(adapter);
-            builder.setView(dialoglayout);
-            requestfolder = builder.create();
+           // builder.setView(dialoglayout);
+            //requestfolder = builder.create();
+            //requestfolder.getWindow().getAttributes().windowAnimations = R.style.MyAnim_SearchWindow;
+           // requestfolder.show();
+            requestfolder=new Dialog(getActivity(),R.style.DialogFragmentStyle);
+            requestfolder.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            requestfolder.setContentView(dialoglayout);
+            requestfolder.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
             requestfolder.getWindow().getAttributes().windowAnimations = R.style.MyAnim_SearchWindow;
+            requestfolder.setCancelable(true);
             requestfolder.show();
+
             btn_cancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -700,7 +754,12 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
                                     break;
                             }
                             map.put("emailId", et_email.getText().toString().trim());
-                            map.put("Message", et_message.getText().toString().trim());
+                            if(et_message.getText().toString().trim().length()==0){
+                                map.put("Message"," ");
+                            }
+                            else{
+                                map.put("Message", et_message.getText().toString().trim());
+                            }
                             methodclass.MakeGetRequestWithParams(map, URLS.REQUEST_FILE);
                         } else {
                             UIutill.ShowSnackBar(getActivity(), getString(R.string.no_network));

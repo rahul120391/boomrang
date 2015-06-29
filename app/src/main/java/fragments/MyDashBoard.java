@@ -39,7 +39,6 @@ public class MyDashBoard<T> extends Fragment implements View.OnClickListener, Da
     LinearLayout layout_myfiles, layout_myprofile;
     TextView tv_myfiles, tv_myprofile, tv_spacestats;
     MethodClass<T> methodClass;
-    private float darkGreySpan;
 
     @Nullable
     @Override
@@ -56,10 +55,10 @@ public class MyDashBoard<T> extends Fragment implements View.OnClickListener, Da
             }
 
             v = inflater.inflate(R.layout.fragment_dashboard, null);
+
+            //intialize views
             layout_myfiles = (LinearLayout) v.findViewById(R.id.layout_myfiles);
-            layout_myfiles.setOnClickListener(this);
             layout_myprofile = (LinearLayout) v.findViewById(R.id.layout_myprofile);
-            layout_myprofile.setOnClickListener(this);
             customseekbar = (ProgressBar) v.findViewById(R.id.customseekbar);
             tv_myfiles = (TextView) v.findViewById(R.id.tv_myfiles);
             tv_myprofile = (TextView) v.findViewById(R.id.tv_myprofile);
@@ -67,6 +66,7 @@ public class MyDashBoard<T> extends Fragment implements View.OnClickListener, Da
             tv_allowed = (TextView) v.findViewById(R.id.tv_allowed);
             tv_consumed = (TextView) v.findViewById(R.id.tv_consumed);
             tv_remaining = (TextView) v.findViewById(R.id.tv_remaining);
+
             //Set Font
             tv_myfiles.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
             tv_myprofile.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
@@ -74,6 +74,11 @@ public class MyDashBoard<T> extends Fragment implements View.OnClickListener, Da
             tv_allowed.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
             tv_consumed.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
             tv_remaining.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+
+            //Set Listeners
+            layout_myfiles.setOnClickListener(this);
+            layout_myprofile.setOnClickListener(this);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
