@@ -9,7 +9,7 @@
 
     <!-- Rotate. -->
     <objectAnimator
-        android:duration="@integer/card_flip_time_full"
+        android:duration="1000"
         android:interpolator="@android:interpolator/accelerate_decelerate"
         android:propertyName="rotationY"
         android:valueFrom="180"
@@ -19,7 +19,7 @@
     <objectAnimator
         android:duration="1"
         android:propertyName="alpha"
-        android:startOffset="@integer/card_flip_time_half"
+        android:startOffset="500"
         android:valueFrom="0.0"
         android:valueTo="1.0" />
     </set>
