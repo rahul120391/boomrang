@@ -55,12 +55,12 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
         try {
 
 
+            String device=getActivity().getResources().getString(R.string.device);
+            System.out.println("device"+device);
             sharedprefs = getActivity().getSharedPreferences("Login", 0);
             checkremstate = getActivity().getSharedPreferences("RemState", 0);
             methodClass = new MethodClass<T>(getActivity(), this);
-            v = inflater.inflate(R.layout.fragment_login, null);
-
-
+            v=inflater.inflate(R.layout.fragment_login,null);
             //intialize views
             ch_rememb = (CheckBox) v.findViewById(R.id.ch_rememb);
             et_email = (EditText) v.findViewById(R.id.et_email);
@@ -141,6 +141,7 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
                             values.put("deviceName",Devices.getDeviceName());
                             System.out.println("urls" + URLS.LOGIN);
                             System.out.println("values" + values);
+                            System.out.println("device name"+Devices.getDeviceName());
                             methodClass.MakePostRequest(values, URLS.LOGIN);
                         } else {
                             UIutill.ShowSnackBar(getActivity(), getString(R.string.no_network));
@@ -218,9 +219,12 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
                         getActivity().getSharedPreferences("RemState", 0).edit().clear().commit();
                     }
                     Intent i = new Intent(getActivity(), DashboardActivity.class);
-                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            | Intent.FLAG_ACTIVITY_NEW_TASK
+                            | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(i);
                     getActivity().finish();
+                    getActivity().overridePendingTransition(R.anim.push_up_in,R.anim.push_up_out);
                 } else {
                     UIutill.ShowDialog(getActivity(), getString(R.string.error), jsonreturn.get("ResponseData").getAsString());
                 }

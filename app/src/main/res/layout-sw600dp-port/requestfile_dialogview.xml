@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/White"
+    android:orientation="vertical"
+    android:scrollbarAlwaysDrawVerticalTrack="true"
+    android:scrollbars="none"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/White"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/tv_requestfolder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/request_folder"
+            android:textColor="@color/search_for_file"
+            android:textSize="28sp" />
+
+        <TextView
+            android:id="@+id/tv_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/emaill"
+            android:textSize="22sp" />
+
+        <EditText
+            android:id="@+id/et_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/search_edittext_bg"
+            android:hint="@string/enter_email"
+            android:inputType="textEmailAddress"
+            android:padding="10dp"
+            android:singleLine="true"
+            android:textSize="24sp"
+            android:textColor="@color/search_box_txtclr"
+            android:textColorHint="@color/search_box_txtclr"
+            android:textCursorDrawable="@drawable/edittext_cursor_drawable" />
+
+        <TextView
+            android:id="@+id/tv_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="@string/messagee"
+            android:textColor="@color/login_button_bg"
+            android:textSize="22sp" />
+
+        <EditText
+            android:id="@+id/et_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/search_edittext_bg"
+            android:hint="@string/enter_message"
+            android:textSize="24sp"
+            android:padding="10dp"
+            android:singleLine="true"
+            android:textColor="@color/search_box_txtclr"
+            android:textColorHint="@color/search_box_txtclr"
+            android:textCursorDrawable="@drawable/edittext_cursor_drawable" />
+
+        <TextView
+            android:id="@+id/tv_expiry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="@string/expiry"
+            android:textColor="@color/login_button_bg"
+            android:textSize="22sp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/search_edittext_bg">
+
+            <Spinner
+                android:id="@+id/sp_select_expiry"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:minHeight="0dp"
+                android:paddingLeft="3dp"
+                android:spinnerMode="dropdown"
+                android:textSize="22sp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="5dp"
+                android:padding="7dp"
+                android:src="@drawable/spinner_arrow" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:weightSum="1">
+
+            <Button
+                android:id="@+id/btn_request"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:layout_weight="0.5"
+                android:background="@drawable/search_button_bg"
+                android:gravity="center"
+                android:textSize="24sp"
+                android:text="@string/request"
+                android:textColor="@color/email_password_txtclr" />
+
+            <Button
+                android:id="@+id/btn_cancel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="0.5"
+                android:background="@drawable/cancel_button_bg"
+                android:text="@string/cancel"
+                android:textSize="24sp"
+                android:textColor="@color/email_password_txtclr" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 21
+    compileSdkVersion 23
     buildToolsVersion "21.1.2"
 
     defaultConfig {
         applicationId "com.weexcelindia.boomerang"
         minSdkVersion 15
-        targetSdkVersion 21
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
     }
@@ -21,8 +21,6 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:21.0.3'
-    compile 'com.android.support:support-v4:21.0.3'
     compile 'com.google.code.gson:gson:2.2.4'
     compile files('libs/android-query-full.0.26.8.jar')
     compile files('libs/retrofit-1.9.0.jar')
@@ -35,4 +33,6 @@ dependencies {
     compile 'de.greenrobot:eventbus:2.2.1'
     compile 'com.appyvet:materialrangebar:1.0'
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.+'
+    compile 'com.android.support:appcompat-v7:23.0.0'
+    compile 'com.android.support:support-v4:23.0.0'
 }

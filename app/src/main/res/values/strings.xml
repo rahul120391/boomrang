@@ -5,7 +5,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_dashboard">DashboardActivity</string>
-
+    <string name="device">phones</string>
     <!-- Common Error Strings -->
     <string name="no_network">No network connection</string>
     <string name="unable_fetch_data">Unable to fetch data</string>
@@ -99,7 +99,7 @@
     <string name="search_file_folder">Search for files/folders</string>
 
     <!--RequesFileView Strings-->
-    <string name="request_folder">Request Folder</string>
+    <string name="request_folder">Request A File</string>
     <string name="enter_email">Enter email</string>
     <string name="request">Request</string>
     <string name="enter_message">Enter message</string>

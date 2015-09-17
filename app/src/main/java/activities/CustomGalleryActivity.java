@@ -230,23 +230,14 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                 String id=cr.getString(3);
                 System.out.println("id"+id);
                 String imagepath=null;
-                Cursor cursor=managedQuery(MediaStore.Video.Thumbnails.EXTERNAL_CONTENT_URI,Thumbnail_projection,MediaStore.Video.Thumbnails.VIDEO_ID+"="+id,null,null);
-                if(cursor.moveToFirst()){
-                    imagepath=cursor.getString(0);
+                Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(path,
+                        MediaStore.Images.Thumbnails.MICRO_KIND);
+                if(thumbnail!=null){
+                    System.out.println("thumbnail"+thumbnail);
+                    Uri uri=getImageUri(this,thumbnail);
+                    imagepath=getRealPathFromURI(uri);
                 }
-                else{
-                    Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(path,
-                            MediaStore.Images.Thumbnails.MICRO_KIND);
-                    if(thumbnail!=null){
-                        System.out.println("thumbnail"+thumbnail);
-                        Uri uri=getImageUri(this,thumbnail);
-                        imagepath=getRealPathFromURI(uri);
-                    }
-                    else{
-                        System.out.println("thumbnail is null");
-                    }
 
-                }
                 model.setVideo_path(path);
                 model.setStatus(false);
                 model.setImage_path(imagepath);
@@ -331,6 +322,7 @@ public class CustomGalleryActivity extends Activity implements View.OnClickListe
                             }
                         }
                         finish();
+                        overridePendingTransition(R.anim.push_down_in, R.anim.push_down_out);
                     }
                 }
                 catch (Exception e){

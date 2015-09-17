@@ -503,6 +503,7 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                         imagegallery.setAction(getString(R.string.choose_multipleaction));
                         imagegallery.putExtra("value", "images");
                         startActivityForResult(imagegallery, RequestCodes.REQUEST_IMAGE);
+                        getActivity().overridePendingTransition(R.anim.push_up_in,R.anim.push_up_out);
                         break;
                     case 2:
                         //gallery of video
@@ -510,6 +511,7 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                         videogallery.setAction(getString(R.string.choose_multipleaction));
                         videogallery.putExtra("value", "videos");
                         startActivityForResult(videogallery, RequestCodes.REQUEST_VIDEO);
+                        getActivity().overridePendingTransition(R.anim.push_up_in, R.anim.push_up_out);
                         break;
                     default:
                         break;
@@ -549,6 +551,7 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
             case 2:
                 Intent filechooser = new Intent(getActivity(), FileChooser.class);
                 startActivityForResult(filechooser, RequestCodes.REQUEST_FILE_BROWSER);
+                getActivity().overridePendingTransition(R.anim.push_up_in, R.anim.push_up_out);
                 break;
             default:
                 break;

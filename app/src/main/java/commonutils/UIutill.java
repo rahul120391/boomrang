@@ -9,6 +9,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -188,5 +189,17 @@ public class UIutill {
             System.out.println("total  freespace internal"+totalspace);
         }
       return totalspace;
+    }
+    /***********************************************************************************************************************/
+    public static float CheckPhone_Tablet(Context cnt){
+        DisplayMetrics metrics = new DisplayMetrics();
+        ((Activity)cnt).getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        int widthPixels = metrics.widthPixels;
+        int heightPixels = metrics.heightPixels;
+        float scaleFactor = metrics.density;
+        float widthDp = widthPixels / scaleFactor;
+        float heightDp = heightPixels / scaleFactor;
+        float smallestWidth = Math.min(widthDp, heightDp);
+        return smallestWidth;
     }
 }

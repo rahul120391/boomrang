@@ -290,6 +290,7 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
                             | Intent.FLAG_ACTIVITY_NEW_TASK
                             | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(logout);
+                    overridePendingTransition(R.anim.push_down_in,R.anim.push_down_out);
                 }
             });
         }

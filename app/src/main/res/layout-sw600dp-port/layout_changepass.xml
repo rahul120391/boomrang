@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/White"
+    android:orientation="vertical"
+    android:scrollbars="none">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/White"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:scrollbarAlwaysDrawVerticalTrack="true">
+
+        <TextView
+            android:id="@+id/tv_changepassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/change_pass"
+            android:textColor="@color/search_box_txtclr"
+            android:textSize="28sp" />
+
+        <EditText
+            android:id="@+id/et_currentpassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/search_edittext_bg"
+            android:hint="@string/current_password"
+            android:inputType="textPassword"
+            android:padding="10dp"
+            android:singleLine="true"
+            android:textSize="22sp"
+            android:textColor="@color/search_box_txtclr"
+            android:textColorHint="@color/search_box_txtclr"
+            android:textCursorDrawable="@drawable/edittext_cursor_drawable" />
+
+        <EditText
+            android:id="@+id/et_newpassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/search_edittext_bg"
+            android:hint="@string/new_password"
+            android:inputType="textPassword"
+            android:padding="10dp"
+            android:singleLine="true"
+            android:textSize="22sp"
+            android:textColor="@color/search_box_txtclr"
+            android:textColorHint="@color/search_box_txtclr"
+            android:textCursorDrawable="@drawable/edittext_cursor_drawable" />
+
+        <EditText
+            android:id="@+id/et_confirmpassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/search_edittext_bg"
+            android:hint="@string/confirm_password"
+            android:inputType="textPassword"
+            android:padding="10dp"
+            android:singleLine="true"
+            android:textSize="22sp"
+            android:textColor="@color/search_box_txtclr"
+            android:textColorHint="@color/search_box_txtclr"
+            android:textCursorDrawable="@drawable/edittext_cursor_drawable" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:weightSum="1">
+
+            <Button
+                android:id="@+id/btn_changepasswod"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:layout_weight="0.5"
+                android:background="@drawable/search_button_bg"
+                android:gravity="center"
+                android:textSize="24sp"
+                android:text="@string/save"
+                android:textColor="@color/email_password_txtclr" />
+
+            <Button
+                android:id="@+id/btn_cancel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="0.5"
+                android:textSize="24sp"
+                android:background="@drawable/cancel_button_bg"
+                android:text="@string/cancel"
+                android:textColor="@color/email_password_txtclr" />
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

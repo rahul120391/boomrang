@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/White"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/tv_settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/settings"
+        android:textColor="@color/search_for_file"
+        android:textSize="28sp" />
+  <!--  <TextView
+        android:id="@+id/tv_memstett"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/mem_set"
+        android:textColor="@color/search_for_file"
+        android:layout_marginTop="20dp"
+        android:textSize="18sp" />
+    <RadioGroup
+        android:id="@+id/rd_memorystatus"
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_height="wrap_content" >
+
+        <RadioButton
+            android:id="@+id/rd_phonesettings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/phone_storage"
+            android:background="@null"
+            android:paddingLeft="20dp"
+            android:textColor="@color/login_box_bg"
+            android:button="@drawable/memory_selector"
+            android:checked="true" />
+
+        <RadioButton
+            android:id="@+id/rd_sdcard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sd_card"
+            android:paddingLeft="20dp"
+            android:background="@null"
+            android:textColor="@color/login_box_bg"
+            android:button="@drawable/memory_selector"
+            />
+
+    </RadioGroup>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/login_box_bg"
+        android:layout_marginTop="10dp"
+        ></View>-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
+
+        <TextView
+            android:id="@+id/tv_autosync"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:text="@string/auto_sync"
+            android:textColor="@color/search_for_file"
+            android:textSize="24sp" />
+
+        <CheckBox
+            android:id="@+id/ch_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/toggle_selector"
+            android:button="@null" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_interval"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/time_interval"
+        android:textColor="@color/search_for_file"
+        android:textSize="24sp" />
+
+    <RelativeLayout
+        android:id="@+id/layout_rangebaar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.appyvet.rangebar.RangeBar
+            xmlns:custom="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/rangebar"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            custom:barColor="@color/email_password_txtclr"
+            custom:connectingLineColor="@color/login_box_bg"
+            custom:pinColor="@color/email_password_txtclr"
+            custom:rangeBar="false"
+            custom:selectorColor="@color/email_password_txtclr"
+            custom:selectorSize="5dp"
+            custom:textColor="@color/login_box_bg"
+            custom:tickColor="@color/email_password_txtclr"
+            custom:tickEnd="12"
+            custom:tickHeight="5dp"
+            custom:tickInterval="2"
+            custom:tickStart="2" />
+
+        <TextView
+            android:id="@+id/tv_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/rangebar"
+            android:textColor="@color/login_box_bg"
+            android:textSize="18sp" />
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/btn_save"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/button_bg"
+        android:gravity="center"
+        android:text="@string/save"
+        android:textSize="24sp"
+        android:textColor="@color/all_indi_color"
+        android:visibility="visible" />
+</LinearLayout>
