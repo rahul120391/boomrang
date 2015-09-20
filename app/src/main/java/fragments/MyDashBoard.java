@@ -1,6 +1,7 @@
 package fragments;
 
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Html;
@@ -32,56 +33,53 @@ import retrofit.RetrofitError;
  * Created by rahul on 3/4/2015.
  */
 public class MyDashBoard<T> extends Fragment implements View.OnClickListener, DataTransferInterface<T> {
-    View v = null;
     ProgressBar customseekbar;
     TextView tv_allowed, tv_consumed, tv_remaining;
     //ProgressBar progressbar;
     LinearLayout layout_myfiles, layout_myprofile;
     TextView tv_myfiles, tv_myprofile, tv_spacestats;
     MethodClass<T> methodClass;
+    View v = null;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        try {
-            methodClass = new MethodClass<T>(getActivity(), this);
-            Map<String, String> values = new HashMap<String, String>();
-            System.out.println("login id" + getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
-            values.put("UserId", getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
-            if (methodClass.checkInternetConnection()) {
-                methodClass.MakePostRequest(values, URLS.GETSPACESTATS);
-            } else {
-                UIutill.ShowSnackBar(getActivity(), getString(R.string.no_network));
-            }
 
-            v = inflater.inflate(R.layout.fragment_dashboard, null);
 
-            //intialize views
-            layout_myfiles = (LinearLayout) v.findViewById(R.id.layout_myfiles);
-            layout_myprofile = (LinearLayout) v.findViewById(R.id.layout_myprofile);
-            customseekbar = (ProgressBar) v.findViewById(R.id.customseekbar);
-            tv_myfiles = (TextView) v.findViewById(R.id.tv_myfiles);
-            tv_myprofile = (TextView) v.findViewById(R.id.tv_myprofile);
-            tv_spacestats = (TextView) v.findViewById(R.id.tv_spacestats);
-            tv_allowed = (TextView) v.findViewById(R.id.tv_allowed);
-            tv_consumed = (TextView) v.findViewById(R.id.tv_consumed);
-            tv_remaining = (TextView) v.findViewById(R.id.tv_remaining);
+        methodClass = new MethodClass<T>(getActivity(), this);
+        Map<String, String> values = new HashMap<String, String>();
+        values.put("UserId", getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
+        v = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
-            //Set Font
-            tv_myfiles.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
-            tv_myprofile.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
-            tv_spacestats.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
-            tv_allowed.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
-            tv_consumed.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
-            tv_remaining.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+        //intialize views
+        layout_myfiles = (LinearLayout) v.findViewById(R.id.layout_myfiles);
+        layout_myprofile = (LinearLayout) v.findViewById(R.id.layout_myprofile);
+        tv_myfiles = (TextView) v.findViewById(R.id.tv_myfiles);
+        tv_myprofile = (TextView) v.findViewById(R.id.tv_myprofile);
+        tv_spacestats = (TextView) v.findViewById(R.id.tv_spacestats);
+        tv_allowed = (TextView) v.findViewById(R.id.tv_allowed);
+        tv_consumed = (TextView) v.findViewById(R.id.tv_consumed);
+        tv_remaining = (TextView) v.findViewById(R.id.tv_remaining);
+        customseekbar = (ProgressBar) v.findViewById(R.id.customseekbar);
+        //Set Font
+        tv_myfiles.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+        tv_myprofile.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+        tv_spacestats.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+        tv_allowed.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+        tv_consumed.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
+        tv_remaining.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
 
-            //Set Listeners
-            layout_myfiles.setOnClickListener(this);
-            layout_myprofile.setOnClickListener(this);
+        //Set Listeners
+        layout_myfiles.setOnClickListener(this);
+        layout_myprofile.setOnClickListener(this);
 
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        if (methodClass.checkInternetConnection()) {
+            methodClass.MakePostRequest(values, URLS.GETSPACESTATS);
+        } else {
+            UIutill.ShowSnackBar(getActivity(), getString(R.string.no_network));
         }
+
         return v;
     }
 
@@ -109,12 +107,11 @@ public class MyDashBoard<T> extends Fragment implements View.OnClickListener, Da
     public void onSuccess(T s) {
         try {
             String value = new Gson().toJson(s);
-            System.out.println("value" + value);
             JsonParser jsonParser = new JsonParser();
             JsonObject jsonreturn = (JsonObject) jsonParser.parse(value);
             boolean IsSucess = jsonreturn.get("IsSucess").getAsBoolean();
             if (IsSucess) {
-                if(jsonreturn.get("ResponseData")!=null && jsonreturn.get("ResponseData").isJsonArray()){
+                if (jsonreturn.get("ResponseData") != null && jsonreturn.get("ResponseData").isJsonArray()) {
                     JsonArray ResponseData = jsonreturn.get("ResponseData").getAsJsonArray();
 
                     JsonObject mainobject = ResponseData.get(0).getAsJsonObject();
@@ -126,12 +123,12 @@ public class MyDashBoard<T> extends Fragment implements View.OnClickListener, Da
                     float remain = allotted - progress;
                     // use \u0025 for %
                     String remaining = remain + "\u0025";
-                    customseekbar.setProgress((int) progress);
+                    getActivity().getSharedPreferences("Login", 0).edit().putInt("progress", (int) progress).commit();
+                    customseekbar.setProgress(getActivity().getSharedPreferences("Login", 0).getInt("progress", 0));
                     tv_allowed.setText(Html.fromHtml("<font  color='#ffae9b'>" + getResources().getString(R.string.allowed) + "</font>" + "  " + "<font color='#FFFFFF'>" + "(" + allotedspace + ")" + "</font>"));
                     tv_consumed.setText(Html.fromHtml("<font  color='#ffae9b'>" + getResources().getString(R.string.consumed) + "</font>" + "  " + "<font color='#FFFFFF'>" + "(" + spaceConsumed + ")" + "</font>"));
                     tv_remaining.setText(Html.fromHtml("<font  color='#ffae9b'>" + getResources().getString(R.string.remaining) + "</font>" + "  " + "<font color='#FFFFFF'>" + "(" + remaining + ")" + "</font>"));
-                }
-                else{
+                } else {
                     UIutill.ShowDialog(getActivity(), getString(R.string.error), jsonreturn.get("Message").getAsString());
                 }
 
@@ -155,5 +152,15 @@ public class MyDashBoard<T> extends Fragment implements View.OnClickListener, Da
     }
 
     /**************************************************************************************************************************/
+    @Override
+    public void onResume() {
+        super.onResume();
+        customseekbar.setProgress(getActivity().getSharedPreferences("Login", 0).getInt("progress", 0));
+    }
 
+    @Override
+    public void onDestroyView() {
+        getActivity().getSharedPreferences("Login", 0).edit().putInt("progress", 0).commit();
+        super.onDestroyView();
+    }
 }

@@ -67,21 +67,20 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
     int folderid;
     Context cnt;
     int pos;
+    ActionSheet.Builder actionsheet;
     TextView tv_note;
-    float sum=0.0f;
+    float sum = 0.0f;
     int position_of_service;
 
     /**
      * this method is used to fetch file size
-     * @param f
-     * -file whose size to be find
+     *
+     * @param f -file whose size to be find
      * @return
      */
     public static float getFileSize(File f) {
         float size = 0;
-        System.out.println("length"+f.length());
-        size=f.length()/(1024*1024);
-        System.out.println("size of file"+size);
+        size = f.length() / (1024 * 1024);
         return size;
     }
 
@@ -97,7 +96,7 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
         try {
 
             v = inflater.inflate(R.layout.fragment_fileupload, null);
-            tv_note=(TextView)v.findViewById(R.id.tv_note);
+            tv_note = (TextView) v.findViewById(R.id.tv_note);
             tv_note.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
             TextView tv_chooseoption = (TextView) v.findViewById(R.id.tv_chooseoption);
             tv_chooseoption.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
@@ -177,14 +176,12 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                         UIutill.ShowSnackBar(getActivity(), getString(R.string.upload_error_message));
                     } else {
                         if (method.checkInternetConnection()) {
-                           Map<String, TypedFile> values = new HashMap<String, TypedFile>();
+                            Map<String, TypedFile> values = new HashMap<String, TypedFile>();
                             for (int i = 0; i < list.size(); i++) {
-                                System.out.println("file size" + list.get(i).getFilesize());
-                                sum=sum+Float.valueOf(list.get(i).getFilesize());
+                                sum = sum + Float.valueOf(list.get(i).getFilesize());
                             }
-                            System.out.println("summ"+sum);
-                            position_of_service=0;
-                            method.MakeGetRequest(URLS.SPACE_AVAILABLE,getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
+                            position_of_service = 0;
+                            method.MakeGetRequest(URLS.SPACE_AVAILABLE, getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
                         } else {
                             UIutill.ShowSnackBar(getActivity(), getString(R.string.no_network));
                         }
@@ -198,11 +195,17 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                 try {
                     pos = 0;
                     getActivity().setTheme(R.style.ActionSheetStyleIOS7);
-                    ActionSheet.createBuilder(cnt, getFragmentManager())
-                            .setCancelButtonTitle(getActivity().getString(R.string.cancel))
-                            .setOtherButtonTitles("Images", "Videos", "File Browser")
-                            .setCancelableOnTouchOutside(true)
-                            .setListener(UploadFiles.this).show();
+
+                    actionsheet = ActionSheet.createBuilder(getActivity(), getFragmentManager());
+
+                    actionsheet.setCancelButtonTitle(getActivity().getString(R.string.cancel));
+                    actionsheet.setOtherButtonTitles("Images", "Videos", "File Browser");
+                    actionsheet.setCancelableOnTouchOutside(true);
+                    actionsheet.setListener(UploadFiles.this);
+
+                    actionsheet.show();
+
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -215,7 +218,7 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
     /********************************************************************************************************/
 
     /**
-     *****************************************************************************************************
+     * ****************************************************************************************************
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -229,10 +232,8 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                 for (GalleryDataModel values : list) {
                     valueslist.add(values.getFileid());
                 }
-                System.out.println("valuelist"+valueslist.toString());
                 for (GalleryDataModel model : returnedlist) {
-                    String fileid=model.getFileid();
-                    System.out.println("fileid"+fileid);
+                    String fileid = model.getFileid();
                     if (!valueslist.contains(fileid)) {
                         GalleryDataModel mymodel = new GalleryDataModel();
                         mymodel.setFilepath(model.getImage_path());
@@ -241,9 +242,8 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                         mymodel.setFiletitle(title);
                         mymodel.setFileid(model.getFileid());
                         mymodel.setFilemimetype(model.getFilemimetype());
-                        System.out.println("image path"+model.getImage_path());
                         mymodel.setImage_path(model.getImage_path());
-                        mymodel.setFilesize(getFileSize(new File(model.getImage_path()))+"");
+                        mymodel.setFilesize(getFileSize(new File(model.getImage_path())) + "");
                         list.add(mymodel);
                     }
                 }
@@ -259,7 +259,7 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                 mymodel.setFiletitle(values[1] + "." + typee[1]);
                 mymodel.setFilemimetype(values[2]);
                 mymodel.setImage_path(values[0]);
-                mymodel.setFilesize(getFileSize(new File(values[0]))+"");
+                mymodel.setFilesize(getFileSize(new File(values[0])) + "");
 
                 list.add(mymodel);
             } else if (requestCode == RequestCodes.REQUEST_VIDEO) {
@@ -268,7 +268,7 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                     valueslist.add(values.getFileid());
                 }
                 for (GalleryDataModel model : returnedlist) {
-                    String fileid =model.getFileid();
+                    String fileid = model.getFileid();
                     if (!valueslist.contains(fileid)) {
                         GalleryDataModel mymodel = new GalleryDataModel();
                         mymodel.setFilepath(model.getVideo_path());
@@ -292,7 +292,6 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                 cursor.moveToFirst();
                 String filepath = cursor.getString(0);
                 String filetitle = cursor.getString(1);
-                System.out.println("file title"+filetitle);
                 String mimetype = cursor.getString(2);
                 String typee[] = mimetype.split("/");
                 GalleryDataModel mymodel = new GalleryDataModel();
@@ -305,24 +304,20 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                 String values[] = getRealPathFromURI(tempUri);
                 mymodel.setImage_path(values[0]);
                 mymodel.setFrom("image");
-                mymodel.setFilesize(getFileSize(new File(filepath))+"");
+                mymodel.setFilesize(getFileSize(new File(filepath)) + "");
                 list.add(mymodel);
             } else if (requestCode == RequestCodes.REQUEST_FILE_BROWSER) {
                 String curFileName = data.getStringExtra("GetFileName");
-                System.out.println("name" + curFileName);
                 String path = data.getStringExtra("GetPath");
                 String image = data.getStringExtra("image");
-                System.out.println("image" + image);
                 GalleryDataModel mymodel = new GalleryDataModel();
-                mymodel.setFilesize(getFileSize(new File(path))+"");
+                mymodel.setFilesize(getFileSize(new File(path)) + "");
                 mymodel.setFiletitle(curFileName);
                 mymodel.setFilepath(path);
                 mymodel.setFilethumnbail(image);
                 if (getMimeType(path) != null) {
-                    System.out.println("path" + path);
                     mymodel.setFilemimetype(getMimeType(path));
                     String urii = "drawable/" + image;
-                    System.out.println("urii" + urii);
                     int imageResource = getActivity().getResources().getIdentifier(urii, null, getActivity().getPackageName());
                     Drawable imagee = getActivity().getResources().getDrawable(imageResource);
                     Bitmap thumbnail = ((BitmapDrawable) imagee).getBitmap();
@@ -334,8 +329,6 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                 }
 
             }
-            //lv_myfiles.setAdapter(null);
-            System.out.println("listt" + list);
             adapter = new MyUploadFilesAdapter(getActivity(), list);
             lv_myfiles.setAdapter(adapter);
 
@@ -387,38 +380,35 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
             JsonObject jsonreturn = (JsonObject) jsonParser.parse(value);
             boolean IsSucess = jsonreturn.get("IsSucess").getAsBoolean();
             if (IsSucess) {
-                if(position_of_service==1){
+                if (position_of_service == 1) {
                     String response = jsonreturn.get("ResponseData").getAsString();
                     UIutill.ShowSnackBar(getActivity(), response);
                     list.clear();
-                    adapter=new MyUploadFilesAdapter(getActivity(),list);
+                    adapter = new MyUploadFilesAdapter(getActivity(), list);
                     lv_myfiles.setAdapter(adapter);
-                    if(list.size()==0){
+                    if (list.size() == 0) {
                         btn_upload.setVisibility(View.GONE);
                         tv_note.setVisibility(View.GONE);
                     }
-                }
-                else if(position_of_service==0){
-                      JsonArray ResponseData=jsonreturn.get("ResponseData").getAsJsonArray();
-                      String spaceavail= ResponseData.get(0).getAsJsonObject().get("spaceAvailable").getAsString();
-                      float space=Float.valueOf(spaceavail);
-                      if(space>sum){
-                        if(method.checkInternetConnection()){
-                            position_of_service=1;
+                } else if (position_of_service == 0) {
+                    JsonArray ResponseData = jsonreturn.get("ResponseData").getAsJsonArray();
+                    String spaceavail = ResponseData.get(0).getAsJsonObject().get("spaceAvailable").getAsString();
+                    float space = Float.valueOf(spaceavail);
+                    if (space > sum) {
+                        if (method.checkInternetConnection()) {
+                            position_of_service = 1;
                             Map<String, TypedFile> values = new HashMap<String, TypedFile>();
                             for (int i = 0; i < list.size(); i++) {
                                 int a = i + 1;
                                 values.put("file" + a, new TypedFile(list.get(i).getFilemimetype(), new File(list.get(i).getFilepath())));
                             }
-                            method.UploadFiles(getActivity().getSharedPreferences("Login", 0).getString("UserID", ""), folderid + "",UIutill.getDeviceId(getActivity()), values, URLS.UPLOAD_FILES);
-                        }
-                        else{
+                            method.UploadFiles(getActivity().getSharedPreferences("Login", 0).getString("UserID", ""), folderid + "", UIutill.getDeviceId(getActivity()), values, URLS.UPLOAD_FILES);
+                        } else {
                             UIutill.ShowSnackBar(getActivity(), getString(R.string.no_network));
                         }
-                      }
-                      else{
-                        UIutill.ShowSnackBar(getActivity(),getString(R.string.space_error));
-                      }
+                    } else {
+                        UIutill.ShowSnackBar(getActivity(), getString(R.string.space_error));
+                    }
                 }
             } else {
                 UIutill.ShowDialog(getActivity(), getString(R.string.error), jsonreturn.get("Message").getAsString());
@@ -436,7 +426,6 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
     @Override
     public void onFailure(RetrofitError error) {
         if (error != null) {
-            System.out.println("error messsage" + error.getMessage());
             UIutill.ShowDialog(getActivity(), getString(R.string.error), CustomErrorHandling.ShowError(error, getActivity()));
         }
     }
@@ -484,7 +473,6 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
 
     @Override
     public void onOtherButtonClick(ActionSheet actionSheet, int index) {
-        System.out.println("indexx" + index);
         switch (index) {
             case 0:
                 switch (pos) {
@@ -503,7 +491,7 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                         imagegallery.setAction(getString(R.string.choose_multipleaction));
                         imagegallery.putExtra("value", "images");
                         startActivityForResult(imagegallery, RequestCodes.REQUEST_IMAGE);
-                        getActivity().overridePendingTransition(R.anim.push_up_in,R.anim.push_up_out);
+                        getActivity().overridePendingTransition(R.anim.push_up_in, R.anim.push_up_out);
                         break;
                     case 2:
                         //gallery of video
@@ -561,10 +549,9 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
 
     /**
      * this method is used to fetch the realpath of the image
-     * @param uri
-     * -uri of the image file
-     * @return
-     * -returns the actual path of tyhe image
+     *
+     * @param uri -uri of the image file
+     * @return -returns the actual path of tyhe image
      */
     public String getSizeFromUri(Uri uri) {
         Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
@@ -622,7 +609,6 @@ public class UploadFiles<T> extends Fragment implements View.OnClickListener, Da
                     aq.id(iv_image).image(mylist.get(position).getImage_path(), false, true, 100,
                             0, null, 0, 1.0f / 1.0f);
                 } else if (mylist.get(position).getFrom().equalsIgnoreCase("browser")) {
-                    System.out.println("bitmapp" + mylist.get(position).getBitmap());
                     aq.id(iv_image).image(mylist.get(position).getBitmap(), 1.0f / 1.0f);
                 }
             } catch (Exception e) {

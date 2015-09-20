@@ -24,7 +24,6 @@ public class DownloadCompleteReciever extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
-        System.out.println("inside onrecieve" + action);
         if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equalsIgnoreCase(action)) {
 
             long downloadId = intent.getLongExtra(
@@ -45,9 +44,8 @@ public class DownloadCompleteReciever extends BroadcastReceiver {
                         .getInt(status)) {
                     int title = c
                             .getColumnIndex(DownloadManager.COLUMN_TITLE);
-                    int mediatypecoulmn=c.getColumnIndex(DownloadManager.COLUMN_MEDIA_TYPE);
-                    String mediatype=c.getString(mediatypecoulmn);
-                    System.out.println("mediatype"+mediatype);
+                    int mediatypecoulmn = c.getColumnIndex(DownloadManager.COLUMN_MEDIA_TYPE);
+                    String mediatype = c.getString(mediatypecoulmn);
                     Toast.makeText(context, context.getString(R.string.download_cmp), Toast.LENGTH_SHORT).show();
 
                     String name = c.getString(title);

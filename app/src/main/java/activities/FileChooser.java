@@ -79,7 +79,6 @@ public class FileChooser extends Activity {
 				}
 				else
 				{
-                    System.out.println("pathhh"+ff.getAbsolutePath());
                     if(ff.getAbsolutePath().endsWith("jpg") || ff.getAbsolutePath().endsWith("jpeg") ||
                             ff.getAbsolutePath().endsWith("png") ||
                             ff.getAbsolutePath().endsWith("gif") ||
@@ -241,6 +240,7 @@ public class FileChooser extends Activity {
         intent.putExtra("image",o.getImage());
         setResult(RESULT_OK, intent);
         finish();
+        overridePendingTransition(R.anim.push_down_in, R.anim.push_down_out);
     }
     /**************************************************************************************************************************/
 }

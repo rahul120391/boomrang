@@ -434,7 +434,9 @@ public class CircularProgressDrawable extends Drawable
             CircularProgressBarUtils.checkAngle(maxSweepAngle);
             mMaxSweepAngle = maxSweepAngle;
             return this;
-        }        private Interpolator mSweepInterpolator = DEFAULT_SWEEP_INTERPOLATOR;
+        }
+
+        private Interpolator mSweepInterpolator = DEFAULT_SWEEP_INTERPOLATOR;
 
         public Builder strokeWidth(float strokeWidth) {
             CircularProgressBarUtils.checkPositiveOrZero(strokeWidth, "StrokeWidth");
@@ -471,7 +473,6 @@ public class CircularProgressDrawable extends Drawable
                     mAngleInterpolator,
                     mSweepInterpolator);
         }
-
 
 
         private Interpolator mAngleInterpolator = DEFAULT_ROTATION_INTERPOLATOR;

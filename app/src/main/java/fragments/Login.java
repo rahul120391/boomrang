@@ -55,12 +55,11 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
         try {
 
 
-            String device=getActivity().getResources().getString(R.string.device);
-            System.out.println("device"+device);
+            String device = getActivity().getResources().getString(R.string.device);
             sharedprefs = getActivity().getSharedPreferences("Login", 0);
             checkremstate = getActivity().getSharedPreferences("RemState", 0);
             methodClass = new MethodClass<T>(getActivity(), this);
-            v=inflater.inflate(R.layout.fragment_login,null);
+            v = inflater.inflate(R.layout.fragment_login, null);
             //intialize views
             ch_rememb = (CheckBox) v.findViewById(R.id.ch_rememb);
             et_email = (EditText) v.findViewById(R.id.et_email);
@@ -77,7 +76,7 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
             tv_forgot.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
             btn_login.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
 
-           //SetListeners
+            //SetListeners
             tv_forgot.setOnClickListener(this);
             btn_login.setOnClickListener(this);
 
@@ -137,11 +136,8 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
                             Map<String, String> values = new HashMap<String, String>();
                             values.put("EmailID", et_email.getText().toString().trim());
                             values.put("Password", et_password.getText().toString().trim());
-                            values.put("deviceId",UIutill.getDeviceId(getActivity()));
-                            values.put("deviceName",Devices.getDeviceName());
-                            System.out.println("urls" + URLS.LOGIN);
-                            System.out.println("values" + values);
-                            System.out.println("device name"+Devices.getDeviceName());
+                            values.put("deviceId", UIutill.getDeviceId(getActivity()));
+                            values.put("deviceName", Devices.getDeviceName());
                             methodClass.MakePostRequest(values, URLS.LOGIN);
                         } else {
                             UIutill.ShowSnackBar(getActivity(), getString(R.string.no_network));
@@ -153,10 +149,9 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
                 }
                 break;
             case R.id.tv_forgot:
-                try{
-                    ((MainActivity)getActivity()).FragmentTransactions(R.id.fragment_place,new Forgotpassword(),"forgotpass");
-                }
-                catch (Exception e){
+                try {
+                    ((MainActivity) getActivity()).FragmentTransactions(R.id.fragment_place, new Forgotpassword(), "forgotpass");
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;
@@ -173,15 +168,13 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
             String value = new Gson().toJson(s);
             JsonParser jsonParser = new JsonParser();
             JsonObject jsonreturn = (JsonObject) jsonParser.parse(value);
-            System.out.println("json return" + jsonreturn);
             boolean IsSucess = jsonreturn.get("IsSucess").getAsBoolean();
             if (IsSucess) {
 
-                if (jsonreturn.get("ResponseData")!=null && jsonreturn.get("ResponseData").isJsonArray()) {
+                if (jsonreturn.get("ResponseData") != null && jsonreturn.get("ResponseData").isJsonArray()) {
                     JsonArray ResponseData = jsonreturn.get("ResponseData").getAsJsonArray();
                     JsonObject mainobject = ResponseData.get(0).getAsJsonObject();
                     SharedPreferences.Editor e = sharedprefs.edit();
-                    System.out.println("user id" + mainobject.get("UserID").getAsInt() + "");
                     e.putString("UserID", mainobject.get("UserID").getAsInt() + "");
                     e.putString("FirstName", mainobject.get("FirstName").getAsString().trim());
                     e.putString("LastName", mainobject.get("LastName").getAsString().trim());
@@ -190,17 +183,14 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
                     e.putInt("DirectoryId", mainobject.get("DirectoryId").getAsInt());
                     e.putBoolean("IsAutoSync", mainobject.get("IsAutoSync").getAsBoolean());
                     e.putInt("SyncInterval", mainobject.get("SyncInterval").getAsInt());
-                    e.putInt("StoragePreference",mainobject.get("StoragePreference").getAsInt());
-                    System.out.println("package description"+mainobject.get("PackageDescription").getAsString());
-                    e.putString("PackageDescription",mainobject.get("PackageDescription").getAsString());
-                    if(mainobject.get("SubscriptionExpiryDate")!=null){
-                        System.out.println("subscription date"+mainobject.get("SubscriptionExpiryDate").getAsString());
-                        e.putString("SubscriptionExpiryDate",mainobject.get("SubscriptionExpiryDate").getAsString());
+                    e.putInt("StoragePreference", mainobject.get("StoragePreference").getAsInt());
+                    e.putString("PackageDescription", mainobject.get("PackageDescription").getAsString());
+                    if (mainobject.get("SubscriptionExpiryDate") != null) {
+                        e.putString("SubscriptionExpiryDate", mainobject.get("SubscriptionExpiryDate").getAsString());
+                    } else {
+                        e.putString("SubscriptionExpiryDate", "Not specified");
                     }
-                    else{
-                        e.putString("SubscriptionExpiryDate","Not specified");
-                    }
-
+                    e.putInt("progress", 0);
                     if (mainobject.get("Company") != null) {
                         e.putString("Company", mainobject.get("Company").getAsString().trim());
                     } else {
@@ -214,6 +204,7 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
                         edit.putString("username", et_email.getText().toString().trim());
                         edit.putString("password", et_password.getText().toString().trim());
                         edit.putBoolean("status", true);
+
                         edit.commit();
                     } else {
                         getActivity().getSharedPreferences("RemState", 0).edit().clear().commit();
@@ -224,7 +215,7 @@ public class Login<T> extends android.app.Fragment implements View.OnClickListen
                             | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(i);
                     getActivity().finish();
-                    getActivity().overridePendingTransition(R.anim.push_up_in,R.anim.push_up_out);
+                    getActivity().overridePendingTransition(R.anim.push_up_in, R.anim.push_up_out);
                 } else {
                     UIutill.ShowDialog(getActivity(), getString(R.string.error), jsonreturn.get("ResponseData").getAsString());
                 }

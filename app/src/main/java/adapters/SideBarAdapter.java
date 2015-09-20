@@ -15,8 +15,8 @@ import commonutils.UIutill;
  * Created by rahul on 3/11/2015.
  */
 public class SideBarAdapter extends BaseAdapter {
-    int images[] = {R.drawable.ic_close, R.drawable.iv_sideprofile, R.drawable.iv_myfiless, R.drawable.iv_dashboard, R.drawable.iv_contactus, R.drawable.iv_settings, R.drawable.iv_logout};
-    String drawer_text[] = {"Close", "Profile", "My Files", "Dashboard", "Contact us", "Settings", "Logout"};
+    int images[] = {R.drawable.ic_close, R.drawable.iv_sideprofile, R.drawable.iv_myfiless, R.drawable.iv_dashboard, R.drawable.iv_settings, R.drawable.iv_logout};
+    String drawer_text[] = {"Close", "Profile", "My Files", "Dashboard", "Settings", "Logout"};
     Context context;
     LayoutInflater inflator;
     TextView tv_itemname;

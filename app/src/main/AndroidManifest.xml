@@ -8,6 +8,17 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"></uses-permission>
     <uses-permission android:name="android.permission.ACCESS_DOWNLOAD_MANAGER"></uses-permission>
+
+    <supports-screens
+        android:anyDensity="false"
+        android:requiresSmallestWidthDp="480"
+        android:normalScreens="true"
+        android:smallScreens="false"
+        android:largeScreens="true"
+        android:xlargeScreens="false"
+        android:largestWidthLimitDp="600"
+        android:compatibleWidthLimitDp="480"
+        ></supports-screens>
     <application
         android:allowBackup="true"
         android:icon="@drawable/appicon"
@@ -32,7 +43,7 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_dashboard"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize|adjustPan"
              >
         </activity>
 

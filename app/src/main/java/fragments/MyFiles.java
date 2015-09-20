@@ -95,9 +95,10 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
     MyFilesAdapter adapter;
     Dialog confirmdialog, requestfolder, sharedialog;
     String searchstring;
-    RelativeLayout mainlayout,layout_bottom;
+    RelativeLayout mainlayout, layout_bottom;
     ExecutorService executorService;
-    TextView tv_total_files,tv_total,tv_total_folders;
+    TextView tv_total_files, tv_total, tv_total_folders;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -113,10 +114,10 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
 
             //intialize views
             layout_foldernames = (RelativeLayout) v.findViewById(R.id.layout_foldernames);
-            layout_bottom=(RelativeLayout)v.findViewById(R.id.layout_bottom);
-            tv_total_folders=(TextView)v.findViewById(R.id.tv_total_folders);
-            tv_total_files=(TextView)v.findViewById(R.id.tv_total_files);
-            tv_total=(TextView)v.findViewById(R.id.tv_total);
+            layout_bottom = (RelativeLayout) v.findViewById(R.id.layout_bottom);
+            tv_total_folders = (TextView) v.findViewById(R.id.tv_total_folders);
+            tv_total_files = (TextView) v.findViewById(R.id.tv_total_files);
+            tv_total = (TextView) v.findViewById(R.id.tv_total);
             mainlayout = (RelativeLayout) v.findViewById(R.id.layout_main);
             layout_myfiles = (RelativeLayout) v.findViewById(R.id.layout_myfiles);
             layout_sync = (RelativeLayout) v.findViewById(R.id.layout_sync);
@@ -149,7 +150,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
             mainlayout.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
-                    if(DashboardActivity.slidingpane.isOpen()){
+                    if (DashboardActivity.slidingpane.isOpen()) {
                         DashboardActivity.slidingpane.closePane();
                     }
                     if (lv_myfiles.getCount() > 0) {
@@ -178,14 +179,13 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                         }
                     }
                     listviewpositionclick = position;
-                    if(DashboardActivity.slidingpane.isOpen()){
+                    if (DashboardActivity.slidingpane.isOpen()) {
                         DashboardActivity.slidingpane.closePane();
                     }
                 }
 
                 @Override
                 public void onSwipeEnd(int position) {
-                    System.out.println("swipe ended");
                 }
             });
 
@@ -196,9 +196,6 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                     return false;
                 }
             });
-
-
-
 
 
             creator = new SwipeMenuCreator() {
@@ -278,7 +275,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                 layout_search.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
                 layout_upload.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
                 layout_createfolder.setBackgroundColor(getResources().getColor(R.color.myfiles_unselelcted));
-               if (methodClass.checkInternetConnection()) {
+                if (methodClass.checkInternetConnection()) {
                     if (stack != null && stack.size() > 0) {
                         position = 7;
                         UIutill.ShowSnackBar(getActivity(), "Sync started");
@@ -325,7 +322,6 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                             map.put("userId", getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
                             int index = stack.indexOf(stack.lastElement());
                             folderid = stack.get(index - 1);
-                            System.out.println("folderid" + folderid);
                             map.put("folderId", folderid + "");
                             methodClass.MakeGetRequestWithParams(map, URLS.GET_ROOT_FOLDER_FILES);
                         } else {
@@ -349,32 +345,28 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
     @Override
     public void onSuccess(T s) {
         try {
-            System.out.println("inside on success");
             String value = new Gson().toJson(s);
-            System.out.println("value" + value);
             JsonParser jsonParser = new JsonParser();
             JsonObject jsonreturn = (JsonObject) jsonParser.parse(value);
             boolean IsSucess = jsonreturn.get("IsSucess").getAsBoolean();
             if (IsSucess) {
-                System.out.println("position value" + position);
                 if (position == 0 || position == 1 || position == 2 || position == 6) {
                     String message = jsonreturn.get("Message").getAsString().trim();
                     if (!message.equalsIgnoreCase("")) {
                         UIutill.ShowSnackBar(getActivity(), message);
                     }
 
-                    if(jsonreturn.get("ResponseData")!=null){
+                    if (jsonreturn.get("ResponseData") != null) {
                         if (jsonreturn.get("ResponseData").isJsonArray() && jsonreturn.get("ResponseData").getAsJsonArray().size() >= 0) {
                             JsonArray ResponseData = jsonreturn.get("ResponseData").getAsJsonArray();
-                            System.out.println("response" + ResponseData);
                             myfileslist.clear();
-                            ArrayList<String> foldercount=new ArrayList<>();
+                            ArrayList<String> foldercount = new ArrayList<>();
                             for (int i = 0; i < ResponseData.size(); i++) {
                                 JsonObject object = ResponseData.get(i).getAsJsonObject();
                                 MyFilesDataModel model = new MyFilesDataModel();
                                 model.setFileid(object.get("FileID").getAsInt());
                                 if (object.get("Type") != null) {
-                                    if(object.get("Type").getAsString().trim().equalsIgnoreCase("folder")){
+                                    if (object.get("Type").getAsString().trim().equalsIgnoreCase("folder")) {
                                         foldercount.add((object.get("Type").getAsString().trim()));
                                     }
                                     model.setFiletype(object.get("Type").getAsString().trim());
@@ -388,11 +380,11 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                                 myfileslist.add(model);
                             }
                             layout_foldernames.setVisibility(View.VISIBLE);
-                            Count(myfileslist,foldercount);
+                            Count(myfileslist, foldercount);
                             if (position == 1) {
                                 stack.push(folderid);
                                 foldernames.push(foldername);
-                                if(myfileslist.size()==0){
+                                if (myfileslist.size() == 0) {
                                     UIutill.ShowSnackBar(getActivity(), getString(R.string.nofilefolder));
                                 }
                             } else if (position == 2) {
@@ -423,9 +415,9 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                     String filename = jsonreturn.get("CallBack").getAsString();
                     DownloadFiles(filename, fileurl);
                 } else if (position == 7) {
-                    if(jsonreturn.get("ResponseData")!=null){
+                    if (jsonreturn.get("ResponseData") != null) {
                         JsonObject ResponseData = jsonreturn.getAsJsonObject("ResponseData");
-                        if(ResponseData.get("Table")!=null){
+                        if (ResponseData.get("Table") != null) {
                             JsonArray Table = ResponseData.getAsJsonArray("Table");
                             if (Table.isJsonArray() && Table.size() > 0) {
                                 ArrayList<Integer> myfiledata = new ArrayList<>();
@@ -434,15 +426,13 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                                 }
                                 for (int x = 0; x < Table.size(); x++) {
                                     JsonObject object = Table.get(x).getAsJsonObject();
-                                    System.out.println("objectt" + object.get("status").getAsInt());
                                     if (object.get("status").getAsInt() == 0) {
                                         if (myfiledata.contains(object.get("FileId").getAsInt())) {
-                                            int index=myfiledata.indexOf(object.get("FileId").getAsInt());
-                                            String name=myfileslist.get(index).getFilename();
-                                            if(name.equalsIgnoreCase(object.get("FileName").getAsString().trim())){
+                                            int index = myfiledata.indexOf(object.get("FileId").getAsInt());
+                                            String name = myfileslist.get(index).getFilename();
+                                            if (name.equalsIgnoreCase(object.get("FileName").getAsString().trim())) {
                                                 continue;
-                                            }
-                                            else{
+                                            } else {
                                                 myfileslist.get(index).setFilename(object.get("FileName").getAsString().trim());
                                             }
                                         } else {
@@ -465,20 +455,19 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                                                 modell.remove();
                                             }
                                         }
-                                    }  else if(object.get("status").getAsInt()==2){
-                                        System.out.println("inside rename");
-                                        int myindex=myfiledata.indexOf(object.get("FileId").getAsString().trim());
+                                    } else if (object.get("status").getAsInt() == 2) {
+                                        int myindex = myfiledata.indexOf(object.get("FileId").getAsString().trim());
                                         myfileslist.get(myindex).setFilename(object.get("FileName").getAsString().trim());
                                     }
 
                                 }
-                                ArrayList<String> foldercount=new ArrayList<>();
-                                for(MyFilesDataModel model:myfileslist){
-                                    if(model.getFiletype().equalsIgnoreCase("folder")){
+                                ArrayList<String> foldercount = new ArrayList<>();
+                                for (MyFilesDataModel model : myfileslist) {
+                                    if (model.getFiletype().equalsIgnoreCase("folder")) {
                                         foldercount.add(model.getFiletype());
                                     }
                                 }
-                                Count(myfileslist,foldercount);
+                                Count(myfileslist, foldercount);
                                 adapter = new MyFilesAdapter(getActivity(), myfileslist);
                                 lv_myfiles.setAdapter(adapter);
                             }
@@ -514,8 +503,6 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int positionn, long id) {
-
-        System.out.println("item click" + positionn);
         listviewpositionclick = positionn;
         if (DashboardActivity.slidingpane.isOpen()) {
             DashboardActivity.slidingpane.closePane();
@@ -529,7 +516,6 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                 foldername = ((MyFilesDataModel) parent.getItemAtPosition(positionn))
                         .getFilename();
                 Map<String, String> map = new HashMap<>();
-                System.out.println("userid" + getActivity().getSharedPreferences("Login", 0).getString("UserID", "") + "\n" + folderid + "\n" + foldername);
                 map.put("userId", getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
                 map.put("folderId", folderid + "");
                 methodClass.MakeGetRequestWithParams(map, URLS.GET_ROOT_FOLDER_FILES);
@@ -546,11 +532,8 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
 
     @Override
     public boolean onMenuItemClick(int positionn, SwipeMenu menu, int index) {
-        System.out.println("listview position" + positionn);
-        System.out.println("indexx" + index);
         String type = null;
         String filetype = myfileslist.get(positionn).getFiletype();
-        System.out.println("filetype" + filetype);
         if (filetype.equalsIgnoreCase("folder")) {
             type = "0";
         } else {
@@ -565,7 +548,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                 if (type.equalsIgnoreCase("0")) {
                     String filenamee = myfileslist.get(positionn).getFilename();
                     ShareDialogView(filenamee, fileid, filetype);
-                   // ShowDialog();
+                    // ShowDialog();
                 } else {
                     if (type.equalsIgnoreCase("1")) {
                         int state = getActivity().getPackageManager().getApplicationEnabledSetting("com.android.providers.downloads");
@@ -588,13 +571,11 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                                     android.provider.Settings.Secure.ANDROID_ID);
                             Map<String, String> map = new HashMap<>();
                             map.put("userId", getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
-                            System.out.println("fileid" + fileid);
                             map.put("folderFileId", fileid);
                             map.put("type", "1");
                             map.put("deviceId", deviceId);
                             if (methodClass.checkInternetConnection()) {
                                 position = 5;
-                                System.out.println("position" + position);
                                 methodClass.MakeGetRequestWithParams(map, URLS.DOWNLOAD);
                             } else {
                                 UIutill.ShowSnackBar(getActivity(), getString(R.string.no_network));
@@ -656,6 +637,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
             btn_cancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    UIutill.HideDialogKeyboard(getActivity(), v);
                     dialog.dismiss();
                 }
             });
@@ -663,8 +645,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
             btn_search.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    UIutill.HideDialogKeyboard(getActivity(), v);
                     if (show.equalsIgnoreCase("search")) {
                         if (et_search.getText().toString().trim().length() == 0) {
                             UIutill.ShowSnackBar(getActivity(), getString(R.string.empty_search));
@@ -673,28 +654,25 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                             SearchResult result = new SearchResult();
                             Bundle b = new Bundle();
                             b.putString("searctext", et_search.getText().toString());
-                            b.putInt("parentid",stack.lastElement());
+                            b.putInt("parentid", stack.lastElement());
                             result.setArguments(b);
                             ((DashboardActivity) getActivity()).FragmentTransactions(R.id.fragment_container, result, "searchresult");
                         }
                     } else if (show.equalsIgnoreCase("createfolder")) {
-                        String spl_characters="<>*?/|\\\":";
+                        String spl_characters = "<>*?/|\\\":";
                         String pattern = ".*[" + Pattern.quote(spl_characters) + "].*";
-                        if (et_search.getText().toString().trim().length()==0) {
+                        if (et_search.getText().toString().trim().length() == 0) {
                             UIutill.ShowSnackBar(getActivity(), getString(R.string.empty_foldername));
-                        }
-                        else if(et_search.getText().toString().trim().length()>80){
+                        } else if (et_search.getText().toString().trim().length() > 80) {
                             UIutill.ShowSnackBar(getActivity(), getString(R.string.folder_name_length));
-                        }
-                        else if(et_search.getText().toString().trim().matches(pattern)){
+                        } else if (et_search.getText().toString().trim().matches(pattern)) {
                             UIutill.ShowSnackBar(getActivity(), getString(R.string.special_ch_not_all));
-                        }
-                        else {
+                        } else {
 
-                            for (MyFilesDataModel model:myfileslist){
-                                if(model.getFiletype().equalsIgnoreCase("folder")){
-                                    if(model.getFilename().trim().equalsIgnoreCase(et_search.getText().toString().trim())){
-                                        UIutill.ShowSnackBar(getActivity(),getString(R.string.folder_already));
+                            for (MyFilesDataModel model : myfileslist) {
+                                if (model.getFiletype().equalsIgnoreCase("folder")) {
+                                    if (model.getFilename().trim().equalsIgnoreCase(et_search.getText().toString().trim())) {
+                                        UIutill.ShowSnackBar(getActivity(), getString(R.string.folder_already));
                                         return;
                                     }
                                 }
@@ -778,7 +756,6 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                         map.put("type", type);
                         map.put("deviceId", UIutill.getDeviceId(getActivity()));
                         map.put("currentFolderId", stack.lastElement() + "");
-                        System.out.println("map"+map);
                         methodClass.MakeGetRequestWithParams(map, URLS.TEMP_DELETE_FILE_FOLDER);
                     } else {
                         UIutill.ShowSnackBar(getActivity(), getString(R.string.no_network));
@@ -840,22 +817,24 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                 }
             };
             sp_select_expiry.setAdapter(adapter);
-            requestfolder=new Dialog(getActivity(),R.style.DialogFragmentStyle);
+            requestfolder = new Dialog(getActivity(), R.style.DialogFragmentStyle);
             requestfolder.requestWindowFeature(Window.FEATURE_NO_TITLE);
             requestfolder.setContentView(dialoglayout);
-            requestfolder.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+            requestfolder.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             requestfolder.getWindow().getAttributes().windowAnimations = R.style.MyAnim_SearchWindow;
             requestfolder.setCancelable(true);
             requestfolder.show();
             btn_cancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    UIutill.HideDialogKeyboard(getActivity(), v);
                     requestfolder.dismiss();
                 }
             });
             btn_request.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    UIutill.HideDialogKeyboard(getActivity(), v);
                     if (et_email.getText().toString().trim().length() == 0) {
                         UIutill.ShowSnackBar(getActivity(), getString(R.string.email_empty));
                     } else if (!et_email.getText().toString().trim()
@@ -883,10 +862,9 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                                     break;
                             }
                             map.put("emailId", et_email.getText().toString().trim());
-                            if(et_message.getText().toString().trim().length()==0){
-                                map.put("Message"," ");
-                            }
-                            else{
+                            if (et_message.getText().toString().trim().length() == 0) {
+                                map.put("Message", " ");
+                            } else {
                                 map.put("Message", et_message.getText().toString().trim());
                             }
 
@@ -932,16 +910,18 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
             btn_share.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
             btn_cancel.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
 
-            sharedialog=new Dialog(getActivity(),R.style.DialogFragmentStyle);
+            sharedialog = new Dialog(getActivity(), R.style.DialogFragmentStyle);
             sharedialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             sharedialog.setContentView(dialoglayout);
-            sharedialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+            sharedialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             sharedialog.getWindow().getAttributes().windowAnimations = R.style.MyAnim_SearchWindow;
             sharedialog.setCancelable(true);
             sharedialog.show();
             btn_cancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+                    UIutill.HideDialogKeyboard(getActivity(), v);
                     sharedialog.dismiss();
                 }
             });
@@ -949,7 +929,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
             btn_share.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    UIutill.HideKeyboard(getActivity());
+                    UIutill.HideDialogKeyboard(getActivity(), v);
                     if (et_email.getText().toString().trim().length() == 0) {
                         UIutill.ShowSnackBar(getActivity(), getString(R.string.email_empty));
                     } else {
@@ -973,14 +953,12 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                             try {
                                 sharedialog.dismiss();
                                 position = 4;
-                                System.out.println("emailids" + builder.toString());
                                 Map<String, String> map = new HashMap<String, String>();
                                 map.put("emailIds", builder.toString());
                                 map.put("userId", getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
-                                if(et_message.getText().toString().trim().length()==0){
-                                    map.put("Message"," ");
-                                }
-                                else{
+                                if (et_message.getText().toString().trim().length() == 0) {
+                                    map.put("Message", " ");
+                                } else {
                                     map.put("Message", et_message.getText().toString().trim());
                                 }
                                 map.put("type", type);
@@ -1027,20 +1005,17 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
             }
         } else {
 
-            if(getActivity().getSharedPreferences("Login",0).getInt("StoragePreference",0)==0){
-                if(UIutill.getInternalStorage()<=0.0){
-                    UIutill.ShowSnackBar(getActivity(),getActivity().getString(R.string.internal_storage_insuff));
-                }
-                else{
+            if (getActivity().getSharedPreferences("Login", 0).getInt("StoragePreference", 0) == 0) {
+                if (UIutill.getInternalStorage() <= 0.0) {
+                    UIutill.ShowSnackBar(getActivity(), getActivity().getString(R.string.internal_storage_insuff));
+                } else {
                     UIutill.ShowSnackBar(getActivity(), getString(R.string.download_start));
                     String path = Environment.getExternalStorageDirectory().getAbsolutePath();
                     File directory = new File(path + "/" + "MyBoomerangBackup");
-                    System.out.println("url" + url);
                     if (!directory.exists()) {
                         directory.mkdir();
                     }
                     String mypath = path + "/" + "MyBoomerangBackup" + "/" + filename;
-                    System.out.println("path" + mypath);
                     File file = new File(mypath);
                     if (file.exists()) {
                         file.delete();
@@ -1054,58 +1029,6 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                     manager.enqueue(request);
                 }
             }
-         /*   else if(getActivity().getSharedPreferences("Login",0).getInt("StoragePreference",0)==1){
-                if(UIutill.getSecondaryStorageSize()<=0.0){
-                    UIutill.ShowSnackBar(getActivity(),getActivity().getString(R.string.sdcard_storage_insuff));
-                }
-                else{
-                    UIutill.ShowSnackBar(getActivity(), getString(R.string.download_start));
-                    String path = System.getenv("SECONDARY_STORAGE");
-                    File filee=new File("/mnt/sdcard1");
-                    if(filee.exists()){
-                        System.out.println("file exists");
-                    }
-                    else{
-                        System.out.println("file not exists");
-                    }
-                    if (Environment.MEDIA_MOUNTED.equals(path)) {
-                        System.out.println("we can read and write");
-                    } else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(path)) {
-                        System.out.println("we can read data only");
-
-                    }
-                    else{
-                        System.out.println("neither read nor write");
-                    }
-                    File directory = new File(path+"/"+"MyBoomerangBackup");
-                    System.out.println("get absolute path"+directory.getAbsolutePath());
-                    System.out.println("url" + url);
-                    if (!directory.exists()) {
-                        directory.mkdir();
-                    }
-                    File ff=new File(path);
-                    if(ff.canWrite()){
-                        System.out.println("yes we can write");
-                    }
-                    else{
-                        System.out.println("cannot write");
-                    }
-                    System.out.println("directory"+path+"/MyBoomerangBackup");
-                    String mypath = path + "/" + "MyBoomerangBackup" + "/" + filename;
-                    System.out.println("path" + mypath);
-                    File file = new File(mypath);
-                    if (file.exists()) {
-                        file.delete();
-                    }
-                    DownloadManager manager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
-                    DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
-                    request.setTitle(filename);
-                    request.setDescription(getString(R.string.downloading));
-                    request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
-                    request.setDestinationInExternalPublicDir("/MyBoomerangBackup", filename);
-                    manager.enqueue(request);
-                }
-            }*/
 
         }
 
@@ -1118,7 +1041,6 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
      * @param event -event to be fired at certian time
      */
     public void onEvent(String event) {
-        System.out.println("event is fired" + event);
         if (stack != null && stack.size() > 0) {
             if (methodClass.checkInternetConnection()) {
                 Gson gson = new GsonBuilder()
@@ -1132,7 +1054,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
 
                 Map<String, String> map = new HashMap<>();
                 map.put("userId", getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
-                map.put("deviceId",  UIutill.getDeviceId(getActivity()));
+                map.put("deviceId", UIutill.getDeviceId(getActivity()));
                 map.put("folderId", folderid + "");
                 executorService = Executors.newCachedThreadPool();
                 final RestAdapter restadapter = new RestAdapter.Builder().
@@ -1146,15 +1068,14 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                     public void success(T t, Response response) {
                         try {
                             String value = new Gson().toJson(t);
-                            System.out.println("value" + value);
                             JsonParser jsonParser = new JsonParser();
                             JsonObject jsonreturn = (JsonObject) jsonParser.parse(value);
                             boolean IsSucess = jsonreturn.get("IsSucess").getAsBoolean();
                             if (IsSucess) {
                                 if (folderid == stack.lastElement()) {
-                                    if(jsonreturn.getAsJsonObject("ResponseData")!=null){
+                                    if (jsonreturn.getAsJsonObject("ResponseData") != null) {
                                         JsonObject ResponseData = jsonreturn.getAsJsonObject("ResponseData");
-                                        if(ResponseData.get("Table")!=null){
+                                        if (ResponseData.get("Table") != null) {
                                             JsonArray Table = ResponseData.getAsJsonArray("Table");
                                             if (Table.isJsonArray() && Table.size() > 0) {
                                                 ArrayList<Integer> list = new ArrayList<Integer>();
@@ -1165,7 +1086,7 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                                                     JsonObject object = Table.get(x).getAsJsonObject();
                                                     if (object.get("status").getAsInt() == 0) {
                                                         if (list.contains(object.get("FileId").getAsInt())) {
-                                                             continue;
+                                                            continue;
                                                         } else {
                                                             MyFilesDataModel model = new MyFilesDataModel();
                                                             model.setFileid(object.get("FileId").getAsInt());
@@ -1186,27 +1107,24 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
                                                                 modell.remove();
                                                             }
                                                         }
-                                                    }
-                                                    else if(object.get("status").getAsInt() == 2){
-                                                          System.out.println("inside rename");
-                                                          int myindex=list.indexOf(object.get("FileId").getAsInt());
-                                                          System.out.println("index"+myindex);
-                                                          myfileslist.get(myindex).setFilename(object.get("FileName").getAsString().trim());
+                                                    } else if (object.get("status").getAsInt() == 2) {
+                                                        int myindex = list.indexOf(object.get("FileId").getAsInt());
+                                                        myfileslist.get(myindex).setFilename(object.get("FileName").getAsString().trim());
                                                     }
 
                                                 }
-                                                ArrayList<String> foldercount=new ArrayList<>();
-                                                for(MyFilesDataModel model:myfileslist){
-                                                    if(model.getFiletype().equalsIgnoreCase("folder")){
+                                                ArrayList<String> foldercount = new ArrayList<>();
+                                                for (MyFilesDataModel model : myfileslist) {
+                                                    if (model.getFiletype().equalsIgnoreCase("folder")) {
                                                         foldercount.add(model.getFiletype());
                                                     }
                                                 }
-                                                Count(myfileslist,foldercount);
+                                                Count(myfileslist, foldercount);
                                                 adapter = new MyFilesAdapter(getActivity(), myfileslist);
                                                 lv_myfiles.setAdapter(adapter);
                                             }
                                         }
-                                        if(ResponseData.get("Table1")!=null){
+                                        if (ResponseData.get("Table1") != null) {
                                             JsonArray Table1 = ResponseData.getAsJsonArray("Table1");
                                             if (Table1.isJsonArray() && Table1.size() > 0) {
                                                 for (int i = 0; i < Table1.size(); i++) {
@@ -1230,7 +1148,6 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
 
                     @Override
                     public void failure(RetrofitError retrofitError) {
-                        System.out.println(CustomErrorHandling.ShowError(retrofitError, getActivity()));
                     }
                 });
             }
@@ -1240,14 +1157,12 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
     }
 
 
-
     /**
      * ****************************************************************************************************
      */
 
     @Override
     public void onDestroyView() {
-        System.out.println("inside on destroy view");
         EventBus.getDefault().unregister(this);
         super.onDestroyView();
     }
@@ -1266,29 +1181,25 @@ public class MyFiles<T> extends Fragment implements View.OnClickListener, DataTr
     /*********************************************************************************************************/
     /**
      * this method is used to count the files, folders and their total
-     * @param myfileslist
-     * -the list containing files and folders
-     * @param foldercount
-     * -the list containing folders
+     *
+     * @param myfileslist -the list containing files and folders
+     * @param foldercount -the list containing folders
      */
-    public void Count(ArrayList<MyFilesDataModel> myfileslist,ArrayList<String> foldercount){
-        if(myfileslist.size()>0){
+    public void Count(ArrayList<MyFilesDataModel> myfileslist, ArrayList<String> foldercount) {
+        if (myfileslist.size() > 0) {
             layout_bottom.setVisibility(View.VISIBLE);
-            tv_total.setText(myfileslist.size()+"");
-            if(foldercount.size()==1){
-                tv_total_folders.setText("Folder"+": "+foldercount.size());
+            tv_total.setText(myfileslist.size() + "");
+            if (foldercount.size() == 1) {
+                tv_total_folders.setText("Folder" + ": " + foldercount.size());
+            } else {
+                tv_total_folders.setText("Folders" + ": " + foldercount.size());
             }
-            else{
-                tv_total_folders.setText("Folders"+": "+foldercount.size());
+            if (myfileslist.size() - foldercount.size() == 1) {
+                tv_total_files.setText("File" + ": " + (myfileslist.size() - foldercount.size()));
+            } else {
+                tv_total_files.setText("Files" + ": " + (myfileslist.size() - foldercount.size()));
             }
-            if(myfileslist.size()-foldercount.size()==1){
-                tv_total_files.setText("File"+": "+(myfileslist.size()-foldercount.size()));
-            }
-            else{
-                tv_total_files.setText("Files"+": "+(myfileslist.size()-foldercount.size()));
-            }
-        }
-        else{
+        } else {
             layout_bottom.setVisibility(View.GONE);
         }
     }

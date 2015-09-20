@@ -141,7 +141,6 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
                 }
                 @Override
                 public void onSwipeEnd(int position) {
-                    System.out.println("swipe ended");
                 }
             });
             lv_myfiles.setOnTouchListener(new View.OnTouchListener() {
@@ -227,7 +226,6 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
             map.put("userId", getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
             map.put("folderId", fileid + "");
             searchtext = fileid + "";
-            System.out.println("searchtext" + searchtext);
             parentid=((MyFilesDataModel) parent.getItemAtPosition(positionn)).getFileid();
             methodclass.MakeGetRequestWithParams(map, URLS.GET_ROOT_FOLDER_FILES);
         }
@@ -242,7 +240,6 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
     public void onSuccess(T s) {
         try {
             String value = new Gson().toJson(s);
-            System.out.println("value" + value);
             JsonParser jsonParser = new JsonParser();
             JsonObject jsonreturn = (JsonObject) jsonParser.parse(value);
             boolean IsSucess = jsonreturn.get("IsSucess").getAsBoolean();
@@ -275,7 +272,6 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
                 else if(position==1 || position==2){
                     if (jsonreturn.get("ResponseData")!=null && jsonreturn.get("ResponseData").isJsonArray() && jsonreturn.get("ResponseData").getAsJsonArray().size() >= 0) {
                         JsonArray ResponseData = jsonreturn.get("ResponseData").getAsJsonArray();
-                        System.out.println("response" + ResponseData);
                         mylist.clear();
                         ArrayList<String> foldercount=new ArrayList<>();
                         for (int i = 0; i < ResponseData.size(); i++) {
@@ -375,12 +371,10 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
             case R.id.iv_back:
                 position = 2;
                 if (stack.size() > 2) {
-                    System.out.println("insid eposition 2");
                     Map<String, String> map = new HashMap<>();
                     map.put("userId", getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
                     int index = stack.indexOf(stack.lastElement());
                     fileid = stack.get(index - 1);
-                    System.out.println("folderid" + fileid);
                     map.put("folderId", fileid);
                     methodclass.MakeGetRequestWithParams(map, URLS.GET_ROOT_FOLDER_FILES);
                 } else {
@@ -400,18 +394,14 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
     @Override
     public boolean onMenuItemClick(int positionn, SwipeMenu menu, int index) {
         listviewindex=positionn;
-        System.out.println("listview position" + positionn);
-        System.out.println("indexx" + index);
         String type = null;
         String filetype = mylist.get(positionn).getFiletype();
-        System.out.println("filetype" + filetype);
         if (filetype.equalsIgnoreCase("folder")) {
             type = "0";
         } else {
             type = "1";
         }
         String fileid = mylist.get(positionn).getFileid() + "";
-        System.out.println("fileid"+fileid);
         switch (index) {
             case 0:
                 ShowConfirmDialog(fileid, type);
@@ -442,13 +432,11 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
                                     android.provider.Settings.Secure.ANDROID_ID);
                             Map<String, String> map = new HashMap<>();
                             map.put("userId", getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
-                            System.out.println("fileid" + fileid);
                             map.put("folderFileId", fileid);
                             map.put("type", "1");
                             map.put("deviceId", deviceId);
                             if (methodclass.checkInternetConnection()) {
                                 position = 5;
-                                System.out.println("position" + position);
                                 methodclass.MakeGetRequestWithParams(map, URLS.DOWNLOAD);
                             } else {
                                 UIutill.ShowSnackBar(getActivity(), getString(R.string.no_network));
@@ -530,7 +518,6 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
                         else{
                             map.put("currentFolderId",stack.lastElement()+"");
                         }
-                        System.out.println("map"+map);
                         methodclass.MakeGetRequestWithParams(map, URLS.TEMP_DELETE_FILE_FOLDER);
                     } else {
                         UIutill.ShowSnackBar(getActivity(), getString(R.string.no_network));
@@ -590,6 +577,7 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
             btn_cancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    UIutill.HideDialogKeyboard(getActivity(), v);
                     sharedialog.dismiss();
                 }
             });
@@ -597,7 +585,7 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
             btn_share.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    UIutill.HideKeyboard(getActivity());
+                    UIutill.HideDialogKeyboard(getActivity(), v);
                     if (et_email.getText().toString().trim().length() == 0) {
                         UIutill.ShowSnackBar(getActivity(), getString(R.string.email_empty));
                     } else {
@@ -624,7 +612,6 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
                             try {
                                 sharedialog.dismiss();
                                 position = 4;
-                                System.out.println("emailids" + builder.toString());
                                 Map<String, String> map = new HashMap<String, String>();
                                 map.put("emailIds", builder.toString());
                                 map.put("userId", getActivity().getSharedPreferences("Login", 0).getString("UserID", ""));
@@ -721,12 +708,14 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
             btn_cancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    UIutill.HideDialogKeyboard(getActivity(), v);
                     requestfolder.dismiss();
                 }
             });
             btn_request.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
                     if (et_email.getText().toString().trim().length() == 0) {
                         UIutill.ShowSnackBar(getActivity(), getString(R.string.email_empty));
                     } else if (!et_email.getText().toString().trim()
@@ -797,12 +786,10 @@ public class SearchResult<T> extends Fragment implements AdapterView.OnItemClick
             UIutill.ShowSnackBar(getActivity(), getString(R.string.download_start));
             String path = Environment.getExternalStorageDirectory().getAbsolutePath();
             File directory = new File(path + "/" + "MyData");
-            System.out.println("url" + url);
             if (!directory.exists()) {
                 directory.mkdir();
             }
             String mypath = path + "/" + "MyData" + "/" + filename;
-            System.out.println("path" + mypath);
             File file = new File(mypath);
             if (file.exists()) {
                 file.delete();

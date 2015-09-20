@@ -15,7 +15,7 @@ public class MySlidingPaneLayout extends SlidingPaneLayout {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event){
+    public boolean onTouchEvent(MotionEvent event) {
 
         return false; // here it returns false so that another event's listener should be called, in your case the MapFragment listener
     }

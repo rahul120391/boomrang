@@ -155,6 +155,7 @@
         android:layout_below="@+id/layout_stats"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
+        android:progress="0"
         android:layout_marginTop="20dp"
         android:progressDrawable="@drawable/progressbar_bg" />
 

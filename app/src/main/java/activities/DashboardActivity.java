@@ -43,12 +43,10 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
         setContentView(R.layout.activity_dashboard);
         Thread.setDefaultUncaughtExceptionHandler(new UnCaughtException(DashboardActivity.this));
         try{
-            System.out.println("inside on resume");
             boolean IsAutoSync=getSharedPreferences("Login", 0).getBoolean("IsAutoSync",false);
             if(IsAutoSync){
                 SyncAlarmClass.StopAlarm();
                 int time=getSharedPreferences("Login", 0).getInt("SyncInterval",0);
-                System.out.println("alaram started");
                 SyncAlarmClass.FireAlarm(this,time);
             }
             lv_drawer=(ListView)findViewById(R.id.lv_drawer);
@@ -133,9 +131,11 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
                     R.animator.card_flip_right_in, R.animator.card_flip_right_out,
                     R.animator.card_flip_left_in, R.animator.card_flip_left_out);
             fragmentTransaction.replace(id, fragment, tag);
+
             fragmentTransaction.addToBackStack(tag);
             fragmentTransaction.commit();
         } else {
+
             fragmentManager.popBackStack(tag, 0);
         }
 
@@ -174,21 +174,13 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
                        break;
                    case 4:
                        try{
-                           FragmentTransactions(R.id.fragment_container,new ContactUs(),"contactus");
-                       }
-                       catch (Exception e){
-                           e.printStackTrace();
-                       }
-                       break;
-                   case 5:
-                       try{
                            FragmentTransactions(R.id.fragment_container,new Settings(),"settings");
                        }
                        catch (Exception e){
                            e.printStackTrace();
                        }
                        break;
-                   case 6:
+                   case 5:
                        try{
                           Logout();
                        }
@@ -207,11 +199,12 @@ public class DashboardActivity extends FragmentActivity implements AdapterView.O
         }
         else{
             if (getFragmentManager().getBackStackEntryCount() > 1) {
+
                 getFragmentManager().popBackStack();
             } else {
-                System.out.println("activity finish");
                 SyncAlarmClass.StopAlarm();
                 finish();
+                overridePendingTransition(R.anim.push_down_in,R.anim.push_down_out);
             }
         }
 

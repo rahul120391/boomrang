@@ -23,6 +23,7 @@ public class MainActivity extends FragmentActivity {
             Intent i = new Intent(this, DashboardActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
+            overridePendingTransition(R.anim.push_up_in, R.anim.push_up_out);
         }
         else{
             FragmentTransactions(R.id.fragment_place,new Splash(),"splash");
@@ -55,7 +56,6 @@ public class MainActivity extends FragmentActivity {
             if (getFragmentManager().getBackStackEntryCount() >2) {
                 getFragmentManager().popBackStack();
             } else {
-                System.out.println("activity finish");
                 finish();
             }
     }

@@ -27,21 +27,22 @@ import retrofit.RetrofitError;
  * Created by rahul on 5/12/2015.
  */
 public class Forgotpassword extends Fragment implements View.OnClickListener, DataTransferInterface {
-    View v=null;
+    View v = null;
     TextView tv_heading;
     EditText et_email;
     Button btn_forgot;
     MethodClass methodClass;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        try{
-            v=inflater.inflate(R.layout.fragment_forgotpassword,null);
-            methodClass=new MethodClass(getActivity(),this);
+        try {
+            v = inflater.inflate(R.layout.fragment_forgotpassword, null);
+            methodClass = new MethodClass(getActivity(), this);
             //intialize views
-            tv_heading=(TextView)v.findViewById(R.id.tv_heading);
-            et_email=(EditText)v.findViewById(R.id.et_email);
-            btn_forgot=(Button)v.findViewById(R.id.btn_forgot);
+            tv_heading = (TextView) v.findViewById(R.id.tv_heading);
+            et_email = (EditText) v.findViewById(R.id.et_email);
+            btn_forgot = (Button) v.findViewById(R.id.btn_forgot);
 
             //settTypeface
             tv_heading.setTypeface(UIutill.SetFont(getActivity(), "segoeuilght.ttf"));
@@ -50,8 +51,7 @@ public class Forgotpassword extends Fragment implements View.OnClickListener, Da
 
             //setListener
             btn_forgot.setOnClickListener(this);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return v;
@@ -59,25 +59,22 @@ public class Forgotpassword extends Fragment implements View.OnClickListener, Da
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.btn_forgot:
-                try{
-                    if(et_email.getText().toString().trim().length()==0){
-                        UIutill.ShowSnackBar(getActivity(),getString(R.string.empty_email));
-                    }
-                    else if (!et_email.getText().toString().trim()
+                try {
+                    if (et_email.getText().toString().trim().length() == 0) {
+                        UIutill.ShowSnackBar(getActivity(), getString(R.string.empty_email));
+                    } else if (!et_email.getText().toString().trim()
                             .matches(Patterns.EMAIL_ADDRESS.pattern())) {
                         UIutill.ShowSnackBar(getActivity(), getString(R.string.valied_Email));
-                    }
-                    else{
+                    } else {
                         if (methodClass.checkInternetConnection()) {
-                            methodClass.MakeGetRequest(URLS.FORGOTPASS,et_email.getText().toString().trim());
+                            methodClass.MakeGetRequest(URLS.FORGOTPASS, et_email.getText().toString().trim());
                         } else {
                             UIutill.ShowSnackBar(getActivity(), getString(R.string.no_network));
                         }
                     }
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;
@@ -86,30 +83,27 @@ public class Forgotpassword extends Fragment implements View.OnClickListener, Da
 
     @Override
     public void onSuccess(Object s) {
-         try{
-             String value = new Gson().toJson(s);
-             System.out.println("value" + value);
-             JsonParser jsonParser = new JsonParser();
-             JsonObject jsonreturn = (JsonObject) jsonParser.parse(value);
-             boolean IsSucess = jsonreturn.get("IsSucess").getAsBoolean();
-             if(IsSucess){
-                  String ResponseData=jsonreturn.get("ResponseData").getAsString();
-                  if(!ResponseData.equalsIgnoreCase("")){
-                      UIutill.ShowSnackBar(getActivity(),ResponseData);
-                      getActivity().onBackPressed();
-                  }
-                 else{
-                     String Message=jsonreturn.get("Message").getAsString();UIutill.ShowSnackBar(getActivity(),Message);
-                  }
+        try {
+            String value = new Gson().toJson(s);
+            JsonParser jsonParser = new JsonParser();
+            JsonObject jsonreturn = (JsonObject) jsonParser.parse(value);
+            boolean IsSucess = jsonreturn.get("IsSucess").getAsBoolean();
+            if (IsSucess) {
+                String ResponseData = jsonreturn.get("ResponseData").getAsString();
+                if (!ResponseData.equalsIgnoreCase("")) {
+                    UIutill.ShowSnackBar(getActivity(), ResponseData);
+                    getActivity().onBackPressed();
+                } else {
+                    String Message = jsonreturn.get("Message").getAsString();
+                    UIutill.ShowSnackBar(getActivity(), Message);
+                }
 
-             }
-             else{
-                 UIutill.ShowDialog(getActivity(), getString(R.string.error), jsonreturn.get("Message").getAsString());
-             }
-         }
-         catch (Exception e){
-             e.printStackTrace();
-         }
+            } else {
+                UIutill.ShowDialog(getActivity(), getString(R.string.error), jsonreturn.get("Message").getAsString());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

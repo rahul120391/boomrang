@@ -23,7 +23,6 @@ public class SyncAlarmClass {
      */
     public static void FireAlarm(Context context, int time) {
         if (manager == null) {
-            System.out.println("alarm fired");
             manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             Intent intent = new Intent(context, CheckFragmentVisibilityBroadcast.class);
             pintent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -37,7 +36,6 @@ public class SyncAlarmClass {
      */
     public static void StopAlarm() {
         if (manager != null) {
-            System.out.println("alarm cancelled");
             manager.cancel(pintent);
             manager=null;
         }

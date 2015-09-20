@@ -57,10 +57,11 @@ public class UIutill {
     public static void HideKeyboard(Activity activity) {
         @SuppressWarnings("static-access")
         InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (inputManager != null)
-            System.out.println("inside input manager");
-        inputManager.hideSoftInputFromWindow(activity.getWindow().getDecorView().getApplicationWindowToken(), 0);
-        activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        if (inputManager != null){
+            inputManager.hideSoftInputFromWindow(activity.getWindow().getDecorView().getApplicationWindowToken(), 0);
+            activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        }
+
     }
     /***********************************************************************************************************************/
 
@@ -71,9 +72,21 @@ public class UIutill {
      * @param message -message to show inside snackbar
      */
     public static void ShowSnackBar(Context context, String message) {
-        SnackbarManager.show(Snackbar.with(context).type(SnackbarType.MULTI_LINE).text(message).textTypeface(SetFont(context,"segoeuilght.ttf")).
+        SnackbarManager.show(Snackbar.with(context).type(SnackbarType.MULTI_LINE).text(message).textTypeface(SetFont(context, "segoeuilght.ttf")).
                 color(context.getResources().getColor(R.color.login_box_bg)).
                 textColor(context.getResources().getColor(R.color.email_password_txtclr)));
+    }
+    /***********************************************************************************************************************/
+
+    /**
+     * this method is used to close keyboard in dialog
+     *
+     * @param context-pass fragment context as argument to close keyboard
+     * @param v-view       to get focus
+     */
+    public static void HideDialogKeyboard(Context context, View v) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
     }
 
     /***********************************************************************************************************************/
@@ -150,26 +163,25 @@ public class UIutill {
 
     /**
      * This method is used to get android phone dvice id
+     *
      * @param cnt -pass the context of fragment/activity
      * @return
      */
-    public static String getDeviceId(Context cnt){
+    public static String getDeviceId(Context cnt) {
         String deviceId = android.provider.Settings.Secure.getString(cnt.getContentResolver(),
                 android.provider.Settings.Secure.ANDROID_ID);
         return deviceId;
     }
+
     /**
      * This method is used to return the sdcard size if available
      */
-    public static double getSecondaryStorageSize(){
+    public static double getSecondaryStorageSize() {
         String secStore = System.getenv("SECONDARY_STORAGE");
         File f_secs = new File(secStore);
-        double  totalspace=0.0;
-        if(f_secs.exists()){
-            System.out.println("external"+f_secs.getAbsolutePath().toString());
-            System.out.println("total freespace in bytes"+f_secs.getFreeSpace());
-            totalspace=(f_secs.getFreeSpace())/(1024*1024*1024);
-            System.out.println("total free space external"+totalspace);
+        double totalspace = 0.0;
+        if (f_secs.exists()) {
+            totalspace = (f_secs.getFreeSpace()) / (1024 * 1024 * 1024);
         }
         return totalspace;
     }
@@ -177,23 +189,21 @@ public class UIutill {
     /**
      * This method is used to return the internal storage if available
      */
-    public static double getInternalStorage(){
+    public static double getInternalStorage() {
 
         String extStore = System.getenv("EXTERNAL_STORAGE");
         File f_exts = new File(extStore);
-        double totalspace=0.0;
-        if(f_exts.exists()){
-            System.out.println("internal"+f_exts.getAbsolutePath().toString());
-            System.out.println("totalspace in bytes"+f_exts.getFreeSpace());
-            totalspace=(f_exts.getFreeSpace())/(1024.0*1024.0*1024.0);
-            System.out.println("total  freespace internal"+totalspace);
+        double totalspace = 0.0;
+        if (f_exts.exists()) {
+            totalspace = (f_exts.getFreeSpace()) / (1024.0 * 1024.0 * 1024.0);
         }
-      return totalspace;
+        return totalspace;
     }
+
     /***********************************************************************************************************************/
-    public static float CheckPhone_Tablet(Context cnt){
+    public static float CheckPhone_Tablet(Context cnt) {
         DisplayMetrics metrics = new DisplayMetrics();
-        ((Activity)cnt).getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        ((Activity) cnt).getWindowManager().getDefaultDisplay().getMetrics(metrics);
         int widthPixels = metrics.widthPixels;
         int heightPixels = metrics.heightPixels;
         float scaleFactor = metrics.density;

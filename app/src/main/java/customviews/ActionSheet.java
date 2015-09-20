@@ -393,10 +393,12 @@ public class ActionSheet extends android.app.Fragment implements OnClickListener
         private String mTag = "actionSheet";
         private boolean mCancelableOnTouchOutside;
         private ActionSheetListener mListener;
+        ActionSheet actionSheet;
 
         public Builder(Context context, android.app.FragmentManager fragmentManager) {
             mContext = context;
             mFragmentManager = fragmentManager;
+
         }
 
         public Builder setCancelButtonTitle(String title) {
@@ -437,13 +439,17 @@ public class ActionSheet extends android.app.Fragment implements OnClickListener
             return bundle;
         }
 
+
         public ActionSheet show() {
-            ActionSheet actionSheet = (ActionSheet) android.app.Fragment.instantiate(
+            actionSheet = (ActionSheet) android.app.Fragment.instantiate(
                     mContext, ActionSheet.class.getName(), prepareArguments());
             actionSheet.setActionSheetListener(mListener);
             actionSheet.show(mFragmentManager, mTag);
+
+
             return actionSheet;
         }
+
 
     }
 

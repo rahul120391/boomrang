@@ -56,52 +56,6 @@ public class MethodClass<T> {
                 .setConverter(new GsonConverter(gson)).build();
         myretro = adapter.create(MyRetrofitInterface.class);
     }
-/****************************************************************************************************************************/
-
-  /*  *//***
-     *
-     * @param mapvalues
-     * -values to be send with url
-     * @param path
-     * -path where the file will be saved
-     * @param cnt
-     * -current activity/fragment context
-     *//*
-    public MethodClass(final Map<String,String> mapvalues,final String path,final Context cnt){
-        new Download(path,cnt).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,mapvalues);
-      *//*  ProgressDialogClass.getDialog(cnt);
-        RestAdapter fileadapter=new RestAdapter.Builder().
-                setEndpoint(URLS.COMMON_URL)
-                .build();
-        MyRetrofitInterface myretorfit=fileadapter.create(MyRetrofitInterface.class);
-        myretorfit.download(mapvalues,new Callback<Response>() {
-            @Override
-            public void success(Response response, Response response2) {
-                   System.out.println("success"+response);
-                try{
-                    byte[] byteses=getBytesFromStream(response.getBody().in());
-                    saveBytesToFile(byteses,path);
-                    ProgressDialogClass.logout();
-                    UIutill.ShowSnackBar(cnt,cnt.getString(R.string.download_cmp));
-                }
-                catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-            @Override
-            public void failure(RetrofitError error) {
-                if(error!=null){
-                    UIutill.ShowDialog(cnt, cnt.getString(R.string.error), CustomErrorHandling.ShowError(error,cnt));
-                }
-                ProgressDialogClass.logout();
-            }
-        });*//*
-    }*/
-  /*  public MethodClass(Context cnt,String path,String url){
-        System.out.println("url"+url);
-        new DownloadFile(cnt,path).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,url);
-    }*/
-
 /********************************************************************************************************************************/
     /**
      * @param is -input stream returned from response
@@ -177,7 +131,6 @@ public class MethodClass<T> {
                 myretro.getspacestats(map, new CallbackClass<T>(inter, cnt));
                 break;
             case URLS.CHANGEPASS:
-                System.out.println("map" + map);
                 myretro.changepass(map,new CallbackClass<T>(inter,cnt));
                 break;
             default:
@@ -239,9 +192,6 @@ public class MethodClass<T> {
     public void UploadFiles(String userid, String folderid,String deviceid, Map<String, TypedFile> files, String url) {
         switch (url) {
             case URLS.UPLOAD_FILES:
-                System.out.println("userid" + userid);
-                System.out.println("folderid" + folderid);
-                System.out.println("file" + files);
                 myretro.fileupload(userid, folderid,deviceid, files, new CallbackClass<T>(inter, cnt));
                 break;
             default:

@@ -16,8 +16,8 @@ import pl.droidsonroids.gif.GifImageView;
  */
 public class Splash extends android.app.Fragment {
 
-    View v=null;
-   // ImageView iv_logo;
+    View v = null;
+    // ImageView iv_logo;
     GifImageView iv_logo;
 
     @Override
@@ -27,26 +27,24 @@ public class Splash extends android.app.Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        try{
-         v=inflater.inflate(R.layout.fragment_splash,null);
-            iv_logo=(GifImageView)v.findViewById(R.id.iv_logo);
-            Thread thread=new Thread(){
+        try {
+            v = inflater.inflate(R.layout.fragment_splash, null);
+            iv_logo = (GifImageView) v.findViewById(R.id.iv_logo);
+            Thread thread = new Thread() {
                 @Override
                 public void run() {
                     super.run();
-                    try{
-                         sleep(3000);
-                        ((MainActivity)getActivity()).FragmentTransactions(R.id.fragment_place,new Login(),"login");
-                    }
-                    catch (Exception e){
+                    try {
+                        sleep(3000);
+                        ((MainActivity) getActivity()).FragmentTransactions(R.id.fragment_place, new Login(), "login");
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
 
                 }
             };
             thread.start();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return v;
