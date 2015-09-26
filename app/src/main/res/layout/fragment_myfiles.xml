@@ -109,9 +109,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:paddingRight="10dp"
             android:singleLine="true"
-            android:layout_toRightOf="@+id/iv_back"
+            android:layout_toLeftOf="@id/iv_back"
+            android:layout_marginRight="10dp"
             android:layout_marginTop="5dp"
             android:textColor="@color/email_password_txtclr"
             android:textSize="18sp" />

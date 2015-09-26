@@ -7,7 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import Boomerang.R;
+import com.boomerang.R;
+
 import activities.MainActivity;
 import pl.droidsonroids.gif.GifImageView;
 

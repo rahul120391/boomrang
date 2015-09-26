@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.boomerang.R;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -19,8 +20,6 @@ import com.google.gson.JsonParser;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import Boomerang.R;
 import activities.DashboardActivity;
 import commonutils.CustomErrorHandling;
 import commonutils.DataTransferInterface;

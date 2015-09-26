@@ -25,11 +25,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.androidquery.AQuery;
+import com.boomerang.R;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-
-import Boomerang.R;
 import commonutils.ProgressDialogClass;
 import commonutils.RequestCodes;
 import commonutils.UIutill;

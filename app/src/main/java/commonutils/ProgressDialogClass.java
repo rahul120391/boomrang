@@ -6,7 +6,8 @@ import android.view.Gravity;
 import android.view.Window;
 import android.view.animation.AccelerateInterpolator;
 
-import Boomerang.R;
+import com.boomerang.R;
+
 import customviews.CircularProgressDrawable;
 
 /**

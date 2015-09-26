@@ -18,13 +18,12 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.boomerang.R;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.SnackbarManager;
 import com.nispok.snackbar.enums.SnackbarType;
 
 import java.io.File;
-
-import Boomerang.R;
 
 /**
  * Created by rahul on 3/4/2015.

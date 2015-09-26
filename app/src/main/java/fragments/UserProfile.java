@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.boomerang.R;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -24,8 +25,6 @@ import com.squareup.okhttp.internal.Util;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import Boomerang.R;
 import commonutils.CustomErrorHandling;
 import commonutils.DataTransferInterface;
 import commonutils.MethodClass;

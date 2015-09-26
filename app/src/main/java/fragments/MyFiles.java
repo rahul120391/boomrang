@@ -31,6 +31,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.boomerang.R;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -48,8 +49,6 @@ import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
-
-import Boomerang.R;
 import activities.DashboardActivity;
 import adapters.MyFilesAdapter;
 import commonutils.CustomErrorHandling;

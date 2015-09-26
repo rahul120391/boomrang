@@ -18,7 +18,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import Boomerang.R;
+import com.boomerang.R;
+
 import adapters.SideBarAdapter;
 import commonutils.SyncAlarmClass;
 import commonutils.UIutill;

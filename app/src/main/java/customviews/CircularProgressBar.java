@@ -8,7 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.ProgressBar;
 
-import Boomerang.R;
+import com.boomerang.R;
 
 
 /**

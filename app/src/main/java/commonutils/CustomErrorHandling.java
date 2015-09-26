@@ -2,9 +2,9 @@ package commonutils;
 
 import android.content.Context;
 
-import java.net.HttpURLConnection;
+import com.boomerang.R;
 
-import Boomerang.R;
+import java.net.HttpURLConnection;
 import retrofit.RetrofitError;
 
 /**

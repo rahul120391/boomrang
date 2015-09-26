@@ -9,9 +9,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.List;
+import com.boomerang.R;
 
-import Boomerang.R;
+import java.util.List;
 import commonutils.UIutill;
 import modelclasses.Item;
 

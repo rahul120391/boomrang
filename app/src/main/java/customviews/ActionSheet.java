@@ -22,7 +22,8 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-import Boomerang.R;
+import com.boomerang.R;
+
 import commonutils.UIutill;
 
 /**

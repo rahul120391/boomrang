@@ -12,9 +12,9 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.widget.Toast;
 
-import java.io.File;
+import com.boomerang.R;
 
-import Boomerang.R;
+import java.io.File;
 
 /**
  * Created by rahul on 3/31/2015.

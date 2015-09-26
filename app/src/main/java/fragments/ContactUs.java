@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import Boomerang.R;
+import com.boomerang.R;
 
 /**
  * Created by rahul on 4/7/2015.

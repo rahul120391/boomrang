@@ -27,6 +27,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.androidquery.AQuery;
+import com.boomerang.R;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -37,8 +38,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-import Boomerang.R;
 import activities.FileChooser;
 import commonutils.CustomErrorHandling;
 import commonutils.DataTransferInterface;

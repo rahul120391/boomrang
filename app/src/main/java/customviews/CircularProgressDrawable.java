@@ -17,7 +17,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
-import Boomerang.R;
+import com.boomerang.R;
 
 
 @SuppressLint("NewApi")
